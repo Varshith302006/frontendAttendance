@@ -31,7 +31,21 @@
 <div class="container">
     <form id="loginForm">
         <input type="text" name="username" placeholder="Student ID" required>
-        <input type="password" name="password" placeholder="Password" required>
+        <div style="position: relative;">
+            <input type="password" name="password" placeholder="Password" required id="passwordField" style="padding-right: 40px;">
+            <span id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; width: 24px; height: 24px;">
+                <!-- Eye Open SVG -->
+                <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <!-- Eye Closed SVG (hidden initially) -->
+                <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24" style="display:none;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 012.197-3.476m1.797-1.681A9.969 9.969 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.05 10.05 0 01-4.202 5.661M3 3l18 18" />
+                </svg>
+            </span>
+        </div>
+
         <button type="submit" class="btn">Get Attendance</button>
     </form>
 
@@ -49,100 +63,118 @@
 </div>
 
 <script>
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const username = formData.get('username');
-    const password = formData.get('password');
+    const passwordField = document.getElementById('passwordField');
+    const togglePassword = document.getElementById('togglePassword');
+    const eyeOpen = document.getElementById('eyeOpen');
+    const eyeClosed = document.getElementById('eyeClosed');
 
-    document.getElementById('academicTable').innerHTML = 'Approximately one minute...';
-    document.getElementById('biometricTable').innerHTML = 'Fetching Biometric Attendance...';
+    togglePassword.addEventListener('click', () => {
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
 
-    try {
-        const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
-            method: 'POST',
-            body: new URLSearchParams({ username, password })
-        });
-
-        if (!res.ok) throw new Error(`Server error: ${res.status}`);
-        
-        // Stream sequential results from backend
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-
-        while(true){
-            const { value, done } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-
-            // Split by newline to parse each step
-            const lines = buffer.split('\n');
-            for (let i=0; i<lines.length-1; i++) {
-                const chunk = JSON.parse(lines[i]);
-                if (chunk.step === 'academic') {
-                    const academicWithTargets = chunk.data;
-                    let totalPercentage = 0;
-                    academicWithTargets.forEach(sub => totalPercentage += sub.percentage);
-                    const averagePercentage = (totalPercentage / academicWithTargets.length).toFixed(2);
-
-                    let html = `<p><strong>Average Academic Attendance: ${averagePercentage}%</strong></p>`;
-                    html += `<table>
-                        <tr>
-                            <th>Course Code</th>
-                            <th>Subject</th>
-                            <th>Attended</th>
-                            <th>Total</th>
-                            <th>Percentage</th>
-                            <th>To Reach 75%</th>
-                            <th>Can Bunk</th>
-                            <th>Progress</th>
-                        </tr>`;
-                    academicWithTargets.forEach(sub => {
-                        html += `<tr>
-                            <td>${sub.courseCode}</td>
-                            <td>${sub.subject}</td>
-                            <td>${sub.attended}</td>
-                            <td>${sub.total}</td>
-                            <td>${sub.percentage.toFixed(2)}%</td>
-                            <td>${sub.classesToAttendFor75}</td>
-                            <td>${sub.classesCanBunk}</td>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar" style="width:${sub.percentage}%;background:${sub.percentage>=75?'green':'red'}">
-                                        ${sub.percentage.toFixed(2)}%
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>`;
-                    });
-                    html += '</table>';
-                    document.getElementById('academicTable').innerHTML = html;
-                }
-
-                if (chunk.step === 'biometric') {
-                    const biometricAttendance = chunk.data;
-                    document.getElementById('biometricTable').innerHTML = `
-                        <p><strong>Total Days:</strong> ${biometricAttendance.totalDays}</p>
-                        <p><strong>Present Days:</strong> ${biometricAttendance.presentCount}</p>
-                        <p><strong>Attendance Percentage: ${biometricAttendance.percentage}%</strong></p>
-                        <div class="progress">
-                            <div class="progress-bar" style="width:${biometricAttendance.percentage}%;background:${biometricAttendance.percentage>=75?'green':'red'}">
-                                ${biometricAttendance.percentage}%
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            buffer = lines[lines.length-1];
+        // Toggle SVGs
+        if(type === 'password') {
+            eyeOpen.style.display = 'block';
+            eyeClosed.style.display = 'none';
+        } else {
+            eyeOpen.style.display = 'none';
+            eyeClosed.style.display = 'block';
         }
+    });
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const username = formData.get('username');
+        const password = formData.get('password');
 
-    } catch (err) {
-        console.error(err);
-        document.getElementById('academicTable').innerHTML = 'Error fetching data';
-        document.getElementById('biometricTable').innerHTML = '';
-    }
-});
+        document.getElementById('academicTable').innerHTML = 'Approximately one minute...';
+        document.getElementById('biometricTable').innerHTML = 'Fetching Biometric Attendance...';
+
+        try {
+            const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
+                method: 'POST',
+                body: new URLSearchParams({ username, password })
+            });
+
+            if (!res.ok) throw new Error(`Server error: ${res.status}`);
+            
+            // Stream sequential results from backend
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while(true){
+                const { value, done } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+
+                // Split by newline to parse each step
+                const lines = buffer.split('\n');
+                for (let i=0; i<lines.length-1; i++) {
+                    const chunk = JSON.parse(lines[i]);
+                    if (chunk.step === 'academic') {
+                        const academicWithTargets = chunk.data;
+                        let totalPercentage = 0;
+                        academicWithTargets.forEach(sub => totalPercentage += sub.percentage);
+                        const averagePercentage = (totalPercentage / academicWithTargets.length).toFixed(2);
+
+                        let html = `<p><strong>Average Academic Attendance: ${averagePercentage}%</strong></p>`;
+                        html += `<table>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Subject</th>
+                                <th>Attended</th>
+                                <th>Total</th>
+                                <th>Percentage</th>
+                                <th>To Reach 75%</th>
+                                <th>Can Bunk</th>
+                                <th>Progress</th>
+                            </tr>`;
+                        academicWithTargets.forEach(sub => {
+                            html += `<tr>
+                                <td>${sub.courseCode}</td>
+                                <td>${sub.subject}</td>
+                                <td>${sub.attended}</td>
+                                <td>${sub.total}</td>
+                                <td>${sub.percentage.toFixed(2)}%</td>
+                                <td>${sub.classesToAttendFor75}</td>
+                                <td>${sub.classesCanBunk}</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width:${sub.percentage}%;background:${sub.percentage>=75?'green':'red'}">
+                                            ${sub.percentage.toFixed(2)}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>`;
+                        });
+                        html += '</table>';
+                        document.getElementById('academicTable').innerHTML = html;
+                    }
+
+                    if (chunk.step === 'biometric') {
+                        const biometricAttendance = chunk.data;
+                        document.getElementById('biometricTable').innerHTML = `
+                            <p><strong>Total Days:</strong> ${biometricAttendance.totalDays}</p>
+                            <p><strong>Present Days:</strong> ${biometricAttendance.presentCount}</p>
+                            <p><strong>Attendance Percentage: ${biometricAttendance.percentage}%</strong></p>
+                            <div class="progress">
+                                <div class="progress-bar" style="width:${biometricAttendance.percentage}%;background:${biometricAttendance.percentage>=75?'green':'red'}">
+                                    ${biometricAttendance.percentage}%
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                buffer = lines[lines.length-1];
+            }
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById('academicTable').innerHTML = 'Error fetching data';
+            document.getElementById('biometricTable').innerHTML = '';
+        }
+    });
 </script>
 
 </body>
