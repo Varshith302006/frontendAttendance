@@ -50,62 +50,95 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const loginForm = document.getElementById('loginForm');
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const username = formData.get('username');
-    const password = formData.get('password');
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const username = formData.get('username');
+        const password = formData.get('password');
 
-    document.getElementById('academicTable').innerHTML = 'Fetching Academic Attendance...';
-    document.getElementById('biometricTable').innerHTML = 'Waiting for Biometric Attendance...';
+        document.getElementById('academicTable').innerHTML = 'Fetching Academic Attendance...';
+        document.getElementById('biometricTable').innerHTML = 'Fetching Biometric Attendance...';
 
-    try {
-      // 1️⃣ Academic
-      const resAcademic = await fetch('https://attendance-4rm8.onrender.com/get-academic', {
-        method: 'POST',
-        body: new URLSearchParams({ username, password })
-      });
-      const resultAcademic = await resAcademic.json();
-      if (!resultAcademic.success) throw new Error(resultAcademic.error);
+        try {
+            // Academic
+            const resAcademic = await fetch('https://attendance-4rm8.onrender.com/get-academic', {
+                method: 'POST',
+                body: new URLSearchParams({ username, password })
+            });
+            const resultAcademic = await resAcademic.json();
+            if (!resultAcademic.success) {
+                document.getElementById('academicTable').innerHTML = 'Error: ' + resultAcademic.error;
+            } else {
+                const academicWithTargets = resultAcademic.data;
+                let totalPercentage = 0;
+                academicWithTargets.forEach(sub => totalPercentage += sub.percentage);
+                const averagePercentage = (totalPercentage / academicWithTargets.length).toFixed(2);
 
-      const academicWithTargets = resultAcademic.data;
-      let totalPercentage = 0;
-      academicWithTargets.forEach(sub => totalPercentage += sub.percentage);
-      const avg = (totalPercentage / academicWithTargets.length).toFixed(2);
+                let html = `<p><strong>Average Academic Attendance: ${averagePercentage}%</strong></p>`;
+                html += `<table>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Subject</th>
+                        <th>Attended</th>
+                        <th>Total</th>
+                        <th>Percentage</th>
+                        <th>To Reach 75%</th>
+                        <th>Can Bunk</th>
+                        <th>Progress</th>
+                    </tr>`;
+                academicWithTargets.forEach(sub => {
+                    html += `<tr>
+                        <td>${sub.courseCode}</td>
+                        <td>${sub.subject}</td>
+                        <td>${sub.attended}</td>
+                        <td>${sub.total}</td>
+                        <td>${sub.percentage.toFixed(2)}%</td>
+                        <td>${sub.classesToAttendFor75}</td>
+                        <td>${sub.classesCanBunk}</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar" style="width:${sub.percentage}%;background:${sub.percentage>=75?'green':'red'}">
+                                    ${sub.percentage.toFixed(2)}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+                html += '</table>';
+                document.getElementById('academicTable').innerHTML = html;
+            }
 
-      let html = `<p><strong>Average Academic Attendance: ${avg}%</strong></p>`;
-      html += `<table>...</table>`; // same table code as before
-      document.getElementById('academicTable').innerHTML = html;
+            // Biometric
+            const resBio = await fetch('https://attendance-4rm8.onrender.com/get-biometric', {
+                method: 'POST',
+                body: new URLSearchParams({ username, password })
+            });
+            const resultBio = await resBio.json();
+            if (!resultBio.success) {
+                document.getElementById('biometricTable').innerHTML = 'Error: ' + resultBio.error;
+            } else {
+                const biometricAttendance = resultBio.data;
+                document.getElementById('biometricTable').innerHTML = `
+                    <p><strong>Total Days:</strong> ${biometricAttendance.totalDays}</p>
+                    <p><strong>Present Days:</strong> ${biometricAttendance.presentCount}</p>
+                    <p><strong>Attendance Percentage: ${biometricAttendance.percentage}%</strong></p>
+                    <div class="progress">
+                        <div class="progress-bar" style="width:${biometricAttendance.percentage}%;background:${biometricAttendance.percentage>=75?'green':'red'}">
+                            ${biometricAttendance.percentage}%
+                        </div>
+                    </div>
+                `;
+            }
 
-      // 2️⃣ Biometric (fetch separately, browser session reused on backend)
-      const resBio = await fetch('https://attendance-4rm8.onrender.com/get-biometric', {
-        method: 'POST',
-        body: new URLSearchParams({ username, password })
-      });
-      const resultBio = await resBio.json();
-      if (!resultBio.success) throw new Error(resultBio.error);
-
-      const bio = resultBio.data;
-      document.getElementById('biometricTable').innerHTML = `
-        <p><strong>Total Days:</strong> ${bio.totalDays}</p>
-        <p><strong>Present Days:</strong> ${bio.presentCount}</p>
-        <p><strong>Attendance Percentage: ${bio.percentage}%</strong></p>
-        <div class="progress">
-          <div class="progress-bar" style="width:${bio.percentage}%;background:${bio.percentage>=75?'green':'red'}">
-            ${bio.percentage}%
-          </div>
-        </div>
-      `;
-    } catch (err) {
-      console.error(err);
-      document.getElementById('academicTable').innerHTML = 'Error fetching data';
-      document.getElementById('biometricTable').innerHTML = '';
-    }
-  });
+        } catch (err) {
+            console.error(err);
+            document.getElementById('academicTable').innerHTML = 'Error fetching data';
+            document.getElementById('biometricTable').innerHTML = '';
+        }
+    });
 });
 </script>
-
 
 
 </body>
