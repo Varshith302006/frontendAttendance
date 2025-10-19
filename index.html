@@ -41,9 +41,9 @@ header h2{
   font-size:20px;
   flex:1;
   text-align:center;
-  white-space:nowrap;        /* Prevent wrapping */
-  overflow:hidden;           /* Hide overflow */
-  text-overflow:ellipsis;    /* Show ellipsis for long text */
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 #logoutBtn{
   position:absolute;
@@ -73,7 +73,7 @@ header h2{
   align-items:center;
 }
 
-/* Centered Login Card */
+/* Login Card */
 .login-card{
   background:var(--card);
   padding:32px 24px;
@@ -221,47 +221,19 @@ th{
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 
 @media(max-width:720px){
-  header{
-    flex-direction:column;
-    text-align:center;
-  }
-  header h2{
-    font-size:18px; /* Slightly smaller on tablet */
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .login-card{
-    padding:24px 16px;
-  }
-  .cards{
-    flex-direction:column;
-  }
-  .card{
-    padding:16px;
-  }
-  table{
-    font-size:13px;
-  }
+  header{flex-direction:column;text-align:center;}
+  header h2{font-size:18px;}
+  .login-card{padding:24px 16px;}
+  .cards{flex-direction:column;}
+  .card{padding:16px;}
+  table{font-size:13px;}
 }
-
 @media(max-width:420px){
-  header h2{
-    font-size:16px; /* Smallest on mobile */
-  }
-  .login-card{
-    padding:20px 12px;
-  }
-  input[type=text], input[type=password]{
-    padding:12px;
-    font-size:14px;
-  }
-  .btn{
-    padding:12px;
-    font-size:14px;
-  }
+  header h2{font-size:16px;}
+  .login-card{padding:20px 12px;}
+  input[type=text], input[type=password]{padding:12px;font-size:14px;}
+  .btn{padding:12px;font-size:14px;}
 }
-
 </style>
 </head>
 <body>
@@ -327,19 +299,33 @@ document.getElementById('loginForm').addEventListener('submit',async e=>{
   const password=formData.get('password');
   const academicEl=document.getElementById('academicTable');
   const biometricEl=document.getElementById('biometricTable');
+  
+  // Show loader
   academicEl.innerHTML='<div class="loader"></div> Loading...';
   biometricEl.innerHTML='Fetching Biometric Attendance...';
+  
   try{
     const res=await fetch('https://attendance-4rm8.onrender.com/get-attendance',{
       method:'POST',
       body:new URLSearchParams({username,password})
     });
-    if(!res.ok)throw new Error(`Server error: ${res.status}`);
-    const data=await res.json();
-    if(data.academic)renderAcademic(data.academic);
-    if(data.biometric)renderBiometric(data.biometric);
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(err) {
+      console.error('Response is not JSON:', text);
+      academicEl.innerHTML='Error fetching data';
+      biometricEl.innerHTML='';
+      return;
+    }
+
+    if(data.academic) renderAcademic(data.academic);
+    if(data.biometric) renderBiometric(data.biometric);
+    
+    // Show dashboard
     showDashboard(username);
-  }catch(err){
+  } catch(err) {
     console.error(err);
     academicEl.innerHTML='Error fetching data';
     biometricEl.innerHTML='';
@@ -355,7 +341,10 @@ function showDashboard(studentId){
 }
 
 function renderAcademic(data){
-  if(!Array.isArray(data)||data.length===0){document.getElementById('academicTable').innerHTML='<em>No academic data available</em>';return;}
+  if(!Array.isArray(data)||data.length===0){
+    document.getElementById('academicTable').innerHTML='<em>No academic data available</em>';
+    return;
+  }
   let total=0;
   data.forEach(sub=>total+=Number(sub.percentage)||0);
   const avg=(total/data.length).toFixed(2);
@@ -371,13 +360,24 @@ function renderAcademic(data){
 }
 
 function renderBiometric(data){
-  if(!data){document.getElementById('biometricTable').innerHTML='<em>No biometric data available</em>';return;}
+  if(!data){
+    document.getElementById('biometricTable').innerHTML='<em>No biometric data available</em>';
+    return;
+  }
   const pct=Number(data.percentage)||0;
   const bg=pct>=75?'green':'red';
   document.getElementById('biometricTable').innerHTML=`<p><strong>Total Days:</strong> ${escapeHtml(data.totalDays)}</p><p><strong>Present Days:</strong> ${escapeHtml(data.presentCount)}</p><p><strong>Attendance Percentage: ${pct}%</strong></p><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct}%</div></div>`;
 }
 
-function escapeHtml(v){if(v===undefined||v===null)return'';return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');}
+function escapeHtml(v){
+  if(v===undefined||v===null) return '';
+  return String(v)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 </script>
 </body>
 </html>
