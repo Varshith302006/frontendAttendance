@@ -117,8 +117,6 @@ form{
   box-shadow:0 0 5px rgba(76,175,80,0.3);
   outline:none;
 }
-
-/* Password field with toggle */
 .password-field input{
   padding-right:40px;
 }
@@ -154,6 +152,7 @@ form{
   display:flex;
   gap:20px;
   flex-wrap:wrap;
+  width:100%;
 }
 .card{
   background:var(--card);
@@ -183,6 +182,9 @@ th{
   background:var(--primary);
   color:#fff;
   font-weight:600;
+}
+.table-wrapper{
+  overflow-x:auto;
 }
 
 /* Progress bar */
@@ -214,6 +216,7 @@ th{
 }
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 
+/* Responsive */
 @media(max-width:720px){
   header{flex-direction:column;text-align:center;}
   header h2{font-size:18px;}
@@ -227,6 +230,7 @@ th{
   .login-card{padding:20px 12px;}
   input[type=text], input[type=password]{padding:12px;font-size:14px;}
   .btn{padding:12px;font-size:14px;}
+  table th, table td{padding:6px;}
 }
 </style>
 </head>
@@ -264,11 +268,11 @@ th{
   <div class="cards" style="display:none;">
     <div class="card" id="academicCard">
       <h3>Academic Attendance</h3>
-      <div id="academicTable" style="color:var(--muted);">Login to fetch attendance</div>
+      <div class="table-wrapper" id="academicTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
     <div class="card" id="biometricCard">
       <h3>Biometric Attendance</h3>
-      <div id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
+      <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
   </div>
 </div>
@@ -293,10 +297,12 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
   const formData=new FormData(e.target);
   const username=formData.get('username');
   const password=formData.get('password');
+
+  // Show dashboard immediately
+  showDashboard(username);
+
   const academicEl=document.getElementById('academicTable');
   const biometricEl=document.getElementById('biometricTable');
-
-  // Show loaders
   academicEl.innerHTML='<div class="loader"></div> Loading...';
   biometricEl.innerHTML='Fetching Biometric Attendance...';
 
@@ -306,26 +312,16 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
       body:new URLSearchParams({username,password})
     });
     const text = await res.text();
-    // Split multiple JSON objects sent by server
     const lines = text.split('\n').map(s=>s.trim()).filter(Boolean);
-    let data={};
     lines.forEach(line=>{
       try{
         const obj = JSON.parse(line);
-        if(obj.step==='academic') data.academic=obj.data;
-        if(obj.step==='biometric') data.biometric=obj.data;
-      }catch(err){
+        if(obj.step==='academic') renderAcademic(obj.data);
+        if(obj.step==='biometric') renderBiometric(obj.data);
+      } catch(err){
         console.error('Invalid JSON line:', line);
       }
     });
-
-    // Render data
-    if(data.academic) renderAcademic(data.academic);
-    if(data.biometric) renderBiometric(data.biometric);
-
-    // Show dashboard and hide login
-    showDashboard(username);
-
   } catch(err){
     console.error(err);
     academicEl.innerHTML='Error fetching data';
@@ -350,7 +346,7 @@ function renderAcademic(data){
   data.forEach(sub=>total+=Number(sub.percentage)||0);
   const avg=(total/data.length).toFixed(2);
   let html=`<p><strong>Average Academic Attendance: ${avg}%</strong></p>`;
-  html+=`<div style="overflow:auto"><table><tr><th>Course Code</th><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>To Reach 75%</th><th>Can Bunk</th><th>Progress</th></tr>`;
+  html+=`<div class="table-wrapper"><table><tr><th>Course Code</th><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>To Reach 75%</th><th>Can Bunk</th><th>Progress</th></tr>`;
   data.forEach(sub=>{
     const pct=Number(sub.percentage)||0;
     const bg=pct>=75?'green':'red';
