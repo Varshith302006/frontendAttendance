@@ -150,6 +150,13 @@ form{
 }
 .btn:hover{background:#45a049;}
 
+/* Loader under button */
+#formLoader .loader{
+  width:28px;
+  height:28px;
+  border-width:4px;
+}
+
 /* Cards */
 .cards{
   display:flex;
@@ -270,6 +277,10 @@ th{
         </span>
       </div>
       <button type="submit" class="btn">Get Attendance</button>
+      <div id="formLoader" style="margin-top:16px; display:none; text-align:center;">
+        <div class="loader"></div>
+        <p style="color:var(--muted); margin-top:8px;">Fetching attendance...</p>
+      </div>
     </form>
   </div>
 
@@ -290,6 +301,12 @@ const passwordField=document.getElementById('passwordField');
 const togglePassword=document.getElementById('togglePassword');
 const eyeOpen=document.getElementById('eyeOpen');
 const eyeClosed=document.getElementById('eyeClosed');
+const formLoader=document.getElementById('formLoader');
+const logoutBtn=document.getElementById('logoutBtn');
+const loginCard=document.getElementById('loginCard');
+const dashboardCards=document.getElementById('dashboardCards');
+
+dashboardCards.style.display='none';
 
 togglePassword.addEventListener('click',()=>{
   const type=passwordField.type==='password'?'text':'password';
@@ -298,17 +315,12 @@ togglePassword.addEventListener('click',()=>{
   eyeClosed.style.display=type==='password'?'none':'block';
 });
 
-const logoutBtn=document.getElementById('logoutBtn');
-const loginCard=document.getElementById('loginCard');
-const dashboardCards=document.getElementById('dashboardCards');
-
-dashboardCards.style.display='none'; // hide initially
 function showDashboard(studentId){
-  loginCard.style.display = 'none'; // hide login card
-  dashboardCards.style.display = 'flex'; // show dashboard
-  dashboardCards.style.opacity = '1'; // fade-in effect
+  loginCard.style.display='none';
+  dashboardCards.style.display='flex';
+  dashboardCards.style.opacity='1';
   document.querySelector('header h2').textContent = `${studentId} - My Attendance Dashboard`;
-  logoutBtn.style.display = 'block';
+  logoutBtn.style.display='block';
   logoutBtn.onclick = () => { location.reload(); };
 }
 
@@ -317,6 +329,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const formData = new FormData(e.target);
   const username = formData.get('username');
   const password = formData.get('password');
+
+  formLoader.style.display = 'block';
 
   const academicEl = document.getElementById('academicTable');
   const biometricEl = document.getElementById('biometricTable');
@@ -333,49 +347,43 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     const decoder = new TextDecoder();
     let buffer = '';
 
-    showDashboard(username); // show dashboard immediately
-
+    showDashboard(username);
     academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
     biometricEl.innerHTML = '';
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      let lines = buffer.split('\n');
-      buffer = lines.pop();
-
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        try {
-          const obj = JSON.parse(line);
-          if (obj.step === 'academic') renderAcademic(obj.data);
-          if (obj.step === 'biometric') renderBiometric(obj.data);
-        } catch (err) {
-          console.error('Invalid JSON:', line);
-        }
+    while(true){
+      const {done,value}=await reader.read();
+      if(done) break;
+      buffer+=decoder.decode(value,{stream:true});
+      let lines=buffer.split('\n');
+      buffer=lines.pop();
+      for(const line of lines){
+        if(!line.trim()) continue;
+        try{
+          const obj=JSON.parse(line);
+          if(obj.step==='academic') renderAcademic(obj.data);
+          if(obj.step==='biometric') renderBiometric(obj.data);
+        }catch(err){console.error('Invalid JSON:',line);}
       }
     }
 
-    // process last buffer
-    if (buffer.trim()) {
-      try {
-        const obj = JSON.parse(buffer);
-        if (obj.step === 'academic') renderAcademic(obj.data);
-        if (obj.step === 'biometric') renderBiometric(obj.data);
-      } catch (err) {
-        console.error('Invalid JSON:', buffer);
-      }
+    if(buffer.trim()){
+      try{
+        const obj=JSON.parse(buffer);
+        if(obj.step==='academic') renderAcademic(obj.data);
+        if(obj.step==='biometric') renderBiometric(obj.data);
+      }catch(err){console.error('Invalid JSON:',buffer);}
     }
 
-  } catch (err) {
+  } catch(err){
     console.error(err);
     alert('Network error or wrong username/password. Please try again.');
-    academicEl.innerHTML = '';
-    biometricEl.innerHTML = '';
+    academicEl.innerHTML='';
+    biometricEl.innerHTML='';
+  } finally {
+    formLoader.style.display='none';
   }
 });
-
 
 
 function renderAcademic(data){
