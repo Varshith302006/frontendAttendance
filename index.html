@@ -287,7 +287,15 @@ th{
       <div class="field password-field">
         <input type="password" name="password" placeholder="Password" required id="passwordField" aria-label="Password">
         <span id="togglePassword" class="toggle-icon" title="Show / Hide password">
-          <!-- eye SVGs -->
+          <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+          <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="M3 3l18 18"/>
+            <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 012.197-3.476"/>
+            <path d="M21.3 15.3A9.968 9.968 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 014.202-5.661"/>
+          </svg>
         </span>
       </div>
       <button type="submit" class="btn">Get Attendance</button>
@@ -313,6 +321,8 @@ th{
 <script>
 const passwordField=document.getElementById('passwordField');
 const togglePassword=document.getElementById('togglePassword');
+const eyeOpen=document.getElementById('eyeOpen');
+const eyeClosed=document.getElementById('eyeClosed');
 const formLoader=document.getElementById('formLoader');
 const logoutBtn=document.getElementById('logoutBtn');
 const loginCard=document.getElementById('loginCard');
@@ -324,6 +334,8 @@ dashboardCards.style.display='none';
 togglePassword.addEventListener('click',()=>{
   const type=passwordField.type==='password'?'text':'password';
   passwordField.type=type;
+  eyeOpen.style.display=type==='password'?'block':'none';
+  eyeClosed.style.display=type==='password'?'none':'block';
 });
 
 function showDashboard(studentId){
@@ -338,9 +350,11 @@ function showDashboard(studentId){
 async function updateTodayVisits(){
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
+    if(!res.ok) throw new Error('Failed to fetch today visits');
     const data = await res.json();
     visitsBadge.textContent = data.today_logins || 0;
   } catch(err){
+    console.error('Error fetching today visits:', err);
     visitsBadge.textContent = '?';
   }
 }
@@ -362,13 +376,15 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
       body: new URLSearchParams({ username, password })
     });
 
+    if(!res.ok) throw new Error('Network response was not ok');
+
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
 
     showDashboard(username);
     academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
-    biometricEl.innerHTML = '<div class="loader"></div> Loading Biometric Attendance...';
+    biometricEl.innerHTML = '';
 
     while(true){
       const {done,value}=await reader.read();
@@ -382,7 +398,7 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
           const obj=JSON.parse(line);
           if(obj.step==='academic') renderAcademic(obj.data);
           if(obj.step==='biometric') renderBiometric(obj.data);
-        }catch{}
+        }catch(err){console.error('Invalid JSON:',line);}
       }
     }
 
@@ -391,11 +407,14 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
         const obj=JSON.parse(buffer);
         if(obj.step==='academic') renderAcademic(obj.data);
         if(obj.step==='biometric') renderBiometric(obj.data);
-      }catch{}
+      }catch(err){console.error('Invalid JSON:',buffer);}
     }
 
+    // Update today visits badge after fetching data
     updateTodayVisits();
+
   } catch(err){
+    console.error(err);
     alert('Network error or wrong username/password. Please try again.');
     academicEl.innerHTML='';
     biometricEl.innerHTML='';
@@ -417,25 +436,46 @@ function renderAcademic(data){
   data.forEach(sub=>{
     const pct=Number(sub.percentage)||0;
     const bg=pct>=75?'green':'red';
-    html+=`<tr><td>${sub.courseCode}</td><td>${sub.subject}</td><td>${sub.attended}</td><td>${sub.total}</td><td>${pct.toFixed(2)}%</td><td>${sub.classesToAttendFor75}</td><td>${sub.classesCanBunk}</td><td><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(2)}%</div></div></td></tr>`;
+    html+=`<tr><td>${escapeHtml(sub.courseCode)}</td><td>${escapeHtml(sub.subject)}</td><td>${escapeHtml(sub.attended)}</td><td>${escapeHtml(sub.total)}</td><td>${pct.toFixed(2)}%</td><td>${escapeHtml(sub.classesToAttendFor75)}</td><td>${escapeHtml(sub.classesCanBunk)}</td><td><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(2)}%</div></div></td></tr>`;
   });
   html+='</table></div>';
   document.getElementById('academicTable').innerHTML=html;
 }
 
 function renderBiometric(data){
-  if(!data) return;
+  if(!data){
+    document.getElementById('biometricTable').innerHTML='<em>No biometric data available</em>';
+    return;
+  }
   const pct=Number(data.percentage)||0;
+  const totalDays = Number(data.totalDays)||0;
+  const presentCount = Number(data.presentCount)||0;
+
+  // Calculate leaves can take & days to attend for 75%
+  const targetPct = 75;
+  const minPresent = Math.ceil(totalDays * targetPct / 100);
+  const daysToAttend = minPresent - presentCount > 0 ? minPresent - presentCount : 0;
+  const leavesCanTake = presentCount - minPresent > 0 ? presentCount - minPresent : 0;
+
   const bg=pct>=75?'green':'red';
-  let html=`
-    <p><strong>Total Days:</strong> ${data.totalDays}</p>
-    <p><strong>Present Days:</strong> ${data.presentCount}</p>
+  document.getElementById('biometricTable').innerHTML=`
+    <p><strong>Total Days:</strong> ${escapeHtml(totalDays)}</p>
+    <p><strong>Present Days:</strong> ${escapeHtml(presentCount)}</p>
     <p><strong>Attendance Percentage:</strong> ${pct}%</p>
-    <p><strong>Leaves can take (to stay ≥75%):</strong> ${data.classesCanBunk}</p>
-    <p><strong>Days to attend to reach 75%:</strong> ${data.classesToAttendFor75}</p>
+    <p><strong>Days to attend for 75%:</strong> ${daysToAttend}</p>
+    <p><strong>Leaves can take:</strong> ${leavesCanTake}</p>
     <div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct}%</div></div>
   `;
-  document.getElementById('biometricTable').innerHTML=html;
+}
+
+function escapeHtml(v){
+  if(v===undefined||v===null) return '';
+  return String(v)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\"/g,'&quot;')
+    .replace(/'/g,'&#39;');
 }
 </script>
 </body>
