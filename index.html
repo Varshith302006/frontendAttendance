@@ -294,40 +294,53 @@ const logoutBtn=document.getElementById('logoutBtn');
 
 document.getElementById('loginForm').addEventListener('submit', async e=>{
   e.preventDefault();
-  const formData=new FormData(e.target);
-  const username=formData.get('username');
-  const password=formData.get('password');
+  const formData = new FormData(e.target);
+  const username = formData.get('username');
+  const password = formData.get('password');
 
   // Show dashboard immediately
   showDashboard(username);
 
-  const academicEl=document.getElementById('academicTable');
-  const biometricEl=document.getElementById('biometricTable');
-  academicEl.innerHTML='<div class="loader"></div> Loading...';
-  biometricEl.innerHTML='Fetching Biometric Attendance...';
+  const academicEl = document.getElementById('academicTable');
+  const biometricEl = document.getElementById('biometricTable');
+
+  // Show academic loader first
+  academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
+  biometricEl.innerHTML = '';
 
   try{
-    const res=await fetch('https://attendance-4rm8.onrender.com/get-attendance',{
+    const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance',{
       method:'POST',
       body:new URLSearchParams({username,password})
     });
+
     const text = await res.text();
     const lines = text.split('\n').map(s=>s.trim()).filter(Boolean);
-    lines.forEach(line=>{
+
+    // Render Academic first
+    for(const line of lines){
       try{
         const obj = JSON.parse(line);
-        if(obj.step==='academic') renderAcademic(obj.data);
-        if(obj.step==='biometric') renderBiometric(obj.data);
+        if(obj.step === 'academic'){
+          renderAcademic(obj.data);
+          // After academic rendered, show biometric loader
+          biometricEl.innerHTML = '<div class="loader"></div> Loading Biometric Attendance...';
+        }
+        if(obj.step === 'biometric'){
+          renderBiometric(obj.data);
+        }
       } catch(err){
         console.error('Invalid JSON line:', line);
       }
-    });
+    }
+
   } catch(err){
     console.error(err);
-    academicEl.innerHTML='Error fetching data';
-    biometricEl.innerHTML='';
+    academicEl.innerHTML = 'Error fetching data';
+    biometricEl.innerHTML = '';
   }
 });
+
 
 function showDashboard(studentId){
   document.querySelector('.cards').style.display='flex';
