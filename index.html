@@ -29,11 +29,10 @@ body{
 header{
   background:var(--primary);
   color:#fff;
-  padding:20px 16px;
+  padding:16px 20px;
   display:flex;
-  justify-content:center;
+  justify-content:space-between;
   align-items:center;
-  position:relative;
   flex-wrap:wrap;
 }
 header h2{
@@ -46,9 +45,6 @@ header h2{
   text-overflow:ellipsis;
 }
 #logoutBtn{
-  position:absolute;
-  top:20px;
-  right:16px;
   padding:8px 14px;
   border:none;
   border-radius:8px;
@@ -167,6 +163,9 @@ form{
 }
 
 /* Tables */
+.table-wrapper{
+  overflow-x:auto;
+}
 table{
   width:100%;
   border-collapse:collapse;
@@ -182,9 +181,6 @@ th{
   background:var(--primary);
   color:#fff;
   font-weight:600;
-}
-.table-wrapper{
-  overflow-x:auto;
 }
 
 /* Progress bar */
@@ -218,8 +214,9 @@ th{
 
 /* Responsive */
 @media(max-width:720px){
-  header{flex-direction:column;text-align:center;}
+  header{flex-direction:column;text-align:center;gap:8px;}
   header h2{font-size:18px;}
+  #logoutBtn{align-self:center;}
   .login-card{padding:24px 16px;}
   .cards{flex-direction:column;}
   .card{padding:16px;}
@@ -298,7 +295,6 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
   const username = formData.get('username');
   const password = formData.get('password');
 
-  // Show dashboard immediately
   showDashboard(username);
 
   const academicEl = document.getElementById('academicTable');
@@ -317,13 +313,11 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
     const text = await res.text();
     const lines = text.split('\n').map(s=>s.trim()).filter(Boolean);
 
-    // Render Academic first
     for(const line of lines){
       try{
         const obj = JSON.parse(line);
         if(obj.step === 'academic'){
           renderAcademic(obj.data);
-          // After academic rendered, show biometric loader
           biometricEl.innerHTML = '<div class="loader"></div> Loading Biometric Attendance...';
         }
         if(obj.step === 'biometric'){
