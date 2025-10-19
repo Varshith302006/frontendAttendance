@@ -293,6 +293,10 @@ th{
       <h3>Biometric Attendance</h3>
       <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
+    <div class="card" id="visitsCard" style="min-width:150px;">
+      <h3>Today's Site Visits</h3>
+      <p id="todayVisits" style="font-size:20px; font-weight:bold; color:var(--primary); text-align:center;">0</p>
+    </div>
   </div>
 </div>
 
@@ -324,6 +328,18 @@ function showDashboard(studentId){
   logoutBtn.onclick = () => { location.reload(); };
 }
 
+async function updateTodayVisits() {
+  try {
+    const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
+    if (!res.ok) throw new Error('Failed to fetch today visits');
+    const data = await res.json();
+    document.getElementById('todayVisits').textContent = data.today_logins || 0;
+  } catch (err) {
+    console.error('Error fetching today visits:', err);
+    document.getElementById('todayVisits').textContent = 'N/A';
+  }
+}
+
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -331,7 +347,6 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
 
   formLoader.style.display = 'block';
-
   const academicEl = document.getElementById('academicTable');
   const biometricEl = document.getElementById('biometricTable');
 
@@ -375,6 +390,9 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       }catch(err){console.error('Invalid JSON:',buffer);}
     }
 
+    // Update today's site visits
+    await updateTodayVisits();
+
   } catch(err){
     console.error(err);
     alert('Network error or wrong username/password. Please try again.');
@@ -384,7 +402,6 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     formLoader.style.display='none';
   }
 });
-
 
 function renderAcademic(data){
   if(!Array.isArray(data)||data.length===0){
