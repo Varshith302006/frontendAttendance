@@ -228,6 +228,25 @@ th{
 }
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 
+/* Floating visits badge */
+#visitsBadge {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+}
+
 /* Responsive */
 @media(max-width:720px){
   .header-container{flex-direction:column;gap:8px;}
@@ -254,6 +273,9 @@ th{
     <button id="logoutBtn">Logout</button>
   </div>
 </header>
+
+<!-- Floating visits badge -->
+<div id="visitsBadge">0</div>
 
 <div class="container">
   <div class="login-card" id="loginCard">
@@ -293,10 +315,6 @@ th{
       <h3>Biometric Attendance</h3>
       <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
-    <div class="card" id="visitsCard" style="min-width:150px;">
-      <h3>Today's Site Visits</h3>
-      <p id="todayVisits" style="font-size:20px; font-weight:bold; color:var(--primary); text-align:center;">0</p>
-    </div>
   </div>
 </div>
 
@@ -309,6 +327,7 @@ const formLoader=document.getElementById('formLoader');
 const logoutBtn=document.getElementById('logoutBtn');
 const loginCard=document.getElementById('loginCard');
 const dashboardCards=document.getElementById('dashboardCards');
+const visitsBadge=document.getElementById('visitsBadge');
 
 dashboardCards.style.display='none';
 
@@ -328,25 +347,26 @@ function showDashboard(studentId){
   logoutBtn.onclick = () => { location.reload(); };
 }
 
-async function updateTodayVisits() {
+async function updateTodayVisits(){
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
-    if (!res.ok) throw new Error('Failed to fetch today visits');
+    if(!res.ok) throw new Error('Failed to fetch today visits');
     const data = await res.json();
-    document.getElementById('todayVisits').textContent = data.today_logins || 0;
-  } catch (err) {
+    visitsBadge.textContent = data.today_logins || 0;
+  } catch(err){
     console.error('Error fetching today visits:', err);
-    document.getElementById('todayVisits').textContent = 'N/A';
+    visitsBadge.textContent = '?';
   }
 }
 
-document.getElementById('loginForm').addEventListener('submit', async e => {
+document.getElementById('loginForm').addEventListener('submit', async e=>{
   e.preventDefault();
   const formData = new FormData(e.target);
   const username = formData.get('username');
   const password = formData.get('password');
 
   formLoader.style.display = 'block';
+
   const academicEl = document.getElementById('academicTable');
   const biometricEl = document.getElementById('biometricTable');
 
@@ -356,7 +376,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       body: new URLSearchParams({ username, password })
     });
 
-    if (!res.ok) throw new Error('Network response was not ok');
+    if(!res.ok) throw new Error('Network response was not ok');
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -390,8 +410,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       }catch(err){console.error('Invalid JSON:',buffer);}
     }
 
-    // Update today's site visits
-    await updateTodayVisits();
+    // Update today visits badge after fetching data
+    updateTodayVisits();
 
   } catch(err){
     console.error(err);
@@ -402,6 +422,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     formLoader.style.display='none';
   }
 });
+
 
 function renderAcademic(data){
   if(!Array.isArray(data)||data.length===0){
