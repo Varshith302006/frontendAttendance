@@ -310,22 +310,12 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
   const username = formData.get('username');
   const password = formData.get('password');
 
-  // Fade out login card
-  loginCard.style.opacity = 0;
-  setTimeout(() => loginCard.style.display='none', 500);
-
-  // Show dashboard with fade in
-  dashboardCards.style.display='flex';
-  setTimeout(()=>dashboardCards.style.opacity=1, 50);
-
-  document.querySelector('header h2').textContent=`${username} - My Attendance Dashboard`;
-  logoutBtn.style.display='block';
-  logoutBtn.onclick=()=>location.reload();
+  showDashboard(username);
 
   const academicEl = document.getElementById('academicTable');
   const biometricEl = document.getElementById('biometricTable');
 
-  academicEl.innerHTML = '<div class="loader"></br></div> Wait for a minute...';
+  academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
   biometricEl.innerHTML = '';
 
   try{
@@ -334,22 +324,34 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
       body:new URLSearchParams({username,password})
     });
 
-    const text = await res.text();
-    const lines = text.split('\n').map(s=>s.trim()).filter(Boolean);
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
 
-    for(const line of lines){
-      try{
-        const obj = JSON.parse(line);
-        if(obj.step === 'academic'){
-          renderAcademic(obj.data);
-          biometricEl.innerHTML = '<div class="loader"></div> Loading Biometric Attendance...';
-        }
-        if(obj.step === 'biometric'){
-          renderBiometric(obj.data);
-        }
-      } catch(err){
-        console.error('Invalid JSON line:', line);
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      buffer += decoder.decode(value, {stream:true});
+      let lines = buffer.split('\n');
+      buffer = lines.pop(); // keep last incomplete line
+
+      for(const line of lines){
+        if(!line.trim()) continue;
+        try{
+          const obj = JSON.parse(line);
+          if(obj.step==='academic') renderAcademic(obj.data);
+          if(obj.step==='biometric') renderBiometric(obj.data);
+        } catch(err){ console.error('Invalid JSON:', line); }
       }
+    }
+
+    // final buffer
+    if(buffer.trim()){
+      try{
+        const obj = JSON.parse(buffer);
+        if(obj.step==='academic') renderAcademic(obj.data);
+        if(obj.step==='biometric') renderBiometric(obj.data);
+      } catch(err){ console.error('Invalid JSON:', buffer); }
     }
 
   } catch(err){
@@ -358,6 +360,7 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
     biometricEl.innerHTML = '';
   }
 });
+
 
 function renderAcademic(data){
   if(!Array.isArray(data)||data.length===0){
