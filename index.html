@@ -85,6 +85,7 @@ header h2{
   width:100%;
   max-width:450px;
   margin-bottom:32px;
+  transition:opacity 0.5s;
 }
 .login-card h3{
   margin:0 0 24px 0;
@@ -155,6 +156,8 @@ form{
   gap:20px;
   flex-wrap:wrap;
   width:100%;
+  opacity:0;
+  transition:opacity 0.5s;
 }
 .card{
   background:var(--card);
@@ -246,7 +249,7 @@ th{
 </header>
 
 <div class="container">
-  <div class="login-card">
+  <div class="login-card" id="loginCard">
     <h3>Student Login</h3>
     <form id="loginForm" autocomplete="on">
       <div class="field">
@@ -270,7 +273,7 @@ th{
     </form>
   </div>
 
-  <div class="cards" style="display:none;">
+  <div class="cards" id="dashboardCards" style="display:flex;">
     <div class="card" id="academicCard">
       <h3>Academic Attendance</h3>
       <div class="table-wrapper" id="academicTable" style="color:var(--muted);">Login to fetch attendance</div>
@@ -296,6 +299,10 @@ togglePassword.addEventListener('click',()=>{
 });
 
 const logoutBtn=document.getElementById('logoutBtn');
+const loginCard=document.getElementById('loginCard');
+const dashboardCards=document.getElementById('dashboardCards');
+
+dashboardCards.style.display='none'; // hide initially
 
 document.getElementById('loginForm').addEventListener('submit', async e=>{
   e.preventDefault();
@@ -303,12 +310,22 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
   const username = formData.get('username');
   const password = formData.get('password');
 
-  showDashboard(username);
+  // Fade out login card
+  loginCard.style.opacity = 0;
+  setTimeout(() => loginCard.style.display='none', 500);
+
+  // Show dashboard with fade in
+  dashboardCards.style.display='flex';
+  setTimeout(()=>dashboardCards.style.opacity=1, 50);
+
+  document.querySelector('header h2').textContent=`${username} - My Attendance Dashboard`;
+  logoutBtn.style.display='block';
+  logoutBtn.onclick=()=>location.reload();
 
   const academicEl = document.getElementById('academicTable');
   const biometricEl = document.getElementById('biometricTable');
 
-  academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
+  academicEl.innerHTML = '<div class="loader"></br></div> Wait for a minute...';
   biometricEl.innerHTML = '';
 
   try{
@@ -341,15 +358,6 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
     biometricEl.innerHTML = '';
   }
 });
-
-
-function showDashboard(studentId){
-  document.querySelector('.cards').style.display='flex';
-  document.querySelector('.login-card').style.display='none';
-  document.querySelector('header h2').textContent=`${studentId} - My Attendance Dashboard`;
-  logoutBtn.style.display='block';
-  logoutBtn.onclick=()=>{location.reload();};
-}
 
 function renderAcademic(data){
   if(!Array.isArray(data)||data.length===0){
