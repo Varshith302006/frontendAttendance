@@ -136,9 +136,10 @@ form{
   height:30px;
 }
 
-/* Buttons */
+/* Button */
 .btn{
-  height:40px;
+  width:100%;
+  height:45px;
   background:var(--primary);
   border:none;
   color:#fff;
@@ -147,7 +148,7 @@ form{
   border-radius:8px;
   transition:background 0.3s;
 }
-.btn:hover{opacity:0.85;}
+.btn:hover{background:#45a049;}
 
 /* Loader under button */
 #formLoader .loader{
@@ -260,7 +261,7 @@ th{
   header h2{font-size:16px;}
   .login-card{padding:20px 12px;}
   input[type=text], input[type=password]{padding:12px;font-size:14px;}
-  .btn{padding:10px;font-size:14px;}
+  .btn{padding:12px;font-size:14px;}
   table th, table td{padding:6px;}
 }
 </style>
@@ -273,6 +274,7 @@ th{
   </div>
 </header>
 
+<!-- Floating visits badge -->
 <div id="visitsBadge">0</div>
 
 <div class="container">
@@ -314,46 +316,14 @@ th{
       <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
   </div>
-
-  <div class="card" id="todayClassesCard" style="margin-top:20px;">
-    <button id="addTodayClassesBtn" class="btn">Add Today Classes</button>
-    <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
-    <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
-  </div>
+  <!-- Add this below Academic & Biometric cards inside container -->
+<div class="card" id="todayClassesCard" style="margin-top:20px;">
+  <button id="addTodayClassesBtn" class="btn">Add Today Classes</button>
+  <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
+  <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
 </div>
 
 <script>
-// Toggle Password
-const passwordField=document.getElementById('passwordField');
-const togglePassword=document.getElementById('togglePassword');
-const eyeOpen=document.getElementById('eyeOpen');
-const eyeClosed=document.getElementById('eyeClosed');
-togglePassword.addEventListener('click',()=>{
-  const type=passwordField.type==='password'?'text':'password';
-  passwordField.type=type;
-  eyeOpen.style.display=type==='password'?'block':'none';
-  eyeClosed.style.display=type==='password'?'none':'block';
-});
-
-// Dashboard Elements
-const formLoader=document.getElementById('formLoader');
-const logoutBtn=document.getElementById('logoutBtn');
-const loginCard=document.getElementById('loginCard');
-const dashboardCards=document.getElementById('dashboardCards');
-const visitsBadge=document.getElementById('visitsBadge');
-
-dashboardCards.style.display='none';
-
-function showDashboard(studentId){
-  loginCard.style.display='none';
-  dashboardCards.style.display='flex';
-  dashboardCards.style.opacity='1';
-  document.querySelector('header h2').textContent = `${studentId} - My Attendance Dashboard`;
-  logoutBtn.style.display='block';
-  logoutBtn.onclick = () => { location.reload(); };
-}
-
-// Today Classes Logic
 const addTodayBtn = document.getElementById('addTodayClassesBtn');
 const todayContainer = document.getElementById('todayClassesContainer');
 const newOverallEl = document.getElementById('newOverallAttendance');
@@ -362,7 +332,7 @@ addTodayBtn.addEventListener('click', () => {
   todayContainer.style.display = 'block';
   todayContainer.innerHTML = '';
 
-  // Get subjects from academic table
+  // Prepare subject list from Academic Attendance table
   const subjectEls = document.querySelectorAll('#academicTable table tr td:nth-child(2)');
   const subjects = Array.from(subjectEls).map(el => el.textContent.trim()).filter(Boolean);
   if(subjects.length === 0) { alert('No subjects found!'); return; }
@@ -377,16 +347,18 @@ addTodayBtn.addEventListener('click', () => {
     // Attend button
     const attendBtn = document.createElement('button');
     attendBtn.textContent = 'Attend';
+    attendBtn.dataset.status = 'attend';
     attendBtn.className = 'btn';
     attendBtn.style.width='100px';
 
     // Bunk button
     const bunkBtn = document.createElement('button');
     bunkBtn.textContent = 'Bunk';
+    bunkBtn.dataset.status = 'bunk';
     bunkBtn.className = 'btn';
     bunkBtn.style.width='100px';
 
-    // Button click logic
+    // Button click handlers
     attendBtn.addEventListener('click', () => {
       attendBtn.style.background = '#4CAF50';
       bunkBtn.style.background = '';
@@ -400,7 +372,12 @@ addTodayBtn.addEventListener('click', () => {
 
     // Subject dropdown
     const select = document.createElement('select');
-    subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.text = s; select.add(o); });
+    subjects.forEach(s => { 
+      const o = document.createElement('option'); 
+      o.value = s; 
+      o.text = s; 
+      select.add(o); 
+    });
     select.style.flex='1';
     select.onchange = calculateNewOverall;
 
@@ -413,19 +390,25 @@ addTodayBtn.addEventListener('click', () => {
   newOverallEl.textContent = '';
 });
 
+// Function to calculate new overall academic attendance
 function calculateNewOverall(){
   const rows = todayContainer.querySelectorAll('div');
   if(rows.length === 0) return;
 
-  const subjectMap = {};
+  // Collect subject totals from academic table
+  const subjectMap = {}; // {subjectName: {attended, total}}
   const trEls = document.querySelectorAll('#academicTable table tr');
   trEls.forEach((tr,i)=>{
-    if(i===0) return;
+    if(i===0) return; // skip header
     const tds = tr.querySelectorAll('td');
     const sub = tds[1].textContent.trim();
-    subjectMap[sub] = { attended: Number(tds[2].textContent), total: Number(tds[3].textContent) };
+    subjectMap[sub] = {
+      attended: Number(tds[2].textContent),
+      total: Number(tds[3].textContent)
+    };
   });
 
+  // Apply today's classes
   rows.forEach(row => {
     const attendBtn = row.children[0];
     const bunkBtn = row.children[1];
@@ -433,35 +416,140 @@ function calculateNewOverall(){
     const sub = select.value;
     if(!subjectMap[sub]) return;
 
+    // Add today's class
     subjectMap[sub].total += 1;
-    if(attendBtn.style.background) subjectMap[sub].attended += 1;
+    if(attendBtn.style.background){ // Attend selected
+      subjectMap[sub].attended += 1;
+    }
+    // If Bunk selected, attended stays the same
   });
 
+  // Calculate new weighted average
   let totalAttended = 0, totalClasses = 0;
-  Object.values(subjectMap).forEach(v => { totalAttended += v.attended; totalClasses += v.total; });
+  Object.values(subjectMap).forEach(v=>{
+    totalAttended += v.attended;
+    totalClasses += v.total;
+  });
 
   const newAvg = ((totalAttended / totalClasses) * 100).toFixed(2);
   newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
 }
 
-// Fetch & Render Attendance (simplified demo)
-document.getElementById('loginForm').addEventListener('submit', e=>{
+
+</script>
+
+</div>
+
+<script>
+const passwordField=document.getElementById('passwordField');
+const togglePassword=document.getElementById('togglePassword');
+const eyeOpen=document.getElementById('eyeOpen');
+const eyeClosed=document.getElementById('eyeClosed');
+const formLoader=document.getElementById('formLoader');
+const logoutBtn=document.getElementById('logoutBtn');
+const loginCard=document.getElementById('loginCard');
+const dashboardCards=document.getElementById('dashboardCards');
+const visitsBadge=document.getElementById('visitsBadge');
+
+dashboardCards.style.display='none';
+
+togglePassword.addEventListener('click',()=>{
+  const type=passwordField.type==='password'?'text':'password';
+  passwordField.type=type;
+  eyeOpen.style.display=type==='password'?'block':'none';
+  eyeClosed.style.display=type==='password'?'none':'block';
+});
+
+function showDashboard(studentId){
+  loginCard.style.display='none';
+  dashboardCards.style.display='flex';
+  dashboardCards.style.opacity='1';
+  document.querySelector('header h2').textContent = `${studentId} - My Attendance Dashboard`;
+  logoutBtn.style.display='block';
+  logoutBtn.onclick = () => { location.reload(); };
+}
+
+async function updateTodayVisits(){
+  try {
+    const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
+    if(!res.ok) throw new Error('Failed to fetch today visits');
+    const data = await res.json();
+    visitsBadge.textContent = data.today_logins || 0;
+  } catch(err){
+    console.error('Error fetching today visits:', err);
+    visitsBadge.textContent = '?';
+  }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async e=>{
   e.preventDefault();
   const formData = new FormData(e.target);
   const username = formData.get('username');
-  showDashboard(username);
+  const password = formData.get('password');
 
-  // Demo: populate academic table with dummy data
-  renderAcademic([
-    {courseCode:'ACSD08', subject:'Data Structures', attended:7, total:12, percentage:58.33, classesToAttendFor75:8, classesCanBunk:0},
-    {courseCode:'ACSD09', subject:'Operating Systems', attended:24, total:34, percentage:70.59, classesToAttendFor75:6, classesCanBunk:0},
-    {courseCode:'AECD04', subject:'Computer System Architecture', attended:34, total:45, percentage:75.56, classesToAttendFor75:0, classesCanBunk:0}
-  ]);
-  renderBiometric({totalDays:43, presentCount:33, percentage:76.74});
+  formLoader.style.display = 'block';
+
+  const academicEl = document.getElementById('academicTable');
+  const biometricEl = document.getElementById('biometricTable');
+
+  try {
+    const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
+      method: 'POST',
+      body: new URLSearchParams({ username, password })
+    });
+
+    if(!res.ok) throw new Error('Network response was not ok');
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    showDashboard(username);
+    academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
+    biometricEl.innerHTML = '';
+
+    while(true){
+      const {done,value}=await reader.read();
+      if(done) break;
+      buffer+=decoder.decode(value,{stream:true});
+      let lines=buffer.split('\n');
+      buffer=lines.pop();
+      for(const line of lines){
+        if(!line.trim()) continue;
+        try{
+          const obj=JSON.parse(line);
+          if(obj.step==='academic') renderAcademic(obj.data);
+          if(obj.step==='biometric') renderBiometric(obj.data);
+        }catch(err){console.error('Invalid JSON:',line);}
+      }
+    }
+
+    if(buffer.trim()){
+      try{
+        const obj=JSON.parse(buffer);
+        if(obj.step==='academic') renderAcademic(obj.data);
+        if(obj.step==='biometric') renderBiometric(obj.data);
+      }catch(err){console.error('Invalid JSON:',buffer);}
+    }
+
+    // Update today visits badge after fetching data
+    updateTodayVisits();
+
+  } catch(err){
+    console.error(err);
+    alert('Network error or wrong username/password. Please try again.');
+    academicEl.innerHTML='';
+    biometricEl.innerHTML='';
+  } finally {
+    formLoader.style.display='none';
+  }
 });
 
 function renderAcademic(data){
-  if(!Array.isArray(data)||data.length===0){ document.getElementById('academicTable').innerHTML='<em>No academic data available</em>'; return; }
+  if(!Array.isArray(data)||data.length===0){
+    document.getElementById('academicTable').innerHTML='<em>No academic data available</em>';
+    return;
+  }
   let total=0;
   data.forEach(sub=>total+=Number(sub.percentage)||0);
   const avg=(total/data.length).toFixed(2);
@@ -477,13 +565,20 @@ function renderAcademic(data){
 }
 
 function renderBiometric(data){
+  if(!data){
+    document.getElementById('biometricTable').innerHTML='<em>No biometric data available</em>';
+    return;
+  }
   const pct=Number(data.percentage)||0;
   const totalDays = Number(data.totalDays)||0;
   const presentCount = Number(data.presentCount)||0;
+
+  // Calculate leaves can take & days to attend for 75%
   const targetPct = 75;
   const minPresent = Math.ceil(totalDays * targetPct / 100);
   const daysToAttend = minPresent - presentCount > 0 ? minPresent - presentCount : 0;
   const leavesCanTake = presentCount - minPresent > 0 ? presentCount - minPresent : 0;
+
   const bg=pct>=75?'green':'red';
   document.getElementById('biometricTable').innerHTML=`
     <p><strong>Total Days:</strong> ${escapeHtml(totalDays)}</p>
