@@ -316,6 +316,88 @@ th{
       <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
   </div>
+  <!-- Add this below Academic & Biometric cards inside container -->
+<div class="card" id="todayClassesCard" style="margin-top:20px;">
+  <button id="addTodayClassesBtn" class="btn">Add Today Classes</button>
+  <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
+  <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
+</div>
+
+<script>
+const addTodayBtn = document.getElementById('addTodayClassesBtn');
+const todayContainer = document.getElementById('todayClassesContainer');
+const newOverallEl = document.getElementById('newOverallAttendance');
+
+addTodayBtn.addEventListener('click', () => {
+  todayContainer.style.display = 'block';
+  todayContainer.innerHTML = '';
+
+  // Prepare subject list from Academic Attendance table
+  const subjectEls = document.querySelectorAll('#academicTable table tr td:nth-child(2)');
+  const subjects = Array.from(subjectEls).map(el => el.textContent.trim()).filter(Boolean);
+  if(subjects.length === 0) { alert('No subjects found!'); return; }
+
+  for(let i=0; i<6; i++){
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.gap = '8px';
+    row.style.alignItems = 'center';
+    row.style.marginBottom = '8px';
+
+    // Attend/Bunk button
+    const btn = document.createElement('button');
+    btn.textContent = 'Attend';
+    btn.dataset.status = 'attend';
+    btn.className = 'btn';
+    btn.style.width='100px';
+    btn.onclick = () => { 
+      btn.dataset.status = btn.dataset.status==='attend'?'bunk':'attend';
+      btn.textContent = btn.dataset.status==='attend'?'Attend':'Bunk';
+      calculateNewOverall();
+    };
+
+    // Subject dropdown
+    const select = document.createElement('select');
+    subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.text = s; select.add(o); });
+    select.style.flex='1';
+    select.onchange = calculateNewOverall;
+
+    row.appendChild(btn);
+    row.appendChild(select);
+    todayContainer.appendChild(row);
+  }
+
+  newOverallEl.textContent = '';
+});
+
+// Function to calculate new overall academic attendance
+function calculateNewOverall(){
+  const rows = todayContainer.querySelectorAll('div');
+  if(rows.length === 0) return;
+
+  // Original totals from academic table
+  const trEls = document.querySelectorAll('#academicTable table tr');
+  let totalAttended = 0, totalClasses = 0;
+  trEls.forEach((tr,i)=>{
+    if(i===0) return; // skip header
+    const tds = tr.querySelectorAll('td');
+    totalAttended += Number(tds[2].textContent);
+    totalClasses += Number(tds[3].textContent);
+  });
+
+  // Count additional classes
+  rows.forEach(row => {
+    const btn = row.querySelector('button');
+    totalClasses += 1;
+    if(btn.dataset.status==='attend') totalAttended += 1;
+    // else bunk: attended not increased
+  });
+
+  const newAvg = ((totalAttended / totalClasses) * 100).toFixed(2);
+  newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
+}
+</script>
+
 </div>
 
 <script>
