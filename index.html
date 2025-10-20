@@ -330,11 +330,11 @@ th{
 
 <script>
 const addTodayBtn = document.getElementById('addTodayClassesBtn');
-const refreshBtn = document.getElementById('refreshTodayClassesBtn');
+const resetBtn = document.getElementById('resetTodayBtn');
 const todayContainer = document.getElementById('todayClassesContainer');
 const newOverallEl = document.getElementById('newOverallAttendance');
 
-addTodayBtn.addEventListener('click', () => {
+function createTodayRows() {
   todayContainer.style.display = 'block';
   todayContainer.innerHTML = '';
 
@@ -355,6 +355,7 @@ addTodayBtn.addEventListener('click', () => {
     attendBtn.dataset.status = '';
     attendBtn.className = 'btn attend-btn';
     attendBtn.style.width='100px';
+    attendBtn.style.background = '#f0f0f0';
     attendBtn.onclick = () => { 
       attendBtn.dataset.status = 'attend';
       bunkBtn.dataset.status = '';
@@ -369,6 +370,7 @@ addTodayBtn.addEventListener('click', () => {
     bunkBtn.dataset.status = '';
     bunkBtn.className = 'btn bunk-btn';
     bunkBtn.style.width='100px';
+    bunkBtn.style.background = '#f0f0f0';
     bunkBtn.onclick = () => { 
       bunkBtn.dataset.status = 'bunk';
       attendBtn.dataset.status = '';
@@ -379,7 +381,13 @@ addTodayBtn.addEventListener('click', () => {
 
     // Subject dropdown
     const select = document.createElement('select');
-    subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.text = s; select.add(o); });
+    select.className = 'today-select'; // for reset reference
+    subjects.forEach(s => { 
+      const o = document.createElement('option'); 
+      o.value = s; 
+      o.text = s; 
+      select.add(o); 
+    });
     select.style.flex='1';
     select.onchange = calculateNewOverall;
 
@@ -389,20 +397,31 @@ addTodayBtn.addEventListener('click', () => {
     todayContainer.appendChild(row);
   }
 
-  newOverallEl.textContent = '';
+  newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
+}
+
+// Add Today Classes button
+addTodayBtn.addEventListener('click', createTodayRows);
+
+// RESET button: reset all selections
+resetBtn.addEventListener('click', () => {
+  const rows = todayContainer.querySelectorAll('div');
+  rows.forEach(row => {
+    const attendBtn = row.querySelector('.attend-btn');
+    const bunkBtn = row.querySelector('.bunk-btn');
+    const select = row.querySelector('select');
+
+    attendBtn.dataset.status = '';
+    bunkBtn.dataset.status = '';
+    attendBtn.style.background = '#f0f0f0';
+    bunkBtn.style.background = '#f0f0f0';
+
+    // Reset dropdown to first option
+    if(select.options.length > 0) select.selectedIndex = 0;
+  });
+
+  newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
 });
-
-// RESET ONLY TODAY’S SELECTIONS (Attend / Bunk buttons)
-document.getElementById("resetTodayBtn").addEventListener("click", () => {
-    document.querySelectorAll('.today-select').forEach(select => {
-        select.value = "";  // clears dropdown
-        select.style.background = ""; // clear color
-    });
-
-    document.getElementById("newOverallAttendance").innerText = 
-        "New Overall Academic Attendance After Today: --";
-});
-
 
 // Function to calculate new overall academic attendance
 function calculateNewOverall(){
@@ -448,7 +467,6 @@ function calculateNewOverall(){
   newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
 }
 </script>
-
 
 </div>
 
