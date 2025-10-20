@@ -316,7 +316,6 @@ th{
       <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
   </div>
-  <!-- Add this below Academic & Biometric cards inside container -->
 <div class="card" id="todayClassesCard" style="margin-top:20px;">
   <button id="addTodayClassesBtn" class="btn">Add Today Classes</button>
   <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
@@ -332,7 +331,7 @@ addTodayBtn.addEventListener('click', () => {
   todayContainer.style.display = 'block';
   todayContainer.innerHTML = '';
 
-  // Prepare subject list from Academic Attendance table
+  // Get subjects from Academic table
   const subjectEls = document.querySelectorAll('#academicTable table tr td:nth-child(2)');
   const subjects = Array.from(subjectEls).map(el => el.textContent.trim()).filter(Boolean);
   if(subjects.length === 0) { alert('No subjects found!'); return; }
@@ -347,38 +346,32 @@ addTodayBtn.addEventListener('click', () => {
     // Attend button
     const attendBtn = document.createElement('button');
     attendBtn.textContent = 'Attend';
-    attendBtn.dataset.status = 'attend';
     attendBtn.className = 'btn';
-    attendBtn.style.width='100px';
-
+    attendBtn.style.width='80px';
+    attendBtn.dataset.status = '';
+    
     // Bunk button
     const bunkBtn = document.createElement('button');
     bunkBtn.textContent = 'Bunk';
-    bunkBtn.dataset.status = 'bunk';
     bunkBtn.className = 'btn';
-    bunkBtn.style.width='100px';
+    bunkBtn.style.width='80px';
+    bunkBtn.dataset.status = '';
 
-    // Button click handlers
-    attendBtn.addEventListener('click', () => {
-      attendBtn.style.background = '#4CAF50';
-      bunkBtn.style.background = '';
-      calculateNewOverall();
-    });
-    bunkBtn.addEventListener('click', () => {
-      bunkBtn.style.background = '#ff4d4d';
-      attendBtn.style.background = '';
-      calculateNewOverall();
-    });
-
-    // Subject dropdown
     const select = document.createElement('select');
-    subjects.forEach(s => { 
-      const o = document.createElement('option'); 
-      o.value = s; 
-      o.text = s; 
-      select.add(o); 
-    });
+    subjects.forEach(s => { const o = document.createElement('option'); o.value = s; o.text = s; select.add(o); });
     select.style.flex='1';
+
+    // Button click logic
+    attendBtn.onclick = () => {
+      attendBtn.dataset.status = 'attend';
+      bunkBtn.dataset.status = '';
+      calculateNewOverall();
+    };
+    bunkBtn.onclick = () => {
+      bunkBtn.dataset.status = 'bunk';
+      attendBtn.dataset.status = '';
+      calculateNewOverall();
+    };
     select.onchange = calculateNewOverall;
 
     row.appendChild(attendBtn);
@@ -390,13 +383,12 @@ addTodayBtn.addEventListener('click', () => {
   newOverallEl.textContent = '';
 });
 
-// Function to calculate new overall academic attendance
+// Calculate weighted average per subject
 function calculateNewOverall(){
   const rows = todayContainer.querySelectorAll('div');
   if(rows.length === 0) return;
 
-  // Collect subject totals from academic table
-  const subjectMap = {}; // {subjectName: {attended, total}}
+  const subjectMap = {};
   const trEls = document.querySelectorAll('#academicTable table tr');
   trEls.forEach((tr,i)=>{
     if(i===0) return; // skip header
@@ -408,33 +400,30 @@ function calculateNewOverall(){
     };
   });
 
-  // Apply today's classes
-  rows.forEach(row => {
-    const btn = row.querySelector('button');
+  // Apply today classes
+  rows.forEach(row=>{
+    const attendBtn = row.querySelector('button:nth-child(1)');
+    const bunkBtn = row.querySelector('button:nth-child(2)');
     const select = row.querySelector('select');
     const sub = select.value;
     if(!subjectMap[sub]) return;
 
-    // Add one to total for today
-    subjectMap[sub].total += 1;
-    if(btn.dataset.status === 'attend') {
+    // Only apply if a button is clicked
+    if(attendBtn.dataset.status==='attend'){
       subjectMap[sub].attended += 1;
+      subjectMap[sub].total += 1;
+    } else if(bunkBtn.dataset.status==='bunk'){
+      subjectMap[sub].total += 1;
     }
-    // if bunk, attended stays same
   });
 
-  // Calculate **subject-wise percentages** first
+  // Average per subject
   const percentages = Object.values(subjectMap).map(v => (v.attended / v.total) * 100);
-
-  // Overall academic attendance = average of all subject percentages
-  const overallAvg = (percentages.reduce((a,b)=>a+b,0) / percentages.length).toFixed(2);
-
-  newOverallEl.textContent = `New Overall Academic Attendance After Today: ${overallAvg}%`;
+  const newAvg = (percentages.reduce((a,b)=>a+b,0)/percentages.length).toFixed(2);
+  newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
 }
-
-
-
 </script>
+
 
 </div>
 
