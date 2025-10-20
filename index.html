@@ -375,27 +375,41 @@ function calculateNewOverall(){
   const rows = todayContainer.querySelectorAll('div');
   if(rows.length === 0) return;
 
-  // Original totals from academic table
+  // Collect subject totals from academic table
+  const subjectMap = {}; // {subjectName: {attended, total}}
   const trEls = document.querySelectorAll('#academicTable table tr');
-  let totalAttended = 0, totalClasses = 0;
   trEls.forEach((tr,i)=>{
     if(i===0) return; // skip header
     const tds = tr.querySelectorAll('td');
-    totalAttended += Number(tds[2].textContent);
-    totalClasses += Number(tds[3].textContent);
+    const sub = tds[1].textContent.trim();
+    subjectMap[sub] = {
+      attended: Number(tds[2].textContent),
+      total: Number(tds[3].textContent)
+    };
   });
 
-  // Count additional classes
+  // Apply today's classes
   rows.forEach(row => {
     const btn = row.querySelector('button');
-    totalClasses += 1;
-    if(btn.dataset.status==='attend') totalAttended += 1;
-    // else bunk: attended not increased
+    const select = row.querySelector('select');
+    const sub = select.value;
+    if(!subjectMap[sub]) return;
+    subjectMap[sub].total += 1;
+    if(btn.dataset.status==='attend') subjectMap[sub].attended +=1;
+    // if bunk, attended stays same
+  });
+
+  // Calculate new weighted average
+  let totalAttended = 0, totalClasses = 0;
+  Object.values(subjectMap).forEach(v=>{
+    totalAttended += v.attended;
+    totalClasses += v.total;
   });
 
   const newAvg = ((totalAttended / totalClasses) * 100).toFixed(2);
   newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
 }
+
 </script>
 
 </div>
