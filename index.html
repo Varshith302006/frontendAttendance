@@ -319,7 +319,10 @@ th{
 <div class="card" id="todayClassesCard" style="margin-top:20px;">
   <div style="display:flex; gap:8px; flex-wrap:wrap;">
     <button id="addTodayClassesBtn" class="btn">Add Today Classes</button>
-    <button id="refreshTodayClassesBtn" class="btn" style="background:#777;">Refresh</button>
+    <button id="refreshTodayClassesBtn" title="Reset Today's Selection"
+      style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px;">
+      &#8635;
+    </button>
   </div>
   <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
   <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
@@ -389,12 +392,17 @@ addTodayBtn.addEventListener('click', () => {
   newOverallEl.textContent = '';
 });
 
-// Refresh button
-refreshBtn.addEventListener('click', () => {
-  todayContainer.innerHTML = '';
-  todayContainer.style.display = 'none';
-  newOverallEl.textContent = '';
+// RESET ONLY TODAY’S SELECTIONS (Attend / Bunk buttons)
+document.getElementById("resetTodayBtn").addEventListener("click", () => {
+    document.querySelectorAll('.today-select').forEach(select => {
+        select.value = "";  // clears dropdown
+        select.style.background = ""; // clear color
+    });
+
+    document.getElementById("newOverallAttendance").innerText = 
+        "New Overall Academic Attendance After Today: --";
 });
+
 
 // Function to calculate new overall academic attendance
 function calculateNewOverall(){
