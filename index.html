@@ -497,6 +497,16 @@ function showDashboard(studentId){
   document.querySelector('header h2').textContent = `${studentId} - My Attendance Dashboard`;
   logoutBtn.style.display='block';
   logoutBtn.onclick = () => { location.reload(); };
+
+  // Show Add Today Classes and Reset buttons
+  const todayCard = document.getElementById('todayClassesCard');
+  const addBtn = document.getElementById('addTodayClassesBtn');
+  const resetBtn = document.getElementById('resetTodayBtn');
+
+  todayCard.style.display = 'block';
+  addBtn.style.display = 'inline-block';
+  resetBtn.style.display = 'inline-block';
+
 }
 
 async function updateTodayVisits(){
