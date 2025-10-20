@@ -410,30 +410,28 @@ function calculateNewOverall(){
 
   // Apply today's classes
   rows.forEach(row => {
-    const attendBtn = row.children[0];
-    const bunkBtn = row.children[1];
+    const btn = row.querySelector('button');
     const select = row.querySelector('select');
     const sub = select.value;
     if(!subjectMap[sub]) return;
 
-    // Add today's class
+    // Add one to total for today
     subjectMap[sub].total += 1;
-    if(attendBtn.style.background){ // Attend selected
+    if(btn.dataset.status === 'attend') {
       subjectMap[sub].attended += 1;
     }
-    // If Bunk selected, attended stays the same
+    // if bunk, attended stays same
   });
 
-  // Calculate new weighted average
-  let totalAttended = 0, totalClasses = 0;
-  Object.values(subjectMap).forEach(v=>{
-    totalAttended += v.attended;
-    totalClasses += v.total;
-  });
+  // Calculate **subject-wise percentages** first
+  const percentages = Object.values(subjectMap).map(v => (v.attended / v.total) * 100);
 
-  const newAvg = ((totalAttended / totalClasses) * 100).toFixed(2);
-  newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
+  // Overall academic attendance = average of all subject percentages
+  const overallAvg = (percentages.reduce((a,b)=>a+b,0) / percentages.length).toFixed(2);
+
+  newOverallEl.textContent = `New Overall Academic Attendance After Today: ${overallAvg}%`;
 }
+
 
 
 </script>
