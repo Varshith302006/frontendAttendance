@@ -498,14 +498,15 @@ function showDashboard(studentId){
   logoutBtn.style.display='block';
   logoutBtn.onclick = () => { location.reload(); };
 
-  // Show Add Today Classes and Reset buttons
+  // Show Today Classes card and buttons
   const todayCard = document.getElementById('todayClassesCard');
   const addBtn = document.getElementById('addTodayClassesBtn');
   const resetBtn = document.getElementById('resetTodayBtn');
 
-  todayCard.style.display = 'block';
+  todayCard.style.display = 'block';   // entire card visible
   addBtn.style.display = 'inline-block';
   resetBtn.style.display = 'inline-block';
+}
 
 }
 
