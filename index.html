@@ -275,7 +275,7 @@ th{
 </header>
 
 <!-- Floating visits badge -->
-<div id="visitsBadge">0</div>
+<div id="visitsBadge" style="display:none;">0</div>
 
 <div class="container">
   <div class="login-card" id="loginCard">
@@ -316,16 +316,18 @@ th{
       <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
     </div>
   </div>
-<div class="card" id="todayClassesCard" style="margin-top:20px;">
-  <div style="display:flex; gap:8px; flex-wrap:wrap;">
-    <button id="addTodayClassesBtn" class="btn">Add Today Classes</button>
-    <button id="resetTodayBtn" title="Reset Today's Selection"
-      style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px;">
-      &#8635;
-    </button>
+
+  <div class="card" id="todayClassesCard" style="margin-top:20px; display:none;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="addTodayClassesBtn" class="btn" style="display:none;">Add Today Classes</button>
+      <button id="resetTodayBtn" title="Reset Today's Selection"
+        style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px; display:none;">
+        &#8635;
+      </button>
+    </div>
+    <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
+    <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
   </div>
-  <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
-  <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
 </div>
 
 <script>
@@ -506,9 +508,11 @@ function showDashboard(studentId){
   todayCard.style.display = 'block';   // entire card visible
   addBtn.style.display = 'inline-block';
   resetBtn.style.display = 'inline-block';
+
+  // Show visits badge
+  visitsBadge.style.display = 'flex';
 }
 
-}
 
 async function updateTodayVisits(){
   try {
