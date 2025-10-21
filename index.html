@@ -262,90 +262,121 @@ th {
 }
 
 /* ====== TODAY CLASSES SECTION ====== */
+/* ====== TODAY CLASSES SECTION ====== */
 .today-row {
-  background: #f9f9fb;
-  border-radius: 14px;
-  padding: 14px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.today-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 /* Subject Dropdown */
 .today-row select {
   width: 100%;
-  max-width: 320px;
-  padding: 10px 12px;
+  max-width: 350px;
+  padding: 12px 14px;
   font-size: 15px;
+  font-weight: 500;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  outline: none;
-  transition: 0.2s;
+  border: 2px solid #ddd;
+  background: #fafafa;
+  transition: 0.25s;
 }
 .today-row select:focus {
   border-color: #4a90e2;
-  box-shadow: 0 0 5px rgba(74,144,226,0.4);
+  box-shadow: 0 0 8px rgba(74,144,226,0.3);
+  background: #fff;
+  outline: none;
 }
 
 /* Button Group */
 .btn-group {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
-  max-width: 320px;
+  max-width: 350px;
 }
 
-/* Attend/Bunk Buttons */
+/* Buttons */
 .attend-btn,
 .bunk-btn {
   flex: 1;
-  padding: 10px 0;
-  font-size: 16px;
-  font-weight: 600;
+  padding: 12px 0;
+  font-size: 17px;
+  font-weight: 700;
   border: none;
   border-radius: 10px;
-  color: white;
+  color: #fff;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
 }
 
+/* Attend Button (Green) */
 .attend-btn {
-  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  background: linear-gradient(145deg, #2e7d32, #1b5e20);
 }
-.bunk-btn {
-  background: linear-gradient(135deg, #f44336, #c62828);
+.attend-btn:hover {
+  background: linear-gradient(145deg, #388e3c, #2e7d32);
+  box-shadow: 0 6px 14px rgba(76, 175, 80, 0.4);
+}
+.attend-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+  animation: pulseGreen 0.3s;
 }
 
-/* Hover/Active */
-.attend-btn:hover,
-.bunk-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+/* Bunk Button (Red) */
+.bunk-btn {
+  background: linear-gradient(145deg, #c62828, #8e0000);
 }
-.attend-btn:active,
+.bunk-btn:hover {
+  background: linear-gradient(145deg, #d32f2f, #b71c1c);
+  box-shadow: 0 6px 14px rgba(244, 67, 54, 0.4);
+}
 .bunk-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
+  transform: scale(0.96);
+  box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+  animation: pulseRed 0.3s;
+}
+
+/* Pulse animations */
+@keyframes pulseGreen {
+  0% { box-shadow: 0 0 0 rgba(76, 175, 80, 0.6); }
+  50% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); }
+  100% { box-shadow: 0 0 0 rgba(76, 175, 80, 0.6); }
+}
+@keyframes pulseRed {
+  0% { box-shadow: 0 0 0 rgba(244, 67, 54, 0.6); }
+  50% { box-shadow: 0 0 15px rgba(244, 67, 54, 0.7); }
+  100% { box-shadow: 0 0 0 rgba(244, 67, 54, 0.6); }
 }
 
 /* Mobile View */
 @media (max-width: 500px) {
   .btn-group {
     flex-direction: row;
-    gap: 8px;
+    gap: 10px;
   }
   .today-row select {
     font-size: 14px;
   }
   .attend-btn,
   .bunk-btn {
-    font-size: 15px;
-    padding: 9px 0;
+    font-size: 16px;
+    padding: 10px 0;
   }
 }
 
