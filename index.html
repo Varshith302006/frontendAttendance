@@ -618,19 +618,31 @@ function renderBiometric(data){
   const totalDays = Number(data.totalDays)||0;
   const presentCount = Number(data.presentCount)||0;
 
-  // Calculate leaves can take & days to attend for 75%
+    // Calculate leaves can take & days to attend for 75%
   const targetPct = 75;
-  const minPresent = Math.ceil(totalDays * targetPct / 100);
-  const daysToAttend = minPresent - presentCount > 0 ? minPresent - presentCount : 0;
-  const leavesCanTake = presentCount - minPresent > 0 ? presentCount - minPresent : 0;
+  const target = targetPct / 100;
+
+  // Days needed to reach target (future total increases)
+  const daysToAttend = Math.ceil(
+    ((target * totalDays) - presentCount) / (1 - target)
+  );
+
+  // Max days you can be absent while staying ≥ target
+  const leavesCanTake = Math.floor(
+    (presentCount - (target * totalDays)) / target
+  );
+
+  const safeDaysToAttend = daysToAttend > 0 ? daysToAttend : 0;
+  const safeLeaves = leavesCanTake > 0 ? leavesCanTake : 0;
+
 
   const bg=pct>=75?'green':'red';
   document.getElementById('biometricTable').innerHTML=`
     <p><strong>Total Days:</strong> ${escapeHtml(totalDays)}</p>
     <p><strong>Present Days:</strong> ${escapeHtml(presentCount)}</p>
     <p><strong>Attendance Percentage:</strong> ${pct}%</p>
-    <p><strong>Days to attend for 75%:</strong> ${daysToAttend}</p>
-    <p><strong>Leaves can take:</strong> ${leavesCanTake}</p>
+    <p><strong>Days to attend for 75%:</strong> ${safeDaysToAttend}</p>
+    <p><strong>Leaves can take:</strong> ${safeLeaves}</p>
     <div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct}%</div></div>
   `;
 }
