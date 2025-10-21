@@ -247,6 +247,7 @@ th{
   z-index: 9999;
 }
 
+
 /* Responsive */
 @media(max-width:720px){
   .header-container{flex-direction:column;gap:8px;}
@@ -264,6 +265,31 @@ th{
   .btn{padding:12px;font-size:14px;}
   table th, table td{padding:6px;}
 }
+.today-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .today-row select {
+      flex: 1;
+      min-width: 120px;
+    }
+    @media(max-width:500px) {
+      .today-row button {
+        flex: 0 0 30%;
+        padding: 6px;
+        font-size: 13px;
+        height: 36px;
+      }
+      .today-row select {
+        flex: 1 0 35%;
+        min-width: 0;
+        height: 36px;
+        font-size: 13px;
+      }
+    }
 </style>
 </head>
 <body>
@@ -346,18 +372,16 @@ function createTodayRows() {
 
   for(let i=0; i<6; i++){
     const row = document.createElement('div');
-    row.style.display = 'flex';
-    row.style.gap = '8px';
-    row.style.alignItems = 'center';
-    row.style.marginBottom = '8px';
+    row.className = 'today-row'; // responsive class
 
     // Attend button
     const attendBtn = document.createElement('button');
     attendBtn.textContent = 'Attend';
     attendBtn.dataset.status = '';
     attendBtn.className = 'btn attend-btn';
-    attendBtn.style.width='100px';
+    attendBtn.style.flex = '0 0 30%';   // responsive width
     attendBtn.style.background = '#f0f0f0';
+    attendBtn.style.minWidth = '60px';  // ensures buttons don't shrink too much
     attendBtn.onclick = () => { 
       attendBtn.dataset.status = 'attend';
       bunkBtn.dataset.status = '';
@@ -371,8 +395,9 @@ function createTodayRows() {
     bunkBtn.textContent = 'Bunk';
     bunkBtn.dataset.status = '';
     bunkBtn.className = 'btn bunk-btn';
-    bunkBtn.style.width='100px';
+    bunkBtn.style.flex = '0 0 30%';
     bunkBtn.style.background = '#f0f0f0';
+    bunkBtn.style.minWidth = '60px';
     bunkBtn.onclick = () => { 
       bunkBtn.dataset.status = 'bunk';
       attendBtn.dataset.status = '';
@@ -383,14 +408,15 @@ function createTodayRows() {
 
     // Subject dropdown
     const select = document.createElement('select');
-    select.className = 'today-select'; // for reset reference
+    select.className = 'today-select';
     subjects.forEach(s => { 
       const o = document.createElement('option'); 
       o.value = s; 
       o.text = s; 
       select.add(o); 
     });
-    select.style.flex='1';
+    select.style.flex = '1 0 35%';       // responsive width
+    select.style.minWidth = '80px';
     select.onchange = calculateNewOverall;
 
     row.appendChild(attendBtn);
@@ -401,6 +427,7 @@ function createTodayRows() {
 
   newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
 }
+
 
 // Add Today Classes button
 addTodayBtn.addEventListener('click', createTodayRows);
