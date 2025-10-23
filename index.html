@@ -515,48 +515,63 @@ function calculateNewOverall(){
 // --------------------- Login & fetch streaming ---------------------
 const formLoader=document.getElementById('formLoader');
 
-document.getElementById('loginForm').addEventListener('submit', async e=>{
+document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const username = formData.get('username');
   const password = formData.get('password');
 
-  formLoader.style.display='block';
-  const academicEl=document.getElementById('academicTable');
-  const biometricEl=document.getElementById('biometricTable');
+  formLoader.style.display = 'block';
+  const academicEl = document.getElementById('academicTable');
+  const biometricEl = document.getElementById('biometricTable');
 
-  try{
-    const res = await fetch('/get-attendance',{
-      method:'POST',
-      body:JSON.stringify({username,password}),
-      headers:{'Content-Type':'application/json'}
+  try {
+    const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ username, password })
     });
-    const reader=res.body.getReader();
-    const decoder=new TextDecoder('utf-8');
-    let buffer='';
-    academicEl.innerHTML=''; biometricEl.innerHTML='';
-    showDashboard(username);
+    const data = await res.json();
 
-    while(true){
-      const {done,value}=await reader.read();
-      if(done) break;
-      buffer+=decoder.decode(value,{stream:true});
-      let lines=buffer.split('\n');
-      buffer=lines.pop();
-      for(const line of lines){
-        if(!line.trim()) continue;
-        try{
-          const data=JSON.parse(line);
-          if(data.type==='academic') academicEl.innerHTML=data.html;
-          if(data.type==='biometric') biometricEl.innerHTML=data.html;
-          if(data.type==='today_classes') { createTodayRows(); }
-        }catch(err){ console.error('Invalid JSON:',line); }
-      }
-    }
-  }catch(err){ alert('Error fetching attendance'); console.error(err); }
-  formLoader.style.display='none';
+    // ---------- Academic Table ----------
+    let html = '<table><tr><th>Subject</th><th>Attended</th><th>Total</th><th>%</th></tr>';
+    data.academic.forEach(sub => {
+      const pct = ((sub.attended / sub.total) * 100).toFixed(2);
+      html += `<tr>
+        <td>${sub.subject}</td>
+        <td>${sub.attended}</td>
+        <td>${sub.total}</td>
+        <td>${pct}%</td>
+      </tr>`;
+    });
+    html += '</table>';
+    academicEl.innerHTML = html;
+
+    // ---------- Biometric Table ----------
+    biometricEl.innerHTML = `
+      <table>
+        <tr><th>Total Days</th><th>Present</th><th>%</th><th>Can Bunk</th><th>Need to Attend for 75%</th></tr>
+        <tr>
+          <td>${data.biometric.totalDays}</td>
+          <td>${data.biometric.presentCount}</td>
+          <td>${data.biometric.percentage}%</td>
+          <td>${data.biometric.classesCanBunk}</td>
+          <td>${data.biometric.classesToAttendFor75}</td>
+        </tr>
+      </table>
+    `;
+
+    showDashboard(username);
+    createTodayRows(); // if you want today classes logic
+  } catch(err) {
+    console.error(err);
+    alert('Failed to fetch attendance.');
+  }
+  formLoader.style.display = 'none';
   updateTodayVisits();
 });
+
 </script>
 </body>
 </html>
+
