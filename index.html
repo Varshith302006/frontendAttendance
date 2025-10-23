@@ -16,7 +16,9 @@
 }
 
 /* Reset */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
@@ -61,7 +63,9 @@ header h2 {
   font-weight: 600;
   transition: background 0.3s;
 }
-#logoutBtn:hover { background: #e60000; }
+#logoutBtn:hover {
+  background: #e60000;
+}
 
 /* Container */
 .container {
@@ -94,8 +98,18 @@ header h2 {
 }
 
 /* Form */
-form { display: flex; flex-direction: column; gap: 16px; width: 100%; }
-.field { position: relative; width: 100%; }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Fields */
+.field {
+  position: relative;
+  width: 100%;
+}
 .field input {
   width: 100%;
   height: 45px;
@@ -110,7 +124,9 @@ form { display: flex; flex-direction: column; gap: 16px; width: 100%; }
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
   outline: none;
 }
-.password-field input { padding-right: 40px; }
+.password-field input {
+  padding-right: 40px;
+}
 .toggle-icon {
   position: absolute;
   right: 10px;
@@ -136,7 +152,9 @@ form { display: flex; flex-direction: column; gap: 16px; width: 100%; }
   border-radius: 8px;
   transition: background 0.3s;
 }
-.btn:hover { background: #45a049; }
+.btn:hover {
+  background: #45a049;
+}
 
 /* Loader under button */
 #formLoader .loader {
@@ -161,17 +179,49 @@ form { display: flex; flex-direction: column; gap: 16px; width: 100%; }
   border-radius: var(--radius);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
-.card h3 { margin-top: 0; margin-bottom: 12px; }
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
 
 /* Tables */
-.table-wrapper { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
-th, td { border: 1px solid #eee; padding: 8px; text-align: center; }
-th { background: var(--primary); color: #fff; font-weight: 600; }
+.table-wrapper {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 14px;
+}
+th,
+td {
+  border: 1px solid #eee;
+  padding: 8px;
+  text-align: center;
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
 
 /* Progress bar */
-.progress { background: #eee; width: 100%; height: 18px; border-radius: 6px; overflow: hidden; }
-.progress-bar { height: 100%; text-align: center; color: #fff; line-height: 18px; font-size: 12px; font-weight: 600; }
+.progress {
+  background: #eee;
+  width: 100%;
+  height: 18px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  text-align: center;
+  color: #fff;
+  line-height: 18px;
+  font-size: 12px;
+  font-weight: 600;
+}
 
 /* Loader */
 .loader {
@@ -184,8 +234,12 @@ th { background: var(--primary); color: #fff; font-weight: 600; }
   margin: auto;
 }
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Floating visits badge */
@@ -250,7 +304,8 @@ th { background: var(--primary); color: #fff; font-weight: 600; }
 }
 
 /* Attend / Bunk Buttons */
-.attend-btn, .bunk-btn {
+.attend-btn,
+.bunk-btn {
   flex: 1;
   padding: 12px 0;
   font-size: 17px;
@@ -264,42 +319,113 @@ th { background: var(--primary); color: #fff; font-weight: 600; }
 }
 
 /* Attend (Green) */
-.attend-btn { background: linear-gradient(145deg, #2e7d32, #1b5e20); }
-.attend-btn:hover { background: linear-gradient(145deg, #388e3c, #2e7d32); box-shadow: 0 6px 14px rgba(76,175,80,0.4); }
-.attend-btn:active { transform: scale(0.96); animation: pulseGreen 0.3s; }
+.attend-btn {
+  background: linear-gradient(145deg, #2e7d32, #1b5e20);
+}
+.attend-btn:hover {
+  background: linear-gradient(145deg, #388e3c, #2e7d32);
+  box-shadow: 0 6px 14px rgba(76, 175, 80, 0.4);
+}
+.attend-btn:active {
+  transform: scale(0.96);
+  animation: pulseGreen 0.3s;
+}
 
 /* Bunk (Red) */
-.bunk-btn { background: linear-gradient(145deg, #c62828, #8e0000); }
-.bunk-btn:hover { background: linear-gradient(145deg, #d32f2f, #b71c1c); box-shadow: 0 6px 14px rgba(244,67,54,0.4); }
-.bunk-btn:active { transform: scale(0.96); animation: pulseRed 0.3s; }
+.bunk-btn {
+  background: linear-gradient(145deg, #c62828, #8e0000);
+}
+.bunk-btn:hover {
+  background: linear-gradient(145deg, #d32f2f, #b71c1c);
+  box-shadow: 0 6px 14px rgba(244, 67, 54, 0.4);
+}
+.bunk-btn:active {
+  transform: scale(0.96);
+  animation: pulseRed 0.3s;
+}
 
 /* Animations */
-@keyframes pulseGreen { 0%, 100% { box-shadow: 0 0 0 rgba(76,175,80,0.6); } 50% { box-shadow: 0 0 15px rgba(76,175,80,0.7); } }
-@keyframes pulseRed { 0%, 100% { box-shadow: 0 0 0 rgba(244,67,54,0.6); } 50% { box-shadow: 0 0 15px rgba(244,67,54,0.7); } }
+@keyframes pulseGreen {
+  0%, 100% { box-shadow: 0 0 0 rgba(76, 175, 80, 0.6); }
+  50% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); }
+}
+@keyframes pulseRed {
+  0%, 100% { box-shadow: 0 0 0 rgba(244, 67, 54, 0.6); }
+  50% { box-shadow: 0 0 15px rgba(244, 67, 54, 0.7); }
+}
 
 /* Mobile */
 @media (max-width: 500px) {
-  .today-row { flex-direction: row; flex-wrap: nowrap; gap: 8px; }
-  .today-row select { flex: 1 1 40%; min-width: 0; }
-  .btn-group { display: flex; gap: 8px; flex: 1 1 60%; }
-  .attend-btn, .bunk-btn { flex: 1; font-size: 14px; padding: 8px 0; }
+  .today-row {
+    flex-direction: row;
+    flex-wrap: nowrap; /* prevent wrapping */
+    gap: 8px;
+  }
+  .today-row select {
+    flex: 1 1 40%; /* subject dropdown */
+    min-width: 0;
+  }
+  .btn-group {
+    display: flex;
+    gap: 8px;
+    flex: 1 1 60%; /* buttons take remaining space */
+  }
+  .attend-btn,
+  .bunk-btn {
+    flex: 1;
+    font-size: 14px;
+    padding: 8px 0;
+  }
 }
+
+
+/* Responsive Layouts */
 @media (max-width: 720px) {
-  .header-container { flex-direction: column; gap: 8px; }
-  header h2 { font-size: 18px; }
-  #logoutBtn { align-self: center; }
-  .login-card { padding: 24px 16px; }
-  .cards { flex-direction: column; }
-  .card { padding: 16px; }
-  table { font-size: 13px; }
+  .header-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  header h2 {
+    font-size: 18px;
+  }
+  #logoutBtn {
+    align-self: center;
+  }
+  .login-card {
+    padding: 24px 16px;
+  }
+  .cards {
+    flex-direction: column;
+  }
+  .card {
+    padding: 16px;
+  }
+  table {
+    font-size: 13px;
+  }
 }
 @media (max-width: 420px) {
-  header h2 { font-size: 16px; }
-  .login-card { padding: 20px 12px; }
-  input[type=text], input[type=password] { padding: 12px; font-size: 14px; }
-  .btn { padding: 12px; font-size: 14px; }
-  table th, table td { padding: 6px; }
+  header h2 {
+    font-size: 16px;
+  }
+  .login-card {
+    padding: 20px 12px;
+  }
+  input[type=text],
+  input[type=password] {
+    padding: 12px;
+    font-size: 14px;
+  }
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  table th,
+  table td {
+    padding: 6px;
+  }
 }
+
 </style>
 </head>
 <body>
@@ -310,6 +436,7 @@ th { background: var(--primary); color: #fff; font-weight: 600; }
   </div>
 </header>
 
+<!-- Floating visits badge -->
 <div id="visitsBadge" style="display:none;">0</div>
 
 <div class="container">
@@ -354,33 +481,181 @@ th { background: var(--primary); color: #fff; font-weight: 600; }
 
   <div class="card" id="todayClassesCard" style="margin-top:20px; display:none;">
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button id="resetTodayBtn" title="Reset Today's Selection" style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px; display:none;">&#8635;</button>
+      <!-- <button id="addTodayClassesBtn" class="btn" style="display:none;">check by today classes</button> -->
+      <button id="resetTodayBtn" title="Reset Today's Selection"
+        style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px; display:none;">
+        &#8635;
+      </button>
     </div>
     <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
     <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
   </div>
+
 </div>
 
 <script>
-// --------------------- Password toggle ---------------------
+const addTodayBtn = document.getElementById('addTodayClassesBtn');
+const resetBtn = document.getElementById('resetTodayBtn');
+const todayContainer = document.getElementById('todayClassesContainer');
+const newOverallEl = document.getElementById('newOverallAttendance');
+
+function createTodayRows() {
+  todayContainer.style.display = 'block';
+  todayContainer.innerHTML = '';
+
+  const subjectEls = document.querySelectorAll('#academicTable table tr td:nth-child(2)');
+  const subjects = Array.from(subjectEls).map(el => el.textContent.trim()).filter(Boolean);
+  if(subjects.length === 0) { alert('No subjects found!'); return; }
+
+  for(let i=0; i<6; i++){
+    const row = document.createElement('div');
+    row.className = 'today-row'; 
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '10px';
+    row.style.flexWrap = 'wrap';
+
+    // Subject dropdown (input first)
+    const select = document.createElement('select');
+    select.className = 'today-select';
+    subjects.forEach(s => { 
+      const o = document.createElement('option'); 
+      o.value = s; 
+      o.text = s; 
+      select.add(o); 
+    });
+    select.style.flex = '1 1 40%';
+    select.onchange = calculateNewOverall;
+
+    // Attend button
+    const attendBtn = document.createElement('button');
+    attendBtn.textContent = 'Attend';
+    attendBtn.dataset.status = '';
+    attendBtn.className = 'btn attend-btn';
+    attendBtn.style.flex = '0 0 25%';
+    attendBtn.onclick = () => { 
+      attendBtn.dataset.status = 'attend';
+      bunkBtn.dataset.status = '';
+      attendBtn.style.background = '#4CAF50';
+      bunkBtn.style.background = '#f0f0f0';
+      calculateNewOverall();
+    };
+
+    // Bunk button
+    const bunkBtn = document.createElement('button');
+    bunkBtn.textContent = 'Bunk';
+    bunkBtn.dataset.status = '';
+    bunkBtn.className = 'btn bunk-btn';
+    bunkBtn.style.flex = '0 0 25%';
+    bunkBtn.onclick = () => { 
+      bunkBtn.dataset.status = 'bunk';
+      attendBtn.dataset.status = '';
+      bunkBtn.style.background = '#ff4d4d';
+      attendBtn.style.background = '#f0f0f0';
+      calculateNewOverall();
+    };
+
+    row.appendChild(select);
+    row.appendChild(attendBtn);
+    row.appendChild(bunkBtn);
+
+    todayContainer.appendChild(row);
+  }
+
+  newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
+}
+
+
+
+// Add Today Classes button
+// addTodayBtn.addEventListener('click', createTodayRows);
+
+// RESET button: reset all selections
+resetBtn.addEventListener('click', () => {
+  const rows = todayContainer.querySelectorAll('div');
+  rows.forEach(row => {
+    const attendBtn = row.querySelector('.attend-btn');
+    const bunkBtn = row.querySelector('.bunk-btn');
+    const select = row.querySelector('select');
+
+    attendBtn.dataset.status = '';
+    bunkBtn.dataset.status = '';
+    attendBtn.style.background = '#f0f0f0';
+    bunkBtn.style.background = '#f0f0f0';
+
+    // Reset dropdown to first option
+    if(select.options.length > 0) select.selectedIndex = 0;
+  });
+
+  newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
+});
+
+// Function to calculate new overall academic attendance
+function calculateNewOverall(){
+  const rows = todayContainer.querySelectorAll('div');
+  if(rows.length === 0) return;
+
+  const subjectMap = {};
+  const trEls = document.querySelectorAll('#academicTable table tr');
+  trEls.forEach((tr,i)=>{
+    if(i===0) return;
+    const tds = tr.querySelectorAll('td');
+    const sub = tds[1].textContent.trim();
+    subjectMap[sub] = {
+      attended: Number(tds[2].textContent),
+      total: Number(tds[3].textContent)
+    };
+  });
+
+  rows.forEach(row => {
+    const attendBtn = row.querySelector('.attend-btn');
+    const bunkBtn = row.querySelector('.bunk-btn');
+    const select = row.querySelector('select');
+    const sub = select.value;
+    if(!subjectMap[sub]) return;
+
+    if(attendBtn.dataset.status==='attend'){
+      subjectMap[sub].attended += 1;
+      subjectMap[sub].total += 1;
+    } else if(bunkBtn.dataset.status==='bunk'){
+      subjectMap[sub].total += 1;
+    }
+  });
+
+  let sumPct = 0;
+  let count = 0;
+  for(const sub in subjectMap){
+    const s = subjectMap[sub];
+    const pct = s.total ? (s.attended / s.total) * 100 : 0;
+    sumPct += pct;
+    count++;
+  }
+  const newAvg = (sumPct / count).toFixed(2);
+  newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
+}
+</script>
+
+</div>
+
+<script>
 const passwordField=document.getElementById('passwordField');
 const togglePassword=document.getElementById('togglePassword');
 const eyeOpen=document.getElementById('eyeOpen');
 const eyeClosed=document.getElementById('eyeClosed');
-togglePassword.addEventListener('click',()=>{
-  const type=passwordField.type==='password'?'text':'password';
-  passwordField.type=type;
-  eyeOpen.style.display=type==='password'?'block':'none';
-  eyeClosed.style.display=type==='password'?'none':'block';
-});
-
-// --------------------- Dashboard & logout ---------------------
+const formLoader=document.getElementById('formLoader');
 const logoutBtn=document.getElementById('logoutBtn');
 const loginCard=document.getElementById('loginCard');
 const dashboardCards=document.getElementById('dashboardCards');
 const visitsBadge=document.getElementById('visitsBadge');
 
 dashboardCards.style.display='none';
+
+togglePassword.addEventListener('click',()=>{
+  const type=passwordField.type==='password'?'text':'password';
+  passwordField.type=type;
+  eyeOpen.style.display=type==='password'?'block':'none';
+  eyeClosed.style.display=type==='password'?'none':'block';
+});
 
 function showDashboard(studentId){
   loginCard.style.display='none';
@@ -390,188 +665,167 @@ function showDashboard(studentId){
   logoutBtn.style.display='block';
   logoutBtn.onclick = () => { location.reload(); };
 
-  // Today Classes
+  // Show Today Classes card and buttons
   const todayCard = document.getElementById('todayClassesCard');
+  const addBtn = document.getElementById('addTodayClassesBtn');
   const resetBtn = document.getElementById('resetTodayBtn');
-  todayCard.style.display = 'block';
+
+  todayCard.style.display = 'block';   // entire card visible
+  //addBtn.style.display = 'inline-block';
   resetBtn.style.display = 'inline-block';
+
+  // Show visits badge
   visitsBadge.style.display = 'flex';
 }
 
+
 async function updateTodayVisits(){
   try {
-    const res = await fetch('/today-logins');
+    const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
+    if(!res.ok) throw new Error('Failed to fetch today visits');
     const data = await res.json();
     visitsBadge.textContent = data.today_logins || 0;
-  } catch(err){ visitsBadge.textContent = '?'; }
-}
-
-// --------------------- Today Classes logic ---------------------
-const resetBtn=document.getElementById('resetTodayBtn');
-const todayContainer=document.getElementById('todayClassesContainer');
-const newOverallEl=document.getElementById('newOverallAttendance');
-
-function createTodayRows() {
-  todayContainer.style.display='block';
-  todayContainer.innerHTML='';
-
-  const subjectEls = document.querySelectorAll('#academicTable table tr td:nth-child(2)');
-  const subjects = Array.from(subjectEls).map(el=>el.textContent.trim()).filter(Boolean);
-  if(subjects.length===0) return;
-
-  for(let i=0;i<6;i++){
-    const row=document.createElement('div');
-    row.className='today-row';
-    row.style.display='flex';
-    row.style.alignItems='center';
-    row.style.gap='10px';
-    row.style.flexWrap='wrap';
-
-    const select=document.createElement('select');
-    select.className='today-select';
-    subjects.forEach(s=>{ const o=document.createElement('option'); o.value=s;o.text=s;select.add(o); });
-    select.style.flex='1 1 40%';
-    select.onchange = calculateNewOverall;
-
-    const attendBtn=document.createElement('button');
-    attendBtn.textContent='Attend';
-    attendBtn.dataset.status='';
-    attendBtn.className='btn attend-btn';
-    attendBtn.style.flex='0 0 25%';
-    attendBtn.onclick=()=>{
-      attendBtn.dataset.status='attend';
-      bunkBtn.dataset.status='';
-      attendBtn.style.background='#4CAF50';
-      bunkBtn.style.background='#f0f0f0';
-      calculateNewOverall();
-    };
-
-    const bunkBtn=document.createElement('button');
-    bunkBtn.textContent='Bunk';
-    bunkBtn.dataset.status='';
-    bunkBtn.className='btn bunk-btn';
-    bunkBtn.style.flex='0 0 25%';
-    bunkBtn.onclick=()=>{
-      bunkBtn.dataset.status='bunk';
-      attendBtn.dataset.status='';
-      bunkBtn.style.background='#ff4d4d';
-      attendBtn.style.background='#f0f0f0';
-      calculateNewOverall();
-    };
-
-    row.appendChild(select);
-    row.appendChild(attendBtn);
-    row.appendChild(bunkBtn);
-    todayContainer.appendChild(row);
+  } catch(err){
+    console.error('Error fetching today visits:', err);
+    visitsBadge.textContent = '?';
   }
-  newOverallEl.textContent="New Overall Academic Attendance After Today: --";
 }
 
-resetBtn.addEventListener('click',()=>{
-  const rows=todayContainer.querySelectorAll('div');
-  rows.forEach(row=>{
-    const attend=row.querySelector('.attend-btn');
-    const bunk=row.querySelector('.bunk-btn');
-    const sel=row.querySelector('select');
-    attend.dataset.status='';
-    bunk.dataset.status='';
-    attend.style.background='#f0f0f0';
-    bunk.style.background='#f0f0f0';
-    if(sel.options.length>0) sel.selectedIndex=0;
-  });
-  newOverallEl.textContent="New Overall Academic Attendance After Today: --";
-});
-
-function calculateNewOverall(){
-  const rows=todayContainer.querySelectorAll('div');
-  if(rows.length===0) return;
-  const subjectMap={};
-  const trEls=document.querySelectorAll('#academicTable table tr');
-  trEls.forEach((tr,i)=>{
-    if(i===0) return;
-    const tds=tr.querySelectorAll('td');
-    const sub=tds[1].textContent.trim();
-    subjectMap[sub]={attended:Number(tds[2].textContent),total:Number(tds[3].textContent)};
-  });
-  rows.forEach(row=>{
-    const attend=row.querySelector('.attend-btn');
-    const bunk=row.querySelector('.bunk-btn');
-    const sel=row.querySelector('select');
-    const sub=sel.value;
-    if(!subjectMap[sub]) return;
-    if(attend.dataset.status==='attend'){ subjectMap[sub].attended+=1; subjectMap[sub].total+=1; }
-    else if(bunk.dataset.status==='bunk'){ subjectMap[sub].total+=1; }
-  });
-  let sumPct=0,count=0;
-  for(const sub in subjectMap){
-    const s=subjectMap[sub];
-    const pct=s.total?(s.attended/s.total)*100:0;
-    sumPct+=pct; count++;
-  }
-  const newAvg=(sumPct/count).toFixed(2);
-  newOverallEl.textContent=`New Overall Academic Attendance After Today: ${newAvg}%`;
-}
-
-// --------------------- Login & fetch streaming ---------------------
-const formLoader=document.getElementById('formLoader');
-
-document.getElementById('loginForm').addEventListener('submit', async e => {
+document.getElementById('loginForm').addEventListener('submit', async e=>{
   e.preventDefault();
   const formData = new FormData(e.target);
   const username = formData.get('username');
   const password = formData.get('password');
 
   formLoader.style.display = 'block';
+
   const academicEl = document.getElementById('academicTable');
   const biometricEl = document.getElementById('biometricTable');
 
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ username, password })
+      body: new URLSearchParams({ username, password })
     });
-    const data = await res.json();
 
-    // ---------- Academic Table ----------
-    let html = '<table><tr><th>Subject</th><th>Attended</th><th>Total</th><th>%</th></tr>';
-    data.academic.forEach(sub => {
-      const pct = ((sub.attended / sub.total) * 100).toFixed(2);
-      html += `<tr>
-        <td>${sub.subject}</td>
-        <td>${sub.attended}</td>
-        <td>${sub.total}</td>
-        <td>${pct}%</td>
-      </tr>`;
-    });
-    html += '</table>';
-    academicEl.innerHTML = html;
+    if(!res.ok) throw new Error('Network response was not ok');
 
-    // ---------- Biometric Table ----------
-    biometricEl.innerHTML = `
-      <table>
-        <tr><th>Total Days</th><th>Present</th><th>%</th><th>Can Bunk</th><th>Need to Attend for 75%</th></tr>
-        <tr>
-          <td>${data.biometric.totalDays}</td>
-          <td>${data.biometric.presentCount}</td>
-          <td>${data.biometric.percentage}%</td>
-          <td>${data.biometric.classesCanBunk}</td>
-          <td>${data.biometric.classesToAttendFor75}</td>
-        </tr>
-      </table>
-    `;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
 
     showDashboard(username);
-    createTodayRows(); // if you want today classes logic
-  } catch(err) {
+    academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
+    biometricEl.innerHTML = '';
+
+    while(true){
+      const {done,value}=await reader.read();
+      if(done) break;
+      buffer+=decoder.decode(value,{stream:true});
+      let lines=buffer.split('\n');
+      buffer=lines.pop();
+      for(const line of lines){
+        if(!line.trim()) continue;
+        try{
+          const obj=JSON.parse(line);
+          if(obj.step==='academic') renderAcademic(obj.data);
+          if(obj.step==='biometric') renderBiometric(obj.data);
+        }catch(err){console.error('Invalid JSON:',line);}
+      }
+    }
+
+    if(buffer.trim()){
+      try{
+        const obj=JSON.parse(buffer);
+        if(obj.step==='academic') renderAcademic(obj.data);
+        if(obj.step==='biometric') renderBiometric(obj.data);
+      }catch(err){console.error('Invalid JSON:',buffer);}
+    }
+
+    // Update today visits badge after fetching data
+    updateTodayVisits();
+
+  } catch(err){
     console.error(err);
-    alert('Failed to fetch attendance.');
+    alert('Network error or wrong username/password. Please try again.');
+    academicEl.innerHTML='';
+    biometricEl.innerHTML='';
+  } finally {
+    formLoader.style.display='none';
   }
-  formLoader.style.display = 'none';
-  updateTodayVisits();
 });
 
+function renderAcademic(data){
+  if(!Array.isArray(data)||data.length===0){
+    document.getElementById('academicTable').innerHTML='<em>No academic data available</em>';
+    return;
+  }
+  let total=0;
+  data.forEach(sub=>total+=Number(sub.percentage)||0);
+  const avg=(total/data.length).toFixed(2);
+  let html=`<p><strong>Average Academic Attendance: ${avg}%</strong></p>`;
+  html+=`<div class="table-wrapper"><table><tr><th>Course Code</th><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>To Reach 75%</th><th>Can Bunk</th><th>Progress</th></tr>`;
+  data.forEach(sub=>{
+    const pct=Number(sub.percentage)||0;
+    const bg=pct>=75?'green':'red';
+    html+=`<tr><td>${escapeHtml(sub.courseCode)}</td><td>${escapeHtml(sub.subject)}</td><td>${escapeHtml(sub.attended)}</td><td>${escapeHtml(sub.total)}</td><td>${pct.toFixed(2)}%</td><td>${escapeHtml(sub.classesToAttendFor75)}</td><td>${escapeHtml(sub.classesCanBunk)}</td><td><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(2)}%</div></div></td></tr>`;
+  });
+  html+='</table></div>';
+  document.getElementById('academicTable').innerHTML=html;
+  // Immediately show today inputs
+  document.getElementById('todayClassesCard').style.display = 'block';
+  document.getElementById('resetTodayBtn').style.display = 'inline-block';
+  createTodayRows();
+
+}
+
+function renderBiometric(data){
+  if(!data){
+    document.getElementById('biometricTable').innerHTML='<em>No biometric data available</em>';
+    return;
+  }
+  const pct=Number(data.percentage)||0;
+  const totalDays = Number(data.totalDays)||0;
+  const presentCount = Number(data.presentCount)||0;
+
+    // Calculate leaves can take & days to attend for 75%
+  const targetPct = 75;
+  const target = targetPct / 100;
+
+  // Days needed to reach target (future total increases)
+  const daysToAttend = Math.ceil(
+    ((target * totalDays) - presentCount) / (1 - target)
+  );
+
+  // Max days you can be absent while staying ≥ target
+  const leavesCanTake = Math.floor(
+    (presentCount - (target * totalDays)) / target
+  );
+
+  const safeDaysToAttend = daysToAttend > 0 ? daysToAttend : 0;
+  const safeLeaves = leavesCanTake > 0 ? leavesCanTake : 0;
+
+
+  const bg=pct>=75?'green':'red';
+  document.getElementById('biometricTable').innerHTML=`
+    <p><strong>Total Days:</strong> ${escapeHtml(totalDays)}</p>
+    <p><strong>Present Days:</strong> ${escapeHtml(presentCount)}</p>
+    <p><strong>Attendance Percentage:</strong> ${pct}%</p>
+    <p><strong>Days to attend for 75%:</strong> ${safeDaysToAttend}</p>
+    <p><strong>Leaves can take:</strong> ${safeLeaves}</p>
+    <div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct}%</div></div>
+  `;
+}
+
+function escapeHtml(v){
+  if(v===undefined||v===null) return '';
+  return String(v)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 </script>
 </body>
 </html>
-
