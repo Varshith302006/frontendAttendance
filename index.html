@@ -470,7 +470,7 @@ th {
 
   <div class="card" id="todayClassesCard" style="margin-top:20px; display:none;">
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button id="addTodayClassesBtn" class="btn" style="display:none;">Add Today Classes</button>
+      <!-- <button id="addTodayClassesBtn" class="btn" style="display:none;">check by today classes</button> -->
       <button id="resetTodayBtn" title="Reset Today's Selection"
         style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px; display:none;">
         &#8635;
@@ -498,20 +498,34 @@ function createTodayRows() {
 
   for(let i=0; i<6; i++){
     const row = document.createElement('div');
-    row.className = 'today-row'; // responsive class
+    row.className = 'today-row'; 
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '10px';
+    row.style.flexWrap = 'wrap';
+
+    // Subject dropdown (input first)
+    const select = document.createElement('select');
+    select.className = 'today-select';
+    subjects.forEach(s => { 
+      const o = document.createElement('option'); 
+      o.value = s; 
+      o.text = s; 
+      select.add(o); 
+    });
+    select.style.flex = '1 1 40%';
+    select.onchange = calculateNewOverall;
 
     // Attend button
     const attendBtn = document.createElement('button');
     attendBtn.textContent = 'Attend';
     attendBtn.dataset.status = '';
     attendBtn.className = 'btn attend-btn';
-    attendBtn.style.flex = '0 0 30%';   // responsive width
-    attendBtn.style.background = '#f0f0f0';
-    attendBtn.style.minWidth = '60px';  // ensures buttons don't shrink too much
+    attendBtn.style.flex = '0 0 25%';
     attendBtn.onclick = () => { 
       attendBtn.dataset.status = 'attend';
       bunkBtn.dataset.status = '';
-      attendBtn.style.background = '#4CAF50'; // green
+      attendBtn.style.background = '#4CAF50';
       bunkBtn.style.background = '#f0f0f0';
       calculateNewOverall();
     };
@@ -521,38 +535,25 @@ function createTodayRows() {
     bunkBtn.textContent = 'Bunk';
     bunkBtn.dataset.status = '';
     bunkBtn.className = 'btn bunk-btn';
-    bunkBtn.style.flex = '0 0 30%';
-    bunkBtn.style.background = '#f0f0f0';
-    bunkBtn.style.minWidth = '60px';
+    bunkBtn.style.flex = '0 0 25%';
     bunkBtn.onclick = () => { 
       bunkBtn.dataset.status = 'bunk';
       attendBtn.dataset.status = '';
-      bunkBtn.style.background = '#ff4d4d'; // red
+      bunkBtn.style.background = '#ff4d4d';
       attendBtn.style.background = '#f0f0f0';
       calculateNewOverall();
     };
 
-    // Subject dropdown
-    const select = document.createElement('select');
-    select.className = 'today-select';
-    subjects.forEach(s => { 
-      const o = document.createElement('option'); 
-      o.value = s; 
-      o.text = s; 
-      select.add(o); 
-    });
-    select.style.flex = '1 0 35%';       // responsive width
-    select.style.minWidth = '80px';
-    select.onchange = calculateNewOverall;
-
+    row.appendChild(select);
     row.appendChild(attendBtn);
     row.appendChild(bunkBtn);
-    row.appendChild(select);
+
     todayContainer.appendChild(row);
   }
 
   newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
 }
+
 
 
 // Add Today Classes button
@@ -659,7 +660,7 @@ function showDashboard(studentId){
   const resetBtn = document.getElementById('resetTodayBtn');
 
   todayCard.style.display = 'block';   // entire card visible
-  addBtn.style.display = 'inline-block';
+  //addBtn.style.display = 'inline-block';
   resetBtn.style.display = 'inline-block';
 
   // Show visits badge
@@ -760,6 +761,11 @@ function renderAcademic(data){
   });
   html+='</table></div>';
   document.getElementById('academicTable').innerHTML=html;
+  // Immediately show today inputs
+  document.getElementById('todayClassesCard').style.display = 'block';
+  document.getElementById('resetTodayBtn').style.display = 'inline-block';
+  createTodayRows();
+
 }
 
 function renderBiometric(data){
