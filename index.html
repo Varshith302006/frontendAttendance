@@ -357,7 +357,12 @@ th {
   .today-row .btn-container {
     display: flex;
     gap: 10px;
-    justify-content: space-between;
+    justify-content:flex-start;
+    flex-wrap: nowrap;
+  }
+  .today-row .btn-container .btn {
+    flex: 1; /* each button takes equal space */
+    min-width: 120px; /* optional: minimum size */
   }
 }
 
@@ -484,7 +489,7 @@ function createTodayRows() {
     attendBtn.textContent = 'Attend';
     attendBtn.dataset.status = '';
     attendBtn.className = 'btn attend-btn';
-    attendBtn.style.flex = '0 0 25%';
+    // attendBtn.style.flex = '0 0 25%';
     attendBtn.onclick = () => { 
       attendBtn.dataset.status = 'attend';
       bunkBtn.dataset.status = '';
@@ -498,7 +503,7 @@ function createTodayRows() {
     bunkBtn.textContent = 'Bunk';
     bunkBtn.dataset.status = '';
     bunkBtn.className = 'btn bunk-btn';
-    bunkBtn.style.flex = '0 0 25%';
+    // bunkBtn.style.flex = '0 0 25%';
     bunkBtn.onclick = () => { 
       bunkBtn.dataset.status = 'bunk';
       attendBtn.dataset.status = '';
