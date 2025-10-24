@@ -16,7 +16,9 @@
 }
 
 /* Reset */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
@@ -61,7 +63,9 @@ header h2 {
   font-weight: 600;
   transition: background 0.3s;
 }
-#logoutBtn:hover { background: #e60000; }
+#logoutBtn:hover {
+  background: #e60000;
+}
 
 /* Container */
 .container {
@@ -102,7 +106,10 @@ form {
 }
 
 /* Fields */
-.field { position: relative; width: 100%; }
+.field {
+  position: relative;
+  width: 100%;
+}
 .field input {
   width: 100%;
   height: 45px;
@@ -117,7 +124,9 @@ form {
   box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
   outline: none;
 }
-.password-field input { padding-right: 40px; }
+.password-field input {
+  padding-right: 40px;
+}
 .toggle-icon {
   position: absolute;
   right: 10px;
@@ -143,7 +152,16 @@ form {
   border-radius: 8px;
   transition: background 0.3s;
 }
-.btn:hover { background: #45a049; }
+.btn:hover {
+  background: #45a049;
+}
+
+/* Loader under button */
+#formLoader .loader {
+  width: 28px;
+  height: 28px;
+  border-width: 4px;
+}
 
 /* Cards */
 .cards {
@@ -161,17 +179,23 @@ form {
   border-radius: var(--radius);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
-.card h3 { margin-top: 0; margin-bottom: 12px; }
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
 
 /* Tables */
-.table-wrapper { overflow-x: auto; }
+.table-wrapper {
+  overflow-x: auto;
+}
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 12px;
   font-size: 14px;
 }
-th, td {
+th,
+td {
   border: 1px solid #eee;
   padding: 8px;
   text-align: center;
@@ -183,7 +207,13 @@ th {
 }
 
 /* Progress bar */
-.progress { background: #eee; width: 100%; height: 18px; border-radius: 6px; overflow: hidden; }
+.progress {
+  background: #eee;
+  width: 100%;
+  height: 18px;
+  border-radius: 6px;
+  overflow: hidden;
+}
 .progress-bar {
   height: 100%;
   text-align: center;
@@ -203,7 +233,10 @@ th {
   animation: spin 1s linear infinite;
   margin: auto;
 }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 /* Floating visits badge */
 #visitsBadge {
@@ -224,7 +257,7 @@ th {
   z-index: 9999;
 }
 
-/* --- Attend/Bunk Section --- */
+/* --- Attend/Bunk Simulation Section --- */
 #todayClassesCard {
   background: #ffffff;
   border-radius: 20px;
@@ -239,40 +272,55 @@ th {
   transform: translateY(-3px);
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-#todayClassesCard h3 { text-align:center; color:#1b1b1b; font-size:20px; font-weight:700; margin-bottom:18px; }
-
+#todayClassesCard h3 {
+  text-align: center;
+  color: #1b1b1b;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
 .today-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap; /* allow wrapping on very small screens */
-  margin-bottom: 16px;
+  flex-wrap: nowrap;  /* prevent vertical stacking */
+   margin-bottom: 16px;  /* <-- add this */
 }
 
 .today-row select {
-  flex: 1 1 40%;
-  min-width: 120px;
+  flex: 1 1 auto;      /* allow it to shrink if needed */
+  min-width: 150px;
 }
 
-.today-row .btn-container {
-  display: flex;
-  gap: 10px;
-  flex: 1 1 55%;
-}
-
-.today-row .btn-container .btn {
-  flex: 1;
-  min-width: 100px;
+.today-row .btn {
+  flex: 0 0 120px;
+  text-align: center;
+  font-weight: 600;
+  border: none;
   border-radius: 10px;
   padding: 10px 0;
-  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.attend-btn { background: linear-gradient(135deg, #43a047, #2e7d32); }
-.bunk-btn { background: linear-gradient(135deg, #e53935, #b71c1c); }
-.attend-btn:hover, .bunk-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.attend-btn {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+}
+.bunk-btn {
+  background: linear-gradient(135deg, #e53935, #b71c1c);
+}
 
+.attend-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.bunk-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(252, 2, 2, 0.15);
+}
 #newOverallAttendance {
   margin-top: 25px;
   background: rgba(76, 175, 80, 0.1);
@@ -284,21 +332,75 @@ th {
   font-weight: 600;
   box-shadow: inset 0 0 8px rgba(76,175,80,0.15);
 }
+.today-row .btn-container {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;      /* don't grow, stay side by side */
+}
+
+.today-row .btn-container .btn {
+  flex: 1;              /* equal width buttons */
+  min-width: 120px;
+}
+
 
 /* --- Responsive (Mobile) --- */
 @media (max-width: 768px) {
-  .today-row { flex-direction: row; align-items: center; }
-  .today-row select { flex: 1 1 40%; }
-  .today-row .btn-container { flex: 1 1 55%; }
+  .today-row {
+    flex-direction: row;
+    flex-wrap:wrap;
+    align-items: center;
+     margin-bottom: 16px;  /* <-- add this */
+  }
+
+  .today-row select {
+    flex:1 1 auto;
+    min-width:120px;
+  }
+
+  .today-row .btn-container {
+    display: flex;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+  .today-row .btn-container .btn {
+    flex: 1; /* each button takes equal space */
+    min-width: 100px; /* optional: minimum size */
+  }
 }
 
 @media (max-width: 480px) {
-  .login-card { padding: 24px 16px; }
-  .today-row { flex-direction: row; align-items: center; }
-  .today-row select { flex: 1 1 40%; }
-  .today-row .btn-container { flex: 1 1 55%; }
-  #visitsBadge { width: 32px; height: 32px; font-size: 14px; }
+  /* .login-card {
+    padding: 24px 16px;
+  } */
+
+  .today-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .today-row select {
+    flex: 1 1 auto;
+    min-width: 100px;
+  }
+
+  .today-row .btn-container {
+    display: flex;
+    gap: 8px;
+  }
+  .today-row .btn-container .btn {
+    flex: 1; /* each button takes equal space */
+    min-width: 90px; /* optional: minimum size */
+  }
+  /* #visitsBadge {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  } */
 }
+
 </style>
 </head>
 <body>
@@ -309,16 +411,19 @@ th {
   </div>
 </header>
 
+<!-- Floating visits badge -->
 <div id="visitsBadge" style="display:none;">0</div>
 
 <div class="container">
   <div class="login-card" id="loginCard">
     <h3>Student Login</h3>
     <form id="loginForm" autocomplete="on">
-      <div class="field"><input type="text" name="username" placeholder="Student ID" required></div>
+      <div class="field">
+        <input type="text" name="username" placeholder="Student ID" required aria-label="Student ID">
+      </div>
       <div class="field password-field">
-        <input type="password" name="password" placeholder="Password" required id="passwordField">
-        <span id="togglePassword" class="toggle-icon">
+        <input type="password" name="password" placeholder="Password" required id="passwordField" aria-label="Password">
+        <span id="togglePassword" class="toggle-icon" title="Show / Hide password">
           <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -350,9 +455,17 @@ th {
   </div>
 
   <div class="card" id="todayClassesCard" style="margin-top:20px; display:none;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <!-- <button id="addTodayClassesBtn" class="btn" style="display:none;">check by today classes</button> -->
+      <button id="resetTodayBtn" title="Reset Today's Selection"
+        style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px; display:none;">
+        &#8635;
+      </button>
+    </div>
     <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
     <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
   </div>
+
 </div>
 
 <script>
@@ -362,33 +475,76 @@ const todayContainer = document.getElementById('todayClassesContainer');
 const newOverallEl = document.getElementById('newOverallAttendance');
 
 function createTodayRows() {
-  const todayContainer = document.getElementById('todayClassesContainer');
   todayContainer.style.display = 'block';
   todayContainer.innerHTML = '';
+
   const subjectEls = document.querySelectorAll('#academicTable table tr td:nth-child(2)');
   const subjects = Array.from(subjectEls).map(el => el.textContent.trim()).filter(Boolean);
   if(subjects.length === 0) { alert('No subjects found!'); return; }
 
-  for(let i=0;i<6;i++){
+  for(let i=0; i<6; i++){
     const row = document.createElement('div');
-    row.className = 'today-row';
+    row.className = 'today-row'; 
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '10px';
+    row.style.flexWrap = 'wrap';
 
+    // Subject dropdown (input first)
     const select = document.createElement('select');
-    subjects.forEach(s=>{const o=document.createElement('option'); o.value=s; o.text=s; select.add(o);});
-    row.appendChild(select);
+    select.className = 'today-select';
+    subjects.forEach(s => { 
+      const o = document.createElement('option'); 
+      o.value = s; 
+      o.text = s; 
+      select.add(o); 
+    });
+    select.style.flex = '1 1 40%';
+    select.onchange = calculateNewOverall;
 
-    const btnContainer = document.createElement('div'); btnContainer.className='btn-container';
-    const attendBtn = document.createElement('button'); attendBtn.className='btn attend-btn'; attendBtn.textContent='Attend';
-    attendBtn.onclick=()=>{ attendBtn.dataset.status='attend'; bunkBtn.dataset.status=''; attendBtn.style.background='#4CAF50'; bunkBtn.style.background='#f0f0f0'; calculateNewOverall(); };
-    const bunkBtn = document.createElement('button'); bunkBtn.className='btn bunk-btn'; bunkBtn.textContent='Bunk';
-    bunkBtn.onclick=()=>{ bunkBtn.dataset.status='bunk'; attendBtn.dataset.status=''; bunkBtn.style.background='#ff4d4d'; attendBtn.style.background='#f0f0f0'; calculateNewOverall(); };
-    btnContainer.appendChild(attendBtn); btnContainer.appendChild(bunkBtn);
-    row.appendChild(btnContainer);
+    // Attend button
+    const attendBtn = document.createElement('button');
+    attendBtn.textContent = 'Attend';
+    attendBtn.dataset.status = '';
+    attendBtn.className = 'btn attend-btn';
+    // attendBtn.style.flex = '0 0 25%';
+    attendBtn.onclick = () => { 
+      attendBtn.dataset.status = 'attend';
+      bunkBtn.dataset.status = '';
+      attendBtn.style.background = '#4CAF50';
+      bunkBtn.style.background = '#f0f0f0';
+      calculateNewOverall();
+    };
+
+    // Bunk button
+    const bunkBtn = document.createElement('button');
+    bunkBtn.textContent = 'Bunk';
+    bunkBtn.dataset.status = '';
+    bunkBtn.className = 'btn bunk-btn';
+    // bunkBtn.style.flex = '0 0 25%';
+    bunkBtn.onclick = () => { 
+      bunkBtn.dataset.status = 'bunk';
+      attendBtn.dataset.status = '';
+      bunkBtn.style.background = '#ff4d4d';
+      attendBtn.style.background = '#f0f0f0';
+      calculateNewOverall();
+    };
+
+  row.appendChild(select);
+
+  const btnContainer = document.createElement('div');
+  btnContainer.className = 'btn-container';
+  btnContainer.appendChild(attendBtn);
+  btnContainer.appendChild(bunkBtn);
+  row.appendChild(btnContainer);
+
 
     todayContainer.appendChild(row);
   }
-  document.getElementById('newOverallAttendance').textContent = "New Overall Academic Attendance After Today: --";
+
+  newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
 }
+
 
 
 // Add Today Classes button
@@ -653,4 +809,3 @@ function escapeHtml(v){
 </script>
 </body>
 </html>
-
