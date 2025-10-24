@@ -321,6 +321,13 @@ th {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(252, 2, 2, 0.15);
 }
+.attend-btn.active {
+  background: #4CAF50 !important;
+}
+.bunk-btn.active {
+  background: #ff4d4d !important;
+}
+
 #newOverallAttendance {
   margin-top: 25px;
   background: rgba(76, 175, 80, 0.1);
@@ -511,8 +518,8 @@ function createTodayRows() {
     attendBtn.onclick = () => { 
       attendBtn.dataset.status = 'attend';
       bunkBtn.dataset.status = '';
-      attendBtn.style.background = '#4CAF50';
-      bunkBtn.style.background = '#f0f0f0';
+      attendBtn.classList.add("active");
+      bunkBtn.classList.remove("active");
       calculateNewOverall();
     };
 
@@ -522,11 +529,11 @@ function createTodayRows() {
     bunkBtn.dataset.status = '';
     bunkBtn.className = 'btn bunk-btn';
     // bunkBtn.style.flex = '0 0 25%';
-    bunkBtn.onclick = () => { 
+   bunkBtn.onclick = () => { 
       bunkBtn.dataset.status = 'bunk';
       attendBtn.dataset.status = '';
-      bunkBtn.style.background = '#ff4d4d';
-      attendBtn.style.background = '#f0f0f0';
+      bunkBtn.classList.add("active");
+      attendBtn.classList.remove("active");
       calculateNewOverall();
     };
 
@@ -560,8 +567,8 @@ resetBtn.addEventListener('click', () => {
 
     attendBtn.dataset.status = '';
     bunkBtn.dataset.status = '';
-    attendBtn.style.background = '#f0f0f0';
-    bunkBtn.style.background = '#f0f0f0';
+    attendBtn.classList.remove("active");  
+    bunkBtn.classList.remove("active");
 
     // Reset dropdown to first option
     if(select.options.length > 0) select.selectedIndex = 0;
@@ -809,4 +816,5 @@ function escapeHtml(v){
 </script>
 </body>
 </html>
+
 
