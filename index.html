@@ -371,18 +371,25 @@ th {
     padding: 24px 16px;
   }
 
-  .btn {
-    font-size: 14px;
-    padding: 10px;
-  }
   .today-row {
     flex-direction: column;
     align-items: stretch;
   }
-  .today-row .btn-container {
-    flex-direction: column;
+
+  .today-row select {
+    width: 100%;
   }
 
+  .today-row .btn-container {
+    display: flex;
+    gap: 10px;
+    justify-content:flex-start;
+    flex-wrap: nowrap;
+  }
+  .today-row .btn-container .btn {
+    flex: 1; /* each button takes equal space */
+    min-width: 120px; /* optional: minimum size */
+  }
   #visitsBadge {
     width: 32px;
     height: 32px;
