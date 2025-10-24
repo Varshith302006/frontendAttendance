@@ -552,7 +552,7 @@ function createTodayRows() {
 
 // RESET button: reset all selections
 resetBtn.addEventListener('click', () => {
-  const rows = todayContainer.querySelectorAll('div');
+  const rows = todayContainer.querySelectorAll('.today-row');
   rows.forEach(row => {
     const attendBtn = row.querySelector('.attend-btn');
     const bunkBtn = row.querySelector('.bunk-btn');
@@ -572,7 +572,7 @@ resetBtn.addEventListener('click', () => {
 
 // Function to calculate new overall academic attendance
 function calculateNewOverall(){
-  const rows = todayContainer.querySelectorAll('div');
+  const rows = todayContainer.querySelectorAll('.today-row');
   if(rows.length === 0) return;
 
   const subjectMap = {};
@@ -809,3 +809,4 @@ function escapeHtml(v){
 </script>
 </body>
 </html>
+
