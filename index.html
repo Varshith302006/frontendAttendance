@@ -804,14 +804,48 @@ tr:hover {
 }
 /* Academic Attendance Table - 3D Horizontal Scroll Effect */
 .table-wrapper {
-  overflow-x: auto;
-  perspective: 600px;
-  position: relative;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(40,37,86,0.10);
+  border-radius: 18px;
+  background: var(--bg-secondary);
+  padding: 8px 0;
+  perspective: 800px;
 }
 .table-wrapper table {
-  transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
-  will-change: transform;
+  background: transparent;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 1px 10px rgba(25,40,60,0.06);
 }
+.table-wrapper table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-wrapper th, .table-wrapper td {
+  border-bottom: 1px solid var(--border-light);
+}
+.table-wrapper tr:last-child td {
+  border-bottom: none;
+}
+
+.table-wrapper th {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  background: var(--bg-primary);
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.card-body .table-wrapper {
+  margin: 0 4px 6px 4px;
+  padding: 0 2px;
+}
+.card, .table-wrapper {
+  background: #fff;
+}
+
+
 
 </style>
 </head>
@@ -1153,7 +1187,7 @@ function renderAcademic(data) {
       const scrollX = tableWrapper.scrollLeft;
       // The 3D "angle" based on scroll position
       const percent = maxScroll ? scrollX / maxScroll : 0;
-      const angle = (percent - 0.5) * 18; // −9deg to +9deg
+      const angle = (percent - 0.5) * 12; // -6deg to +6deg 
       table.style.transform = `rotateY(${angle}deg)`;
     }
     if (tableWrapper && table) {
