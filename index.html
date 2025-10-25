@@ -4,683 +4,875 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Attendance Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
 :root {
-  --bg: #f4f6f9;
-  --card: #fff;
-  --primary: #4CAF50;
-  --text: #333;
-  --muted: #777;
+  /* Modern Color Palette */
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: #eef2ff;
+  --secondary: #8b5cf6;
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --info: #06b6d4;
+  
+  /* Neutrals */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Gradient */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-danger: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  
+  /* Spacing */
   --radius: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
 }
 
-/* Reset */
 * {
   box-sizing: border-box;
-}
-body {
-  font-family: 'Roboto', sans-serif;
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
   min-height: 100vh;
 }
 
 /* Header */
 header {
-  background: var(--primary);
-  color: #fff;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
   padding: 16px 0;
-  display: flex;
-  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
 }
+
 .header-container {
-  width: 95%;
-  max-width: 900px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
 }
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  background: var(--gradient-primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+}
+
 header h2 {
-  margin: 0;
   font-size: 20px;
-  flex: 1;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-#logoutBtn {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  background: #ff4d4d;
-  color: #fff;
-  cursor: pointer;
-  display: none;
   font-weight: 600;
-  transition: background 0.3s;
+  color: var(--text-primary);
 }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#visitsBadge {
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 14px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+#logoutBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--danger);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+  display: none;
+}
+
 #logoutBtn:hover {
-  background: #e60000;
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
 }
 
 /* Container */
 .container {
-  width: 95%;
-  max-width: 900px;
-  margin: 24px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
 }
 
 /* Login Card */
 .login-card {
-  background: var(--card);
-  padding: 32px 24px;
-  border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 450px;
-  margin-bottom: 32px;
-  transition: opacity 0.5s;
+  background: var(--bg-secondary);
+  padding: 48px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 480px;
+  margin: 80px auto;
+  border: 1px solid var(--border);
 }
-.login-card h3 {
-  margin: 0 0 24px 0;
-  font-size: 22px;
-  color: var(--primary);
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: white;
+  font-size: 32px;
+}
+
+.login-header h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 /* Form */
 form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: 100%;
+  gap: 20px;
 }
 
-/* Fields */
 .field {
   position: relative;
-  width: 100%;
 }
+
+.field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
 .field input {
   width: 100%;
-  height: 45px;
-  padding: 0 14px;
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
   font-size: 15px;
-  transition: border 0.3s, box-shadow 0.3s;
+  transition: all 0.2s;
+  background: var(--bg-primary);
 }
+
 .field input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
   outline: none;
+  background: white;
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
+
 .password-field input {
-  padding-right: 40px;
+  padding-right: 48px;
 }
+
 .toggle-icon {
   position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 12px;
+  top: 38px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.toggle-icon:hover {
+  color: var(--text-primary);
 }
 
 /* Button */
 .btn {
-  width: 100%;
-  height: 45px;
-  background: var(--primary);
+  height: 48px;
+  padding: 0 24px;
+  background: var(--gradient-primary);
   border: none;
-  color: #fff;
+  color: white;
   font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.3s;
-}
-.btn:hover {
-  background: #45a049;
-}
-
-/* Loader under button */
-#formLoader .loader {
-  width: 28px;
-  height: 28px;
-  border-width: 4px;
-}
-
-/* Cards */
-.cards {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  width: 100%;
-  opacity: 0;
-  transition: opacity 0.5s;
-}
-.card {
-  background: var(--card);
-  flex: 1 1 320px;
-  padding: 20px;
   border-radius: var(--radius);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-}
-.card h3 {
-  margin-top: 0;
-  margin-bottom: 12px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-/* Tables */
-.table-wrapper {
-  overflow-x: auto;
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 12px;
-  font-size: 14px;
+
+.btn:active {
+  transform: translateY(0);
 }
-th,
-td {
-  border: 1px solid #eee;
-  padding: 8px;
+
+#formLoader {
+  display: none;
   text-align: center;
-}
-th {
-  background: var(--primary);
-  color: #fff;
-  font-weight: 600;
+  margin-top: 16px;
 }
 
-/* Progress bar */
-.progress {
-  background: #eee;
-  width: 100%;
-  height: 18px;
-  border-radius: 6px;
-  overflow: hidden;
-}
-.progress-bar {
-  height: 100%;
-  text-align: center;
-  color: #fff;
-  line-height: 18px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* Loader */
 .loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--primary);
+  border: 3px solid var(--border);
+  border-top: 3px solid var(--primary);
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   animation: spin 1s linear infinite;
-  margin: auto;
+  margin: 0 auto 12px;
 }
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-/* Floating visits badge */
-#visitsBadge {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  background: var(--primary);
-  color: #fff;
-  font-weight: 600;
-  font-size: 16px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+#formLoader p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: none;
+  gap: 24px;
+  margin-top: 32px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.dashboard-grid.show {
+  opacity: 1;
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.stat-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
+  font-size: 24px;
 }
 
-/* --- Attend/Bunk Simulation Section --- */
-#todayClassesCard {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 28px 24px;
-  max-width: 750px;
-  margin: 40px auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  border: 1px solid #e5e9f0;
-  transition: all 0.3s ease;
-}
-#todayClassesCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-#todayClassesCard h3 {
-  text-align: center;
-  color: #1b1b1b;
-  font-size: 20px;
+.stat-card-value {
+  font-size: 36px;
   font-weight: 700;
-  margin-bottom: 18px;
-  letter-spacing: 0.5px;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 8px;
 }
-.today-row {
+
+.stat-card-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Card */
+.card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+/* Table */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead {
+  background: var(--bg-primary);
+}
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover {
+  background: var(--bg-primary);
+}
+
+/* Progress Bar */
+.progress {
+  background: var(--border-light);
+  height: 24px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.badge-danger {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+/* Simulation Card */
+#todayClassesCard {
+  display: none;
+  margin-top: 24px;
+}
+
+.simulation-header {
+  display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.simulation-controls {
+  display: flex;
   gap: 12px;
-  flex-wrap: nowrap;  /* prevent vertical stacking */
-   margin-bottom: 16px;  /* <-- add this */
+}
+
+#resetTodayBtn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  display: none;
+}
+
+#resetTodayBtn:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--primary);
+}
+
+.today-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
 }
 
 .today-row select {
-  flex: 1 1 auto;      /* allow it to shrink if needed */
-  min-width: 150px;
+  height: 48px;
+  padding: 0 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.today-row select:hover {
+  border-color: var(--primary);
+}
+
+.today-row select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.btn-container {
+  display: flex;
+  gap: 12px;
 }
 
 .today-row .btn {
-  flex: 0 0 120px;
-  text-align: center;
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 0;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.attend-btn {
-  background: linear-gradient(135deg, #76d47b, #76ef7c);
-}
-.bunk-btn {
-  background: linear-gradient(135deg, #f87f7d, #f67b7b);
-}
-
-.attend-btn:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  background: #01ff5e;
-}
-.bunk-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(252, 2, 2, 0.15);
-  background: #fc0101;
-}
-.attend-btn.active {
-  background: #45a049 !important;
-}
-.bunk-btn.active {
-  background: #e63a3a !important;
-}
-
-#newOverallAttendance {
-  margin-top: 25px;
-  background: rgba(76, 175, 80, 0.1);
-  color: #2e7d32;
-  padding: 12px;
-  text-align: center;
-  font-size: 17px;
-  border-radius: 10px;
-  font-weight: 600;
-  box-shadow: inset 0 0 8px rgba(76,175,80,0.15);
-}
-.today-row .btn-container {
-  display: flex;
-  gap: 10px;
-  flex: 0 0 auto;      /* don't grow, stay side by side */
-}
-
-.today-row .btn-container .btn {
-  flex: 1;              /* equal width buttons */
+  height: 48px;
   min-width: 120px;
 }
 
+.attend-btn {
+  background: var(--gradient-success);
+}
 
-/* --- Responsive (Mobile) --- */
+.attend-btn:hover {
+  background: var(--success);
+}
+
+.attend-btn.active {
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-light);
+}
+
+.bunk-btn {
+  background: var(--gradient-danger);
+}
+
+.bunk-btn:hover {
+  background: var(--danger);
+}
+
+.bunk-btn.active {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-light);
+}
+
+#newOverallAttendance {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--primary-light);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Grid Layout */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .login-card {
+    padding: 32px 24px;
+    margin: 40px 16px;
+  }
+
+  .header-container {
+    padding: 0 16px;
+  }
+
+  header h2 {
+    font-size: 16px;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
   .today-row {
-    flex-direction: row;
-    flex-wrap:wrap;
-    align-items: center;
-     margin-bottom: 16px;  /* <-- add this */
+    grid-template-columns: 1fr;
   }
 
-  .today-row select {
-    flex:1 1 auto;
-    min-width:120px;
+  .btn-container {
+    width: 100%;
   }
 
-  .today-row .btn-container {
-    display: flex;
-    gap: 10px;
-    flex: 0 0 auto;
+  .today-row .btn {
+    flex: 1;
   }
-  .today-row .btn-container .btn {
-    flex: 1; /* each button takes equal space */
-    min-width: 100px; /* optional: minimum size */
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px;
   }
 }
 
 @media (max-width: 480px) {
-  /* .login-card {
-    padding: 24px 16px;
-  } */
-
-  .today-row {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 12px;
+  .login-card {
+    padding: 24px 20px;
   }
 
-  .today-row select {
-    flex: 1 1 auto;
-    min-width: 100px;
+  .stat-card-value {
+    font-size: 28px;
   }
 
-  .today-row .btn-container {
-    display: flex;
-    gap: 8px;
+  .card-header, .card-body {
+    padding: 16px;
   }
-  .today-row .btn-container .btn {
-    flex: 1; /* each button takes equal space */
-    min-width: 90px; /* optional: minimum size */
-  }
-  /* #visitsBadge {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  } */
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: var(--text-secondary);
+}
+
+.loading-state .loader {
+  margin-bottom: 16px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
 }
 
 </style>
 </head>
 <body>
+
 <header>
   <div class="header-container">
-    <h2>My Attendance Dashboard</h2>
-    <button id="logoutBtn">Logout</button>
+    <div class="header-title">
+      <div class="logo">📊</div>
+      <h2>My Attendance Dashboard</h2>
+    </div>
+    <div class="header-actions">
+      <div id="visitsBadge">
+        <span>👥</span>
+        <span id="visitsCount">0</span>
+      </div>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </div>
 </header>
 
-<!-- Floating visits badge -->
-<div id="visitsBadge" style="display:none;">0</div>
-
 <div class="container">
+  <!-- Login Card -->
   <div class="login-card" id="loginCard">
-    <h3>Student Login</h3>
+    <div class="login-header">
+      <div class="login-icon">🎓</div>
+      <h3>Student Login</h3>
+      <p>Enter your credentials to view your attendance</p>
+    </div>
     <form id="loginForm" autocomplete="on">
       <div class="field">
-        <input type="text" name="username" placeholder="Student ID" required aria-label="Student ID">
+        <label for="username">Student ID</label>
+        <input type="text" name="username" id="username" placeholder="Enter your student ID" required>
       </div>
       <div class="field password-field">
-        <input type="password" name="password" placeholder="Password" required id="passwordField" aria-label="Password">
-        <span id="togglePassword" class="toggle-icon" title="Show / Hide password">
-          <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <label for="passwordField">Password</label>
+        <input type="password" name="password" id="passwordField" placeholder="Enter your password" required>
+        <span id="togglePassword" class="toggle-icon">
+          <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
           </svg>
-          <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+          <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
             <path d="M3 3l18 18"/>
-            <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 012.197-3.476"/>
-            <path d="M21.3 15.3A9.968 9.968 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 014.202-5.661"/>
+            <path d="M10.584 10.587a2 2 0 002.828 2.826"/>
+            <path d="M9.363 5.365A9.466 9.466 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.963 9.963 0 01-1.363 2.419m-2.756 2.755A9.464 9.464 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.963 9.963 0 013.13-4.49"/>
           </svg>
         </span>
       </div>
-      <button type="submit" class="btn">Get Attendance</button>
-      <div id="formLoader" style="margin-top:16px; display:none; text-align:center;">
+      <button type="submit" class="btn">
+        <span>Sign In</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+      <div id="formLoader">
         <div class="loader"></div>
-        <p style="color:var(--muted); margin-top:8px;">Fetching attendance...<br>Wait for a minute....</p>
+        <p>Fetching your attendance data...<br>Please wait a moment</p>
       </div>
     </form>
   </div>
 
-  <div class="cards" id="dashboardCards" style="display:flex;">
+  <!-- Dashboard -->
+  <div class="dashboard-grid" id="dashboardCards">
+    <!-- Stats Cards -->
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <!-- Academic Attendance -->
     <div class="card" id="academicCard">
-      <h3>Academic Attendance</h3>
-      <div class="table-wrapper" id="academicTable" style="color:var(--muted);">Login to fetch attendance</div>
+      <div class="card-header">
+        <h3>
+          <span>📚</span>
+          Academic Attendance
+        </h3>
+      </div>
+      <div class="card-body">
+        <div id="academicTable" class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <p>Login to fetch attendance data</p>
+        </div>
+      </div>
     </div>
+
+    <!-- Biometric Attendance -->
     <div class="card" id="biometricCard">
-      <h3>Biometric Attendance</h3>
-      <div class="table-wrapper" id="biometricTable" style="color:var(--muted);">Login to fetch attendance</div>
+      <div class="card-header">
+        <h3>
+          <span>🔐</span>
+          Biometric Attendance
+        </h3>
+      </div>
+      <div class="card-body">
+        <div id="biometricTable" class="empty-state">
+          <div class="empty-state-icon">👤</div>
+          <p>Login to fetch attendance data</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance Simulation -->
+    <div class="card" id="todayClassesCard">
+      <div class="card-header">
+        <h3>
+          <span>🎯</span>
+          Attendance Simulator
+        </h3>
+        <div class="simulation-controls">
+          <button id="resetTodayBtn" title="Reset selections">↻</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="todayClassesContainer"></div>
+        <div id="newOverallAttendance"></div>
+      </div>
     </div>
   </div>
-
-  <div class="card" id="todayClassesCard" style="margin-top:20px; display:none;">
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <!-- <button id="addTodayClassesBtn" class="btn" style="display:none;">check by today classes</button> -->
-      <button id="resetTodayBtn" title="Reset Today's Selection"
-        style="background:transparent; border:none; font-size:20px; cursor:pointer; margin-left:5px; display:none;">
-        &#8635;
-      </button>
-    </div>
-    <div id="todayClassesContainer" style="margin-top:16px; display:none;"></div>
-    <p id="newOverallAttendance" style="margin-top:12px; font-weight:600;"></p>
-  </div>
-
 </div>
 
 <script>
-const addTodayBtn = document.getElementById('addTodayClassesBtn');
+const passwordField = document.getElementById('passwordField');
+const togglePassword = document.getElementById('togglePassword');
+const eyeOpen = document.getElementById('eyeOpen');
+const eyeClosed = document.getElementById('eyeClosed');
+const formLoader = document.getElementById('formLoader');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginCard = document.getElementById('loginCard');
+const dashboardCards = document.getElementById('dashboardCards');
+const visitsBadge = document.getElementById('visitsBadge');
+const visitsCount = document.getElementById('visitsCount');
 const resetBtn = document.getElementById('resetTodayBtn');
 const todayContainer = document.getElementById('todayClassesContainer');
 const newOverallEl = document.getElementById('newOverallAttendance');
 
-function createTodayRows() {
-  todayContainer.style.display = 'block';
-  todayContainer.innerHTML = '';
-
-  const subjectEls = document.querySelectorAll('#academicTable table tr td:nth-child(2)');
-  const subjects = Array.from(subjectEls).map(el => el.textContent.trim()).filter(Boolean);
-  if(subjects.length === 0) { alert('No subjects found!'); return; }
-
-  for(let i=0; i<6; i++){
-    const row = document.createElement('div');
-    row.className = 'today-row'; 
-    row.style.display = 'flex';
-    row.style.alignItems = 'center';
-    row.style.gap = '10px';
-    row.style.flexWrap = 'wrap';
-
-    // Subject dropdown (input first)
-    const select = document.createElement('select');
-    select.className = 'today-select';
-    subjects.forEach(s => { 
-      const o = document.createElement('option'); 
-      o.value = s; 
-      o.text = s; 
-      select.add(o); 
-    });
-    select.style.flex = '1 1 40%';
-    select.onchange = calculateNewOverall;
-
-    // Attend button
-    const attendBtn = document.createElement('button');
-    attendBtn.textContent = 'Attend';
-    attendBtn.dataset.status = '';
-    attendBtn.className = 'btn attend-btn';
-    // attendBtn.style.flex = '0 0 25%';
-    attendBtn.onclick = () => { 
-      attendBtn.dataset.status = 'attend';
-      bunkBtn.dataset.status = '';
-      attendBtn.classList.add("active");
-      bunkBtn.classList.remove("active");
-      calculateNewOverall();
-    };
-
-    // Bunk button
-    const bunkBtn = document.createElement('button');
-    bunkBtn.textContent = 'Bunk';
-    bunkBtn.dataset.status = '';
-    bunkBtn.className = 'btn bunk-btn';
-    // bunkBtn.style.flex = '0 0 25%';
-   bunkBtn.onclick = () => { 
-      bunkBtn.dataset.status = 'bunk';
-      attendBtn.dataset.status = '';
-      bunkBtn.classList.add("active");
-      attendBtn.classList.remove("active");
-      calculateNewOverall();
-    };
-
-  row.appendChild(select);
-
-  const btnContainer = document.createElement('div');
-  btnContainer.className = 'btn-container';
-  btnContainer.appendChild(attendBtn);
-  btnContainer.appendChild(bunkBtn);
-  row.appendChild(btnContainer);
-
-
-    todayContainer.appendChild(row);
-  }
-
-  newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
-}
-
-
-
-// Add Today Classes button
-// addTodayBtn.addEventListener('click', createTodayRows);
-
-// RESET button: reset all selections
-resetBtn.addEventListener('click', () => {
-  const rows = todayContainer.querySelectorAll('.today-row');
-  rows.forEach(row => {
-    const attendBtn = row.querySelector('.attend-btn');
-    const bunkBtn = row.querySelector('.bunk-btn');
-    const select = row.querySelector('select');
-
-    attendBtn.dataset.status = '';
-    bunkBtn.dataset.status = '';
-    attendBtn.classList.remove("active");  
-    bunkBtn.classList.remove("active");
-
-    // Reset dropdown to first option
-    if(select.options.length > 0) select.selectedIndex = 0;
-  });
-
-  newOverallEl.textContent = "New Overall Academic Attendance After Today: --";
+togglePassword.addEventListener('click', () => {
+  const type = passwordField.type === 'password' ? 'text' : 'password';
+  passwordField.type = type;
+  eyeOpen.style.display = type === 'password' ? 'block' : 'none';
+  eyeClosed.style.display = type === 'password' ? 'none' : 'block';
 });
 
-// Function to calculate new overall academic attendance
-function calculateNewOverall(){
-  const rows = todayContainer.querySelectorAll('.today-row');
-  if(rows.length === 0) return;
-
-  const subjectMap = {};
-  const trEls = document.querySelectorAll('#academicTable table tr');
-  trEls.forEach((tr,i)=>{
-    if(i===0) return;
-    const tds = tr.querySelectorAll('td');
-    const sub = tds[1].textContent.trim();
-    subjectMap[sub] = {
-      attended: Number(tds[2].textContent),
-      total: Number(tds[3].textContent)
-    };
-  });
-
-  rows.forEach(row => {
-    const attendBtn = row.querySelector('.attend-btn');
-    const bunkBtn = row.querySelector('.bunk-btn');
-    const select = row.querySelector('select');
-    const sub = select.value;
-    if(!subjectMap[sub]) return;
-
-    if(attendBtn.dataset.status==='attend'){
-      subjectMap[sub].attended += 1;
-      subjectMap[sub].total += 1;
-    } else if(bunkBtn.dataset.status==='bunk'){
-      subjectMap[sub].total += 1;
-    }
-  });
-
-  let sumPct = 0;
-  let count = 0;
-  for(const sub in subjectMap){
-    const s = subjectMap[sub];
-    const pct = s.total ? (s.attended / s.total) * 100 : 0;
-    sumPct += pct;
-    count++;
-  }
-  const newAvg = (sumPct / count).toFixed(2);
-  newOverallEl.textContent = `New Overall Academic Attendance After Today: ${newAvg}%`;
-}
-</script>
-
-</div>
-
-<script>
-const passwordField=document.getElementById('passwordField');
-const togglePassword=document.getElementById('togglePassword');
-const eyeOpen=document.getElementById('eyeOpen');
-const eyeClosed=document.getElementById('eyeClosed');
-const formLoader=document.getElementById('formLoader');
-const logoutBtn=document.getElementById('logoutBtn');
-const loginCard=document.getElementById('loginCard');
-const dashboardCards=document.getElementById('dashboardCards');
-const visitsBadge=document.getElementById('visitsBadge');
-
-dashboardCards.style.display='none';
-
-togglePassword.addEventListener('click',()=>{
-  const type=passwordField.type==='password'?'text':'password';
-  passwordField.type=type;
-  eyeOpen.style.display=type==='password'?'block':'none';
-  eyeClosed.style.display=type==='password'?'none':'block';
-});
-
-function showDashboard(studentId){
-  loginCard.style.display='none';
-  dashboardCards.style.display='flex';
-  dashboardCards.style.opacity='1';
-  document.querySelector('header h2').textContent = `${studentId} - My Attendance Dashboard`;
-  logoutBtn.style.display='block';
+function showDashboard(studentId) {
+  loginCard.style.display = 'none';
+  dashboardCards.style.display = 'block';
+  setTimeout(() => {
+    dashboardCards.classList.add('show');
+  }, 10);
+  document.querySelector('header h2').textContent = `${studentId}'s Dashboard`;
+  logoutBtn.style.display = 'block';
   logoutBtn.onclick = () => { location.reload(); };
-
-  // Show Today Classes card and buttons
-  const todayCard = document.getElementById('todayClassesCard');
-  const addBtn = document.getElementById('addTodayClassesBtn');
-  const resetBtn = document.getElementById('resetTodayBtn');
-
-  todayCard.style.display = 'block';   // entire card visible
-  //addBtn.style.display = 'inline-block';
-  resetBtn.style.display = 'inline-block';
-
-  // Show visits badge
   visitsBadge.style.display = 'flex';
+  document.getElementById('todayClassesCard').style.display = 'block';
+  resetBtn.style.display = 'block';
 }
 
-
-async function updateTodayVisits(){
+async function updateTodayVisits() {
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
-    if(!res.ok) throw new Error('Failed to fetch today visits');
+    if (!res.ok) throw new Error('Failed to fetch today visits');
     const data = await res.json();
-    visitsBadge.textContent = data.today_logins || 0;
-  } catch(err){
+    visitsCount.textContent = data.today_logins || 0;
+  } catch (err) {
     console.error('Error fetching today visits:', err);
-    visitsBadge.textContent = '?';
+    visitsCount.textContent = '?';
   }
 }
 
-document.getElementById('loginForm').addEventListener('submit', async e=>{
+document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const username = formData.get('username');
@@ -697,127 +889,300 @@ document.getElementById('loginForm').addEventListener('submit', async e=>{
       body: new URLSearchParams({ username, password })
     });
 
-    if(!res.ok) throw new Error('Network response was not ok');
+    if (!res.ok) throw new Error('Network response was not ok');
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
 
     showDashboard(username);
-    academicEl.innerHTML = '<div class="loader"></div> Loading Academic Attendance...';
+    academicEl.innerHTML = '<div class="loading-state"><div class="loader"></div><p>Loading Academic Attendance...</p></div>';
     biometricEl.innerHTML = '';
 
-    while(true){
-      const {done,value}=await reader.read();
-      if(done) break;
-      buffer+=decoder.decode(value,{stream:true});
-      let lines=buffer.split('\n');
-      buffer=lines.pop();
-      for(const line of lines){
-        if(!line.trim()) continue;
-        try{
-          const obj=JSON.parse(line);
-          if(obj.step==='academic') renderAcademic(obj.data);
-          if(obj.step==='biometric') renderBiometric(obj.data);
-        }catch(err){console.error('Invalid JSON:',line);}
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const obj = JSON.parse(line);
+          if (obj.step === 'academic') renderAcademic(obj.data);
+          if (obj.step === 'biometric') renderBiometric(obj.data);
+        } catch (err) { console.error('Invalid JSON:', line); }
       }
     }
 
-    if(buffer.trim()){
-      try{
-        const obj=JSON.parse(buffer);
-        if(obj.step==='academic') renderAcademic(obj.data);
-        if(obj.step==='biometric') renderBiometric(obj.data);
-      }catch(err){console.error('Invalid JSON:',buffer);}
+    if (buffer.trim()) {
+      try {
+        const obj = JSON.parse(buffer);
+        if (obj.step === 'academic') renderAcademic(obj.data);
+        if (obj.step === 'biometric') renderBiometric(obj.data);
+      } catch (err) { console.error('Invalid JSON:', buffer); }
     }
 
-    // Update today visits badge after fetching data
     updateTodayVisits();
 
-  } catch(err){
+  } catch (err) {
     console.error(err);
-    alert('Network error or wrong username/password. Please try again.');
-    academicEl.innerHTML='';
-    biometricEl.innerHTML='';
+    alert('Network error or wrong credentials. Please try again.');
+    academicEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Failed to load data</p></div>';
+    biometricEl.innerHTML = '';
   } finally {
-    formLoader.style.display='none';
+    formLoader.style.display = 'none';
   }
 });
 
-function renderAcademic(data){
-  if(!Array.isArray(data)||data.length===0){
-    document.getElementById('academicTable').innerHTML='<em>No academic data available</em>';
+function renderAcademic(data) {
+  if (!Array.isArray(data) || data.length === 0) {
+    document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     return;
   }
-  let total=0;
-  data.forEach(sub=>total+=Number(sub.percentage)||0);
-  const avg=(total/data.length).toFixed(2);
-  let html=`<p><strong>Average Academic Attendance: ${avg}%</strong></p>`;
-  html+=`<div class="table-wrapper"><table><tr><th>Course Code</th><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>To Reach 75%</th><th>Can Bunk</th><th>Progress</th></tr>`;
-  data.forEach(sub=>{
-    const pct=Number(sub.percentage)||0;
-    const bg=pct>=75?'green':'red';
-    html+=`<tr><td>${escapeHtml(sub.courseCode)}</td><td>${escapeHtml(sub.subject)}</td><td>${escapeHtml(sub.attended)}</td><td>${escapeHtml(sub.total)}</td><td>${pct.toFixed(2)}%</td><td>${escapeHtml(sub.classesToAttendFor75)}</td><td>${escapeHtml(sub.classesCanBunk)}</td><td><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(2)}%</div></div></td></tr>`;
-  });
-  html+='</table></div>';
-  document.getElementById('academicTable').innerHTML=html;
-  // Immediately show today inputs
-  document.getElementById('todayClassesCard').style.display = 'block';
-  document.getElementById('resetTodayBtn').style.display = 'inline-block';
-  createTodayRows();
 
+  let total = 0;
+  data.forEach(sub => total += Number(sub.percentage) || 0);
+  const avg = (total / data.length).toFixed(2);
+
+  // Update stats cards
+  const statsGrid = document.getElementById('statsGrid');
+  statsGrid.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div>
+          <div class="stat-card-title">Average Attendance</div>
+          <div class="stat-card-value">${avg}%</div>
+          <div class="stat-card-label">Academic Performance</div>
+        </div>
+        <div class="stat-card-icon" style="background: var(--primary-light); color: var(--primary);">📊</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div>
+          <div class="stat-card-title">Total Subjects</div>
+          <div class="stat-card-value">${data.length}</div>
+          <div class="stat-card-label">Enrolled Courses</div>
+        </div>
+        <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div>
+          <div class="stat-card-title">Status</div>
+          <div class="stat-card-value">${avg >= 75 ? '✓' : '⚠'}</div>
+          <div class="stat-card-label">${avg >= 75 ? 'On Track' : 'Needs Attention'}</div>
+        </div>
+        <div class="stat-card-icon" style="background: ${avg >= 75 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${avg >= 75 ? 'var(--success)' : 'var(--danger)'};">${avg >= 75 ? '✓' : '!'}</div>
+      </div>
+    </div>
+  `;
+
+  let html = '<div class="table-wrapper"><table><thead><tr>';
+  html += '<th>Course Code</th><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>To 75%</th><th>Can Bunk</th><th>Progress</th>';
+  html += '</tr></thead><tbody>';
+
+  data.forEach(sub => {
+    const pct = Number(sub.percentage) || 0;
+    const bg = pct >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
+    html += `<tr>
+      <td><strong>${escapeHtml(sub.courseCode)}</strong></td>
+      <td>${escapeHtml(sub.subject)}</td>
+      <td>${escapeHtml(sub.attended)}</td>
+      <td>${escapeHtml(sub.total)}</td>
+      <td><span class="badge ${pct >= 75 ? 'badge-success' : 'badge-danger'}">${pct.toFixed(2)}%</span></td>
+      <td>${escapeHtml(sub.classesToAttendFor75)}</td>
+      <td>${escapeHtml(sub.classesCanBunk)}</td>
+      <td><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(0)}%</div></div></td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  document.getElementById('academicTable').innerHTML = html;
+
+  createTodayRows();
 }
 
-function renderBiometric(data){
-  if(!data){
-    document.getElementById('biometricTable').innerHTML='<em>No biometric data available</em>';
+function renderBiometric(data) {
+  if (!data) {
+    document.getElementById('biometricTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No biometric data available</p></div>';
     return;
   }
-  const pct=Number(data.percentage)||0;
-  const totalDays = Number(data.totalDays)||0;
-  const presentCount = Number(data.presentCount)||0;
 
-    // Calculate leaves can take & days to attend for 75%
-  const targetPct = 75;
-  const target = targetPct / 100;
+  const pct = Number(data.percentage) || 0;
+  const totalDays = Number(data.totalDays) || 0;
+  const presentCount = Number(data.presentCount) || 0;
 
-  // Days needed to reach target (future total increases)
-  const daysToAttend = Math.ceil(
-    ((target * totalDays) - presentCount) / (1 - target)
-  );
+  const target = 0.75;
+  const daysToAttend = Math.max(0, Math.ceil(((target * totalDays) - presentCount) / (1 - target)));
+  const leavesCanTake = Math.max(0, Math.floor((presentCount - (target * totalDays)) / target));
 
-  // Max days you can be absent while staying ≥ target
-  const leavesCanTake = Math.floor(
-    (presentCount - (target * totalDays)) / target
-  );
+  const bg = pct >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
 
-  const safeDaysToAttend = daysToAttend > 0 ? daysToAttend : 0;
-  const safeLeaves = leavesCanTake > 0 ? leavesCanTake : 0;
-
-
-  const bg=pct>=75?'green':'red';
-  document.getElementById('biometricTable').innerHTML=`
-    <p><strong>Total Days:</strong> ${escapeHtml(totalDays)}</p>
-    <p><strong>Present Days:</strong> ${escapeHtml(presentCount)}</p>
-    <p><strong>Attendance Percentage:</strong> ${pct}%</p>
-    <p><strong>Days to attend for 75%:</strong> ${safeDaysToAttend}</p>
-    <p><strong>Leaves can take:</strong> ${safeLeaves}</p>
-    <div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct}%</div></div>
+  document.getElementById('biometricTable').innerHTML = `
+    <div style="display: grid; gap: 16px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">${totalDays}</div>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Total Days</div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: var(--success);">${presentCount}</div>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Present Days</div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: var(--primary);">${daysToAttend}</div>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">To Reach 75%</div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: var(--warning);">${leavesCanTake}</div>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Can Bunk</div>
+        </div>
+      </div>
+      <div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+          <span style="font-weight: 600; color: var(--text-primary);">Attendance Percentage</span>
+          <span style="font-weight: 700; color: ${pct >= 75 ? 'var(--success)' : 'var(--danger)'};">${pct.toFixed(2)}%</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(0)}%</div>
+        </div>
+      </div>
+    </div>
   `;
 }
 
-function escapeHtml(v){
-  if(v===undefined||v===null) return '';
+function createTodayRows() {
+  todayContainer.innerHTML = '';
+
+  const subjectEls = document.querySelectorAll('#academicTable table tbody tr td:nth-child(2)');
+  const subjects = Array.from(subjectEls).map(el => el.textContent.trim()).filter(Boolean);
+  if (subjects.length === 0) return;
+
+  for (let i = 0; i < 6; i++) {
+    const row = document.createElement('div');
+    row.className = 'today-row';
+
+    const select = document.createElement('select');
+    subjects.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s;
+      o.text = s;
+      select.add(o);
+    });
+    select.onchange = calculateNewOverall;
+
+    const attendBtn = document.createElement('button');
+    attendBtn.textContent = 'Attend';
+    attendBtn.dataset.status = '';
+    attendBtn.className = 'btn attend-btn';
+    attendBtn.onclick = () => {
+      attendBtn.dataset.status = 'attend';
+      bunkBtn.dataset.status = '';
+      attendBtn.classList.add('active');
+      bunkBtn.classList.remove('active');
+      calculateNewOverall();
+    };
+
+    const bunkBtn = document.createElement('button');
+    bunkBtn.textContent = 'Bunk';
+    bunkBtn.dataset.status = '';
+    bunkBtn.className = 'btn bunk-btn';
+    bunkBtn.onclick = () => {
+      bunkBtn.dataset.status = 'bunk';
+      attendBtn.dataset.status = '';
+      bunkBtn.classList.add('active');
+      attendBtn.classList.remove('active');
+      calculateNewOverall();
+    };
+
+    const btnContainer = document.createElement('div');
+    btnContainer.className = 'btn-container';
+    btnContainer.appendChild(attendBtn);
+    btnContainer.appendChild(bunkBtn);
+
+    row.appendChild(select);
+    row.appendChild(btnContainer);
+    todayContainer.appendChild(row);
+  }
+
+  newOverallEl.textContent = 'Select attend or bunk for each class to see predicted attendance';
+}
+
+resetBtn.addEventListener('click', () => {
+  const rows = todayContainer.querySelectorAll('.today-row');
+  rows.forEach(row => {
+    const attendBtn = row.querySelector('.attend-btn');
+    const bunkBtn = row.querySelector('.bunk-btn');
+    const select = row.querySelector('select');
+
+    attendBtn.dataset.status = '';
+    bunkBtn.dataset.status = '';
+    attendBtn.classList.remove('active');
+    bunkBtn.classList.remove('active');
+
+    if (select.options.length > 0) select.selectedIndex = 0;
+  });
+
+  newOverallEl.textContent = 'Select attend or bunk for each class to see predicted attendance';
+});
+
+function calculateNewOverall() {
+  const rows = todayContainer.querySelectorAll('.today-row');
+  if (rows.length === 0) return;
+
+  const subjectMap = {};
+  const trEls = document.querySelectorAll('#academicTable table tbody tr');
+  trEls.forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    const sub = tds[1].textContent.trim();
+    subjectMap[sub] = {
+      attended: Number(tds[2].textContent),
+      total: Number(tds[3].textContent)
+    };
+  });
+
+  rows.forEach(row => {
+    const attendBtn = row.querySelector('.attend-btn');
+    const bunkBtn = row.querySelector('.bunk-btn');
+    const select = row.querySelector('select');
+    const sub = select.value;
+    if (!subjectMap[sub]) return;
+
+    if (attendBtn.dataset.status === 'attend') {
+      subjectMap[sub].attended += 1;
+      subjectMap[sub].total += 1;
+    } else if (bunkBtn.dataset.status === 'bunk') {
+      subjectMap[sub].total += 1;
+    }
+  });
+
+  let sumPct = 0;
+  let count = 0;
+  for (const sub in subjectMap) {
+    const s = subjectMap[sub];
+    const pct = s.total ? (s.attended / s.total) * 100 : 0;
+    sumPct += pct;
+    count++;
+  }
+  const newAvg = (sumPct / count).toFixed(2);
+  newOverallEl.textContent = `Predicted Overall Attendance: ${newAvg}%`;
+  newOverallEl.style.background = newAvg >= 75 ? 'var(--success-light)' : 'var(--danger-light)';
+  newOverallEl.style.color = newAvg >= 75 ? 'var(--success)' : 'var(--danger)';
+  newOverallEl.style.borderColor = newAvg >= 75 ? 'var(--success)' : 'var(--danger)';
+}
+
+function escapeHtml(v) {
+  if (v === undefined || v === null) return '';
   return String(v)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/\"/g,'&quot;')
-    .replace(/'/g,'&#39;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 </script>
 </body>
 </html>
-
-
-
