@@ -802,6 +802,16 @@ tr:hover {
   margin-bottom: 16px;
   opacity: 0.5;
 }
+/* Academic Attendance Table - 3D Horizontal Scroll Effect */
+.table-wrapper {
+  overflow-x: auto;
+  perspective: 600px;
+  position: relative;
+}
+.table-wrapper table {
+  transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+}
 
 </style>
 </head>
@@ -1112,7 +1122,7 @@ function renderAcademic(data) {
   `;
 
   let html = '<div class="table-scroll-hint">⬅️ Scroll to see more ⬅️</div><div class="table-wrapper"><table><thead><tr>';
-  html += '<th>Course Code</th><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>To 75%</th><th>Can Bunk</th><th>Progress</th>';
+  html += '<th>Course Code</th><th>Subject</th><th>Attended</th><th>Tot</th><th>Percentage</th><th>To 75%</th><th>Can Bunk</th><th>Progress</th>';
   html += '</tr></thead><tbody>';
 
   data.forEach(sub => {
@@ -1135,21 +1145,23 @@ function renderAcademic(data) {
 
   createTodayRows();
   setTimeout(() => {
-  const tableWrapper = document.querySelector('.table-wrapper');
-  function updateTableFade() {
-    if (!tableWrapper) return;
-    const atEnd = tableWrapper.scrollLeft + tableWrapper.clientWidth >= tableWrapper.scrollWidth - 2;
-    if (atEnd) {
-      tableWrapper.classList.add('scrolled-end');
-    } else {
-      tableWrapper.classList.remove('scrolled-end');
+    const tableWrapper = document.querySelector('.table-wrapper');
+    const table = tableWrapper?.querySelector('table');
+    function updateTable3D() {
+      if (!tableWrapper || !table) return;
+      const maxScroll = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+      const scrollX = tableWrapper.scrollLeft;
+      // The 3D "angle" based on scroll position
+      const percent = maxScroll ? scrollX / maxScroll : 0;
+      const angle = (percent - 0.5) * 18; // −9deg to +9deg
+      table.style.transform = `rotateY(${angle}deg)`;
     }
-  }
-  if (tableWrapper) {
-    tableWrapper.addEventListener('scroll', updateTableFade);
-    updateTableFade();
-  }
-}, 100);
+    if (tableWrapper && table) {
+      tableWrapper.addEventListener('scroll', updateTable3D);
+      updateTable3D();
+    }
+  }, 100);
+
 
 }
 
