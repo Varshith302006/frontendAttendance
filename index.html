@@ -45,30 +45,7 @@
 }
 
 /* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark Mode Colors */
-    --primary-light: #312e81;
-    --success-light: #064e3b;
-    --danger-light: #7f1d1d;
-    --warning-light: #78350f;
-    
-    /* Neutrals - Dark Mode */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    --border: #334155;
-    --border-light: #293548;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
-  }
-}
-
-[data-theme="dark"] {
+body[data-theme="dark"] {
   /* Dark Mode Colors */
   --primary-light: #312e81;
   --success-light: #064e3b;
@@ -161,7 +138,7 @@ header h2 {
   background: var(--bg-primary);
   border-radius: var(--radius);
   cursor: pointer;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
@@ -280,6 +257,7 @@ form {
   font-size: 15px;
   transition: all 0.2s;
   background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .field input:focus {
@@ -287,6 +265,7 @@ form {
   outline: none;
   background: var(--bg-secondary);
   box-shadow: 0 0 0 3px var(--primary-light);
+  color: var(--text-primary);
 }
 
 .password-field input {
@@ -908,23 +887,31 @@ const newOverallEl = document.getElementById('newOverallAttendance');
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
 
-// Theme Management
-const currentTheme = localStorage.getItem('theme') || 
-  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+// Theme Management - Initialize on page load
+function initTheme() {
+  const currentTheme = localStorage.getItem('theme') || 
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
-if (currentTheme === 'dark') {
-  document.documentElement.setAttribute('data-theme', 'dark');
-  themeIcon.textContent = '☀️';
+  if (currentTheme === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    themeIcon.textContent = '☀️';
+  } else {
+    document.body.removeAttribute('data-theme');
+    themeIcon.textContent = '🌙';
+  }
 }
 
+// Initialize theme immediately
+initTheme();
+
 themeToggle.addEventListener('click', () => {
-  const theme = document.documentElement.getAttribute('data-theme');
+  const theme = document.body.getAttribute('data-theme');
   if (theme === 'dark') {
-    document.documentElement.removeAttribute('data-theme');
+    document.body.removeAttribute('data-theme');
     themeIcon.textContent = '🌙';
     localStorage.setItem('theme', 'light');
   } else {
-    document.documentElement.setAttribute('data-theme', 'dark');
+    document.body.setAttribute('data-theme', 'dark');
     themeIcon.textContent = '☀️';
     localStorage.setItem('theme', 'dark');
   }
