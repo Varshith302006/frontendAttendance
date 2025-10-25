@@ -774,6 +774,21 @@ tr:hover {
   .card-header, .card-body {
     padding: 16px;
   }
+  /* Academic Attendance Table - 3D Horizontal Scroll Effect */
+.table-wrapper {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(40,37,86,0.10);
+  border-radius: 18px;
+  background: var(--bg-secondary);
+  padding: 8px 0;
+  perspective: 800px;
+}
+.table-wrapper table {
+  background: transparent;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 1px 10px rgba(25,40,60,0.06);
+}
 }
 
 /* Loading State */
@@ -802,21 +817,7 @@ tr:hover {
   margin-bottom: 16px;
   opacity: 0.5;
 }
-/* Academic Attendance Table - 3D Horizontal Scroll Effect */
-.table-wrapper {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(40,37,86,0.10);
-  border-radius: 18px;
-  background: var(--bg-secondary);
-  padding: 8px 0;
-  perspective: 800px;
-}
-.table-wrapper table {
-  background: transparent;
-  border-radius: 18px;
-  overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 1px 10px rgba(25,40,60,0.06);
-}
+
 .table-wrapper table {
   border-collapse: separate;
   border-spacing: 0;
