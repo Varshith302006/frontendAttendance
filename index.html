@@ -1128,6 +1128,10 @@ function renderBiometric(data) {
     <div style="display: grid; gap: 16px;">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
         <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+          <div style="font-size: 24px; font-weight: 700; color: ${pct >= 75 ? 'var(--success)' : 'var(--danger)'};">${pct.toFixed(2)}%</div>
+          <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Attendance %</div>
+        </div>
+        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
           <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">${totalDays}</div>
           <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Total Days</div>
         </div>
@@ -1145,10 +1149,6 @@ function renderBiometric(data) {
         </div>
       </div>
       <div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span style="font-weight: 600; color: var(--text-primary);">Attendance Percentage</span>
-          <span style="font-weight: 700; color: ${pct >= 75 ? 'var(--success)' : 'var(--danger)'};">${pct.toFixed(2)}%</span>
-        </div>
         <div class="progress">
           <div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(0)}%</div>
         </div>
@@ -1156,6 +1156,7 @@ function renderBiometric(data) {
     </div>
   `;
 }
+
 
 function createTodayRows() {
   todayContainer.innerHTML = '';
