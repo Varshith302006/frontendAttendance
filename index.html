@@ -467,9 +467,9 @@ form {
 }
 
 /* Table */
-/* .table-wrapper {
+.table-wrapper {
   overflow-x: auto;
-} */
+}
 
 table {
   width: 100%;
@@ -731,6 +731,34 @@ tr:hover {
 
   th, td {
     padding: 8px;
+  }
+}
+@media (max-width: 768px) {
+  .table-wrapper {
+    position: relative;
+  }
+  .table-wrapper::after {
+    content: '';
+    pointer-events: none;
+    display: block;
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 32px;
+    background: linear-gradient(to left, var(--bg-primary), transparent 75%);
+    z-index: 2;
+    opacity: 1;
+    transition: opacity 0.4s;
+  }
+  .table-wrapper.scrolled-end::after {
+    opacity: 0;
+  }
+  .table-scroll-hint {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 4px;
+    text-align: right;
+    padding-right: 8px;
+    display: block;
   }
 }
 
@@ -1083,7 +1111,7 @@ function renderAcademic(data) {
     </div>
   `;
 
-  let html = '<div class="table-wrapper"><table><thead><tr>';
+  let html = '<div class="table-scroll-hint">⬅️ Scroll to see more ⬅️</div><div class="table-wrapper"><table><thead><tr>';
   html += '<th>Course Code</th><th>Subject</th><th>Attended</th><th>Total</th><th>Percentage</th><th>To 75%</th><th>Can Bunk</th><th>Progress</th>';
   html += '</tr></thead><tbody>';
 
@@ -1106,6 +1134,23 @@ function renderAcademic(data) {
   document.getElementById('academicTable').innerHTML = html;
 
   createTodayRows();
+  setTimeout(() => {
+  const tableWrapper = document.querySelector('.table-wrapper');
+  function updateTableFade() {
+    if (!tableWrapper) return;
+    const atEnd = tableWrapper.scrollLeft + tableWrapper.clientWidth >= tableWrapper.scrollWidth - 2;
+    if (atEnd) {
+      tableWrapper.classList.add('scrolled-end');
+    } else {
+      tableWrapper.classList.remove('scrolled-end');
+    }
+  }
+  if (tableWrapper) {
+    tableWrapper.addEventListener('scroll', updateTableFade);
+    updateTableFade();
+  }
+}, 100);
+
 }
 
 function renderBiometric(data) {
