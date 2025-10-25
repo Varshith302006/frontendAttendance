@@ -1271,10 +1271,19 @@ function calculateNewOverall() {
     count++;
   }
   const newAvg = (sumPct / count).toFixed(2);
-  newOverallEl.textContent = `Predicted Overall Attendance: ${newAvg}%`;
+  const color = newAvg >= 75 ? 'var(--success)' : 'var(--danger)';
+  const bg = newAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
+  newOverallEl.innerHTML = `
+    Predicted Overall Attendance: ${newAvg}%<br>
+    <div class="progress" style="margin-top:16px;">
+      <div class="progress-bar" style="width:${newAvg}%;background:${bg};color: white;">
+        ${newAvg}%
+      </div>
+    </div>
+  `;
   newOverallEl.style.background = newAvg >= 75 ? 'var(--success-light)' : 'var(--danger-light)';
-  newOverallEl.style.color = newAvg >= 75 ? 'var(--success)' : 'var(--danger)';
-  newOverallEl.style.borderColor = newAvg >= 75 ? 'var(--success)' : 'var(--danger)';
+  newOverallEl.style.color = color;
+  newOverallEl.style.borderColor = color;
 }
 
 function escapeHtml(v) {
