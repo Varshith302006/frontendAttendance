@@ -20,7 +20,7 @@
   --warning-light: #fef3c7;
   --info: #06b6d4;
   
-  /* Neutrals */
+  /* Neutrals - Light Mode */
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --text-primary: #0f172a;
@@ -42,6 +42,51 @@
   --radius: 12px;
   --radius-lg: 16px;
   --radius-full: 9999px;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark Mode Colors */
+    --primary-light: #312e81;
+    --success-light: #064e3b;
+    --danger-light: #7f1d1d;
+    --warning-light: #78350f;
+    
+    /* Neutrals - Dark Mode */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --border-light: #293548;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+  }
+}
+
+[data-theme="dark"] {
+  /* Dark Mode Colors */
+  --primary-light: #312e81;
+  --success-light: #064e3b;
+  --danger-light: #7f1d1d;
+  --warning-light: #78350f;
+  
+  /* Neutrals - Dark Mode */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --border-light: #293548;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -108,6 +153,24 @@ header h2 {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--bg-primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--text-primary);
+  font-size: 20px;
+}
+.theme-toggle:hover {
+  background: var(--border);
+  transform: scale(1.05);
 }
 
 #visitsBadge {
@@ -222,7 +285,7 @@ form {
 .field input:focus {
   border-color: var(--primary);
   outline: none;
-  background: white;
+  background: var(--bg-secondary);
   box-shadow: 0 0 0 3px var(--primary-light);
 }
 
@@ -561,6 +624,7 @@ tr:hover {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-light);
+  background: var(--bg-secondary);
 }
 
 .btn-container {
@@ -718,6 +782,9 @@ tr:hover {
       <h2>My Attendance Dashboard</h2>
     </div>
     <div class="header-actions">
+      <button id="themeToggle" title="Toggle dark mode" style="display: flex !important;">
+        <span id="themeIcon">🌙</span>
+      </button>
       <div id="visitsBadge">
         <span>👥</span>
         <span id="visitsCount">0</span>
@@ -838,6 +905,30 @@ const visitsCount = document.getElementById('visitsCount');
 const resetBtn = document.getElementById('resetTodayBtn');
 const todayContainer = document.getElementById('todayClassesContainer');
 const newOverallEl = document.getElementById('newOverallAttendance');
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+// Theme Management
+const currentTheme = localStorage.getItem('theme') || 
+  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+if (currentTheme === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  themeIcon.textContent = '☀️';
+}
+
+themeToggle.addEventListener('click', () => {
+  const theme = document.documentElement.getAttribute('data-theme');
+  if (theme === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+    themeIcon.textContent = '🌙';
+    localStorage.setItem('theme', 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeIcon.textContent = '☀️';
+    localStorage.setItem('theme', 'dark');
+  }
+});
 
 togglePassword.addEventListener('click', () => {
   const type = passwordField.type === 'password' ? 'text' : 'password';
