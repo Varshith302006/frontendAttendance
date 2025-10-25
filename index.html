@@ -1059,6 +1059,33 @@ async function updateTodayVisits() {
     visitsCount.textContent = '?';
   }
 }
+// Caching System (10-minute expiration)
+// Caching System (10-minute expiration, cleared on tab close)
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
+function setCache(key, data) {
+  const record = { data, timestamp: Date.now() };
+  sessionStorage.setItem(key, JSON.stringify(record));
+}
+
+function getCache(key) {
+  const item = sessionStorage.getItem(key);
+  if (!item) return null;
+
+  try {
+    const record = JSON.parse(item);
+    if (Date.now() - record.timestamp < CACHE_DURATION) {
+      return record.data;
+    } else {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+  } catch (e) {
+    console.error("Cache parse error", e);
+    return null;
+  }
+}
+
 
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
@@ -1067,9 +1094,22 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
 
   formLoader.style.display = 'block';
-
   const academicEl = document.getElementById('academicTable');
   const biometricEl = document.getElementById('biometricTable');
+
+  const cacheKey = `attendance_${username}`;
+  const cachedData = getCache(cacheKey);
+  
+  if (cachedData) {
+    console.log("Loaded from cache:", cacheKey);
+    showDashboard(username);
+    renderAcademic(cachedData.academic);
+    renderBiometric(cachedData.biometric);
+    formLoader.style.display = "none";
+    updateTodayVisits();
+    return;
+  }
+
 
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
@@ -1082,6 +1122,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
+    let academicData = [];
+    let biometricData = {};
 
     showDashboard(username);
     academicEl.innerHTML = '<div class="loading-state"><div class="loader"></div><p>Loading Academic Attendance...</p></div>';
@@ -1091,33 +1133,26 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      let lines = buffer.split('\n');
+      const lines = buffer.split('\n');
       buffer = lines.pop();
       for (const line of lines) {
         if (!line.trim()) continue;
         try {
           const obj = JSON.parse(line);
-          if (obj.step === 'academic') renderAcademic(obj.data);
-          if (obj.step === 'biometric') renderBiometric(obj.data);
+          if (obj.step === 'academic') { academicData = obj.data; renderAcademic(obj.data); }
+          if (obj.step === 'biometric') { biometricData = obj.data; renderBiometric(obj.data); }
         } catch (err) { console.error('Invalid JSON:', line); }
       }
     }
 
-    if (buffer.trim()) {
-      try {
-        const obj = JSON.parse(buffer);
-        if (obj.step === 'academic') renderAcademic(obj.data);
-        if (obj.step === 'biometric') renderBiometric(obj.data);
-      } catch (err) { console.error('Invalid JSON:', buffer); }
-    }
-
+    // Save in cache for 10 minutes
+    setCache(cacheKey, { academic: academicData, biometric: biometricData });
     updateTodayVisits();
 
   } catch (err) {
     console.error(err);
-    alert('Network error or wrong credentials. Please try again.');
+    alert('Network error or wrong credentials.');
     academicEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Failed to load data</p></div>';
-    biometricEl.innerHTML = '';
   } finally {
     formLoader.style.display = 'none';
   }
