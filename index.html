@@ -895,11 +895,11 @@ body[data-theme="dark"] .table-wrapper th {
       <h3>Student Login</h3>
       <p>Enter your credentials to view your attendance</p>
     </div>
-    <!-- <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
+    <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
       Fetch Attendance Now
-    </button> -->
+    </button>
     
-    <!-- <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p> -->
+    <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p>
 
     <form id="loginForm" autocomplete="on">
       <div class="field">
@@ -938,9 +938,9 @@ body[data-theme="dark"] .table-wrapper th {
   <div class="dashboard-grid" id="dashboardCards">
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
-   <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
+   <!-- <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
           Fetch Attendance Now
-        </button>
+        </button> -->
     <!-- Academic Attendance -->
     <div class="card" id="academicCard">
       <div class="card-header">
@@ -992,27 +992,7 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 <script>
-  const OWNER_USERNAME = "24951A05DX";   // change owner username here
-  const OWNER_PASSWORD = "varshi2006";   // change owner password here
-
-  const loginBtn = document.getElementById("loginBtn");
-  const fetchBtn = document.getElementById("fetchBtn");
-
-  loginBtn.addEventListener("click", function () {
-    const user = document.getElementById("username").value.trim();
-    const pass = document.getElementById("passwordField").value.trim();
-
-    if (user === OWNER_USERNAME && pass === OWNER_PASSWORD) {
-      // ✅ Hide login section
-      document.getElementById("username").style.display = "none";
-      document.getElementById("passwordField").style.display = "none";
-      loginBtn.style.display = "none";
-
-      // ✅ Show fetch button
-      fetchBtn.style.display = "block";
-    }
-  });
-  document.getElementById("fetchBtn").addEventListener("click", async function () {
+    document.getElementById("fetchBtn").addEventListener("click", async function () {
     const status = document.getElementById("statusMsg");
     status.innerText = "Fetching attendance... please wait ⏳";
 
