@@ -1172,8 +1172,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         if (!line.trim()) continue;
         try {
           const obj = JSON.parse(line);
-          if (obj.step === 'academic') { academicData = obj.data; renderAcademic(obj.data); }
-          if (obj.step === 'biometric') { biometricData = obj.data; renderBiometric(obj.data); }
+          if (obj.step === 'academic') { academicData = obj.data; renderAcademic(obj.data || obj.academic_data); }
+          if (obj.step === 'biometric') { biometricData = obj.data; renderBiometric(obj.data || obj.biometric_data); }
         } catch (err) { console.error('Invalid JSON:', line); }
       }
     }
