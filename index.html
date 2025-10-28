@@ -1171,6 +1171,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       for (const line of lines) {
         if (!line.trim()) continue;
         try {
+           console.log("STREAM RECEIVED →", obj); 
           const obj = JSON.parse(line);
           if (obj.step === 'academic') { academicData = obj.data; renderAcademic(obj.data); }
           if (obj.step === 'biometric') { biometricData = obj.data; renderBiometric(obj.data); }
