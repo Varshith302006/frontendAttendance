@@ -899,7 +899,7 @@ body[data-theme="dark"] .table-wrapper th {
       Fetch Attendance Now
     </button> -->
     
-    <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p>
+    <!-- <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p> -->
 
     <form id="loginForm" autocomplete="on">
       <div class="field">
@@ -922,6 +922,9 @@ body[data-theme="dark"] .table-wrapper th {
         </span>
       </div>
       <button type="submit" class="btn">
+        <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          Fetch Attendance Now
+        </button>
         <span>Sign In</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -990,6 +993,26 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 <script>
+  const OWNER_USERNAME = "24951A05DX";   // change owner username here
+  const OWNER_PASSWORD = "varshi2006";   // change owner password here
+
+  const loginBtn = document.getElementById("loginBtn");
+  const fetchBtn = document.getElementById("fetchBtn");
+
+  loginBtn.addEventListener("click", function () {
+    const user = document.getElementById("user").value.trim();
+    const pass = document.getElementById("pass").value.trim();
+
+    if (user === OWNER_USERNAME && pass === OWNER_PASSWORD) {
+      // ✅ Hide login section
+      document.getElementById("user").style.display = "none";
+      document.getElementById("pass").style.display = "none";
+      loginBtn.style.display = "none";
+
+      // ✅ Show fetch button
+      fetchBtn.style.display = "block";
+    }
+  });
   document.getElementById("fetchBtn").addEventListener("click", async function () {
     const status = document.getElementById("statusMsg");
     status.innerText = "Fetching attendance... please wait ⏳";
