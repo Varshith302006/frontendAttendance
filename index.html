@@ -895,6 +895,12 @@ body[data-theme="dark"] .table-wrapper th {
       <h3>Student Login</h3>
       <p>Enter your credentials to view your attendance</p>
     </div>
+    <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
+      Fetch Attendance Now
+    </button>
+    
+    <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p>
+
     <form id="loginForm" autocomplete="on">
       <div class="field">
         <label for="username">Student ID</label>
@@ -983,6 +989,26 @@ body[data-theme="dark"] .table-wrapper th {
     </div>
   </div>
 </div>
+<script>
+  document.getElementById("fetchBtn").addEventListener("click", async function () {
+    const status = document.getElementById("statusMsg");
+    status.innerText = "Fetching attendance... please wait ⏳";
+
+    try {
+      const res = await fetch("https://attendance-4rm8.onrender.com/run-cron");
+      const data = await res.json();
+
+      if (data.success) {
+        status.innerText = "✅ Attendance fetched successfully!";
+      } else {
+        status.innerText = "⚠️ Error: " + data.message;
+      }
+    } catch (err) {
+      status.innerText = "❌ Request failed. Check console/logs.";
+      console.error(err);
+    }
+  });
+</script>
 
 
 <script>
