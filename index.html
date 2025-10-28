@@ -895,7 +895,6 @@ body[data-theme="dark"] .table-wrapper th {
       <h3>Student Login</h3>
       <p>Enter your credentials to view your attendance</p>
     </div>
-    <div id="liveLogs" style="margin-top:10px;font-weight:500;"></div>
     <form id="loginForm" autocomplete="on">
       <div class="field">
         <label for="username">Student ID</label>
@@ -927,7 +926,6 @@ body[data-theme="dark"] .table-wrapper th {
         <p>Fetching your attendance data...<br>Please wait a moment</p>
       </div>
     </form>
-    <div id="status" style="margin-top:10px;font-weight:500;"></div>
   </div>
 
   <!-- Dashboard -->
@@ -985,53 +983,7 @@ body[data-theme="dark"] .table-wrapper th {
     </div>
   </div>
 </div>
-<script>
-const logEl = document.getElementById('liveLogs');
 
-function addLog(msg){ logEl.innerHTML += `✔️ ${msg}<br>`; }
-function clearLogs(){ logEl.innerHTML = ''; }
-
-document.getElementById('loginForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  clearLogs();
-  addLog('Connecting to Samvidha server...');
-  addLog('Logging into Samvidha portal...');
-
-  try {
-    const roll = document.getElementById('username').value;
-    const password = document.getElementById('passwordField').value;
-
-    const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: roll, password })
-    });
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-
-    while(true){
-      const { value, done } = await reader.read();
-      if(done){
-        addLog('All data successfully fetched ✅');
-        break;
-      }
-      const text = decoder.decode(value).trim();
-      try {
-        const json = JSON.parse(text);
-        if(json.step === 'academic') addLog('Academic data received');
-        else if(json.step === 'biometric') addLog('Biometric data received');
-      } catch(e) {
-        addLog(text);
-      }
-    }
-
-  } catch(err){
-    addLog('Error fetching attendance ❌');
-  }
-});
-
-</script>
 
 <script>
 const passwordField = document.getElementById('passwordField');
