@@ -936,12 +936,13 @@ body[data-theme="dark"] .table-wrapper th {
      
   <!-- Dashboard -->
   <div class="dashboard-grid" id="dashboardCards">
+    <button id="fetchBtn" style="display: none; padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
+      Fetch Attendance Now
+    </button>
+    <p id="statusMsg"></p>
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
-   <!-- <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
-          Fetch Attendance Now
-        </button> -->
-    <!-- Academic Attendance -->
+      <!-- Academic Attendance -->
     <div class="card" id="academicCard">
       <div class="card-header">
         <h3>
@@ -1079,7 +1080,17 @@ function showDashboard(studentId) {
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
+
+  // ---- Only show button for specific users ----
+  const fetchBtn = document.getElementById('fetchBtn');
+  const allowedUsers = ['24951A05DX']; // put allowed usernames here
+  if (allowedUsers.includes(studentId)) {
+    fetchBtn.style.display = 'inline-block'; // show button
+  } else {
+    fetchBtn.style.display = 'none'; // hide button
+  }
 }
+
 
 async function updateTodayVisits() {
   try {
