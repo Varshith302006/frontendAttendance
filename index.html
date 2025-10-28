@@ -996,22 +996,30 @@ body[data-theme="dark"] .table-wrapper th {
 <script>
     document.getElementById("fetchBtn").addEventListener("click", async function () {
     const status = document.getElementById("statusMsg");
-    status.innerText = "Fetching attendance... please wait ⏳";
-
+    status.innerHTML = "Fetching attendance... please wait ⏳";
+  
     try {
-      const res = await fetch("https://attendance-4rm8.onrender.com/run-cron");
+      const res = await fetch("https://your-backend-url/run-cron");
       const data = await res.json();
-
+  
       if (data.success) {
-        status.innerText = "✅ Attendance fetched successfully!";
+        // Display stats
+        status.innerHTML = `
+          <b>Attendance Refresh Complete!</b><br>
+          <span style="color: green;">✅ Success: ${data.succeeded}</span><br>
+          <span style="color: red;">❌ Failures: ${data.skipped}</span><br>
+          <span>Total processed: ${data.processed}</span><br>
+          <span>Time: ${data.time_seconds} sec</span>
+        `;
       } else {
-        status.innerText = "⚠️ Error: " + data.message;
+        status.innerHTML = "⚠️ Error: " + data.message;
       }
     } catch (err) {
-      status.innerText = "❌ Request failed. Check console/logs.";
+      status.innerHTML = "❌ Request failed. Check console/logs.";
       console.error(err);
     }
   });
+
 </script>
 
 
