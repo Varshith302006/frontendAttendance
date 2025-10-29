@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!--ATTENDANCE_INJECT-->
 <title>Attendance Dashboard</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -1140,78 +1139,98 @@ function getCache(key) {
   }
 }
 
+// Supabase setup (make sure supabase-js is included via CDN or import)
+const supabaseUrl = "YOUR_SUPABASE_URL";
+const supabaseKey = "YOUR_SUPABASE_ANON_KEY";
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const username = formData.get('username');
   const password = formData.get('password');
-  formLoader.style.display = 'block';
   const cacheKey = `attendance_${username}`;
+  formLoader.style.display = 'block';
+
+  // Try live lookup in Supabase first
+  let { data, error } = await supabase
+    .from("student_credentials")
+    .select("*")
+    .eq("username", username)
+    .eq("password", password)
+    .maybeSingle();
   
-  // Check preloaded attendance
-const preloaded = window.PRELOADED_ATTENDANCE?.[username];
-let isFresh = false;
-let isPasswordMatch = false;
-if (preloaded) {
-  // Check password
-  if (preloaded.password === password) { // if storing plain text (not recommended)
-    isPasswordMatch = true;
+  let shouldFetchFromBackend = false;
+  if (!error && data) {
+    // Found Supabase row—check age
+    const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
+    let isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 36 * 60 * 60 * 1000);
+    if (isFresh) {
+      showDashboard(username);
+      renderAcademic(data.academic_data);
+      renderBiometric(data.biometric_data);
+      setCache(cacheKey, {
+        academic: data.academic_data,
+        biometric: data.biometric_data,
+        fetched_at: data.fetched_at
+      });
+      formLoader.style.display = "none";
+       // After successful attendance display
+      await supabase
+        .from("site_visits")
+        .insert([
+          { username, visited_at: new Date().toISOString() }
+        ]);
+      updateTodayVisits();
+      return;
+    } else {
+      // Too old, needs backend refresh
+      shouldFetchFromBackend = true;
+    }
+  } else {
+    // Not in Supabase, new user, or credential mismatch
+    shouldFetchFromBackend = true;
   }
-  // Check freshness
-  const fetchedAt = preloaded.fetched_at ? new Date(preloaded.fetched_at) : null;
-  if (fetchedAt) {
-    const ageMs = Date.now() - fetchedAt.getTime();
-    if (ageMs < 36 * 60 * 60 * 1000) isFresh = true;
-  }
-}
-if (preloaded && isFresh && isPasswordMatch) {
-  showDashboard(username);
-  renderAcademic(preloaded.academic_data);
-  renderBiometric(preloaded.biometric_data);
-  formLoader.style.display = "none";
-  setCache(cacheKey, { academic: preloaded.academic_data, biometric: preloaded.biometric_data, fetched_at: preloaded.fetched_at });
-  updateTodayVisits();
-  return;
-}
-if (preloaded && !isPasswordMatch) {
-  formLoader.style.display = "none";
-  alert("Incorrect Username or password!");
-  return;
-}
-// If expired, not found, or any error, fallback to backend
 
+  // If necessary, call backend to fetch (new user, invalid, or stale)
+  if (shouldFetchFromBackend) {
+    try {
+      const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
+        method: 'POST',
+        body: new URLSearchParams({ username, password })
+      });
 
-  // Need backend fetch for new/stale users
-  try {
-    const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
-      method: 'POST',
-      body: new URLSearchParams({ username, password })
-    });
-
-    if (!res.ok) throw new Error("Network error or bad credentials.");
-    const text = await res.text();
-    const lines = text.split('\n');
-    let academicData, biometricData, fetchedAt;
-    lines.forEach(line => {
-      if (!line.trim()) return;
-      const obj = JSON.parse(line);
-      if (obj.step === 'academic') academicData = obj.data;
-      if (obj.step === 'biometric') biometricData = obj.data;
-      if (obj.step === 'fetched_at') fetchedAt = obj.data; // If backend sends fetched_at explicitly
-    });
-    showDashboard(username);
-    renderAcademic(academicData);
-    renderBiometric(biometricData);
-    setCache(cacheKey, { academic: academicData, biometric: biometricData, fetched_at: fetchedAt || new Date().toISOString() });
-    updateTodayVisits();
-  } catch (err) {
-    alert('Network error or wrong credentials');
-  } finally {
+      if (!res.ok) throw new Error("Network error or bad credentials.");
+      const text = await res.text();
+      const lines = text.split('\n');
+      let academicData, biometricData, fetchedAt;
+      lines.forEach(line => {
+        if (!line.trim()) return;
+        const obj = JSON.parse(line);
+        if (obj.step === 'academic') academicData = obj.data;
+        if (obj.step === 'biometric') biometricData = obj.data;
+        if (obj.step === 'fetched_at') fetchedAt = obj.data;
+      });
+      showDashboard(username);
+      renderAcademic(academicData);
+      renderBiometric(biometricData);
+      setCache(cacheKey, {
+        academic: academicData,
+        biometric: biometricData,
+        fetched_at: fetchedAt || new Date().toISOString()
+      });
+      updateTodayVisits();
+    } catch (err) {
+      alert('Network error or wrong credentials');
+    } finally {
+      formLoader.style.display = "none";
+    }
+  } else {
+    // Defensive; should not happen
     formLoader.style.display = "none";
+    alert("Unexpected error in attendance lookup.");
   }
 });
-
 
 function renderAcademic(data) {
   if (!Array.isArray(data) || data.length === 0) {
