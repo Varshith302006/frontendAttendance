@@ -1152,12 +1152,12 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
   // Try cached data via backend API first
   let data, error, isFresh = false;
-  try {
-    const res = await fetch('/api/get', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+    try {
+      fetch('/api/get', {
+    method: 'POST',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
     if (res.ok) {
       data = await res.json();
       const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
