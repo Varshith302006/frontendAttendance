@@ -999,7 +999,7 @@ body[data-theme="dark"] .table-wrapper th {
     status.innerHTML = "Fetching attendance... please wait ⏳";
   
     try {
-      const res = await fetch("https://your-backend-url/run-cron");
+      const res = await fetch("https://attendance-4rm8.onrender.com/run-cron");
       const data = await res.json();
   
       if (data.success) {
