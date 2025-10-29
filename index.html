@@ -868,7 +868,81 @@ body[data-theme="dark"] .table-wrapper th {
 </style>
 </head>
 <body>
-
+<div id="splashScreen" style="
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: radial-gradient(ellipse at 60% 12%, #6366f1 40%, transparent 90%) #1e293b;
+    overflow:hidden;
+    z-index:1000;
+">
+  <!-- Decorative blurred shapes for depth and realism -->
+  <div style="
+    position:absolute;
+    left:10vw; top:20vh; width:260px; height:260px;
+    background:radial-gradient(ellipse at center, #8b5cf6 0%, #6366f1 80%, transparent 100%);
+    opacity:.45;
+    filter: blur(60px);
+    border-radius: 50%;
+    z-index:1;
+  "></div>
+  <div style="
+    position:absolute;
+    right:9vw; bottom:15vh; width:180px; height:180px;
+    background:radial-gradient(ellipse at center, #eef2ff 0%, #a5b4fc 85%, transparent 100%);
+    opacity:.32;
+    filter: blur(45px);
+    border-radius: 50%;
+    z-index:1;
+  "></div>
+  <!-- Splash Content -->
+  <div style="
+      position:relative;
+      z-index:4;
+      background:rgba(51, 58, 120,.12);
+      border-radius:28px;
+      padding: 46px 88px 40px 88px;
+      box-shadow: 0 4px 32px 0 rgba(81,57,202,0.21);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  ">
+    <span style="
+      font-size:2.9em;
+      font-weight:900;
+      letter-spacing:1px;
+      background: linear-gradient(95deg, #fff 18%, #e0e7ff 98%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-fill-color: transparent;
+      animation: splashfadein 1s cubic-bezier(.93,0,.8,1.2);
+    ">
+      Welcome to the website
+    </span>
+    <span id="splash-loading-text" style="margin-top:31px;color:#e0e7ff;font-size:1.16em;opacity:0.88;">
+      Loading<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>
+    </span>
+  </div>
+  <style>
+    @keyframes splashfadein {
+      from { opacity:0; transform: translateY(48px);}
+      to   { opacity:1; transform: translateY(0);}
+    }
+    #splash-loading-text .dot1, #splash-loading-text .dot2, #splash-loading-text .dot3 {
+      animation: blink 1.4s infinite both;
+      opacity: 0.7;
+    }
+    #splash-loading-text .dot2 { animation-delay: 0.18s; }
+    #splash-loading-text .dot3 { animation-delay: 0.35s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.2; }
+      40% { opacity: 1; }
+    }
+  </style>
+</div>
 <header>
   <div class="header-container">
     <div class="header-title">
@@ -994,6 +1068,19 @@ body[data-theme="dark"] .table-wrapper th {
     </div>
   </div>
 </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        const splash = document.getElementById("splashScreen");
+        splash.style.transition = "opacity 0.7s";
+        splash.style.opacity = 0;
+        setTimeout(function() {
+          splash.style.display = "none";
+          document.getElementById("loginCard").style.display = "block";
+        }, 700);
+      }, 2000);
+    };
+    </script>
 <script>
    document.getElementById('fetchBtn').addEventListener('click', async function() {
   const status = document.getElementById('statusMsg');
