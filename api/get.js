@@ -1,7 +1,8 @@
 // /api/get.js
 import { createClient } from "@supabase/supabase-js";
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-
+console.log("ENV:", process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+console.log("BODY:", req.body);
 export default async function handler(req, res) {
   try{
   if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
