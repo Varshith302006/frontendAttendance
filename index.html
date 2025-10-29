@@ -1152,7 +1152,22 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
   const cacheKey = `attendance_${username}`;
   const cachedData = getCache(cacheKey);
-  
+
+  // CHANGE 1: Check if attendance is preloaded in HTML (window.PRELOADED_ATTENDANCE)
+  const preloaded = window.PRELOADED_ATTENDANCE && window.PRELOADED_ATTENDANCE[username];
+  if (preloaded) {
+    console.log("Loaded from index.html preloaded data:", username);
+    showDashboard(username);
+    renderAcademic(preloaded.academic_data);
+    renderBiometric(preloaded.biometric_data);
+    formLoader.style.display = "none";
+    updateTodayVisits();
+    // Optionally: also write this to the cache if you want local replays
+    setCache(cacheKey, { academic: preloaded.academic_data, biometric: preloaded.biometric_data });
+    return;
+  }
+
+  // if not found in index.html or cache, continue as before...
   if (cachedData) {
     console.log("Loaded from cache:", cacheKey);
     showDashboard(username);
@@ -1162,6 +1177,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     updateTodayVisits();
     return;
   }
+
 
 
   try {
