@@ -995,32 +995,32 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 <script>
-    document.getElementById("fetchBtn").addEventListener("click", async function () {
-    const status = document.getElementById("statusMsg");
-    status.innerHTML = "Fetching attendance... please wait ⏳";
-  
-    try {
-      const res = await fetch("https://attendance-4rm8.onrender.com/run-cron");
-      const data = await res.json();
-  
-      if (data.success) {
-        // Display stats
-        status.innerHTML = `
-          <b>Attendance Refresh Complete!</b><br>
-          <span style="color: green;">✅ Success: ${data.succeeded}</span><br>
-          <span style="color: red;">❌ Failures: ${data.skipped}</span><br>
-          <span>Total processed: ${data.processed}</span><br>
-          <span>Time: ${data.time_seconds} sec</span>
-        `;
-      } else {
-        status.innerHTML = "⚠️ Error: " + data.message;
-      }
-    } catch (err) {
-      status.innerHTML = "❌ Request failed. Check console/logs.";
-      console.error(err);
-    }
-  });
+   document.getElementById('fetchBtn').addEventListener('click', async function() {
+  const status = document.getElementById('statusMsg');
+  // Show this message instantly when the button is clicked
+  status.innerHTML = '⏳ Fetching attendance... please wait';
 
+  try {
+    // Start the API call
+    const res = await fetch('https://attendance-4rm8.onrender.com/run-cron');
+    const data = await res.json();
+
+    if (data.success) {
+      status.innerHTML = `
+        <b>Attendance Refresh Complete!</b><br>
+        <span style="color: green">Success: ${data.succeeded}</span><br>
+        <span style="color: red">Failures: ${data.skipped}</span><br>
+        <span>Total processed: ${data.processed}</span><br>
+        <span>Time: ${data.time_seconds} sec</span>
+      `;
+    } else {
+      status.innerHTML = `❗ Error: ${data.message}`;
+    }
+  } catch (err) {
+    status.innerHTML = '❗ Request failed. Check console/logs.';
+    console.error(err);
+  }
+});
 </script>
 
 
