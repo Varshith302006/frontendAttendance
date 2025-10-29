@@ -1146,89 +1146,64 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const formData = new FormData(e.target);
   const username = formData.get('username');
   const password = formData.get('password');
-
   formLoader.style.display = 'block';
-  const academicEl = document.getElementById('academicTable');
-  const biometricEl = document.getElementById('biometricTable');
-
   const cacheKey = `attendance_${username}`;
-  const cachedData = getCache(cacheKey);
+  
+  // Check preloaded attendance
+  const preloaded = window.PRELOADED_ATTENDANCE?.[username];
+  let isFresh = false;
 
-  // CHANGE 1: Check if attendance is preloaded in HTML (window.PRELOADED_ATTENDANCE)
-  const preloaded = window.PRELOADED_ATTENDANCE && window.PRELOADED_ATTENDANCE[username];
   if (preloaded) {
-    console.log("Loaded from index.html preloaded data:", username);
+    // Check fetched_at timestamp (should be present in preloaded data structure)
+    const fetchedAt = preloaded.fetched_at ? new Date(preloaded.fetched_at) : null;
+    if (fetchedAt) {
+      const ageMs = Date.now() - fetchedAt.getTime();
+      if (ageMs < 36 * 60 * 60 * 1000) { // less than 36 hours
+        isFresh = true;
+      }
+    }
+  }
+
+  if (preloaded && isFresh) {
     showDashboard(username);
     renderAcademic(preloaded.academic_data);
     renderBiometric(preloaded.biometric_data);
     formLoader.style.display = "none";
-    updateTodayVisits();
-    // Optionally: also write this to the cache if you want local replays
-    setCache(cacheKey, { academic: preloaded.academic_data, biometric: preloaded.biometric_data });
-    return;
-  }
-
-  // if not found in index.html or cache, continue as before...
-  if (cachedData) {
-    console.log("Loaded from cache:", cacheKey);
-    showDashboard(username);
-    renderAcademic(cachedData.academic);
-    renderBiometric(cachedData.biometric);
-    formLoader.style.display = "none";
+    setCache(cacheKey, { academic: preloaded.academic_data, biometric: preloaded.biometric_data, fetched_at: preloaded.fetched_at });
     updateTodayVisits();
     return;
   }
 
-
-
+  // Need backend fetch for new/stale users
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
       method: 'POST',
       body: new URLSearchParams({ username, password })
     });
 
-    if (!res.ok) throw new Error('Network response was not ok');
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    let academicData = [];
-    let biometricData = {};
-
+    if (!res.ok) throw new Error("Network error or bad credentials.");
+    const text = await res.text();
+    const lines = text.split('\n');
+    let academicData, biometricData, fetchedAt;
+    lines.forEach(line => {
+      if (!line.trim()) return;
+      const obj = JSON.parse(line);
+      if (obj.step === 'academic') academicData = obj.data;
+      if (obj.step === 'biometric') biometricData = obj.data;
+      if (obj.step === 'fetched_at') fetchedAt = obj.data; // If backend sends fetched_at explicitly
+    });
     showDashboard(username);
-    academicEl.innerHTML = '<div class="loading-state"><div class="loader"></div><p>Loading Academic Attendance...</p></div>';
-    biometricEl.innerHTML = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        try {
-          const obj = JSON.parse(line);
-                     console.log("STREAM RECEIVED →", obj); 
-
-          if (obj.step === 'academic') { academicData = obj.data; renderAcademic(obj.data); }
-          if (obj.step === 'biometric') { biometricData = obj.data; renderBiometric(obj.data); }
-        } catch (err) { console.error('Invalid JSON:', line); }
-      }
-    }
-
-    // Save in cache for 10 minutes
-    setCache(cacheKey, { academic: academicData, biometric: biometricData });
+    renderAcademic(academicData);
+    renderBiometric(biometricData);
+    setCache(cacheKey, { academic: academicData, biometric: biometricData, fetched_at: fetchedAt || new Date().toISOString() });
     updateTodayVisits();
-
   } catch (err) {
-    console.error(err);
-    alert('Network error or wrong credentials.');
-    academicEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Failed to load data</p></div>';
+    alert('Network error or wrong credentials');
   } finally {
-    formLoader.style.display = 'none';
+    formLoader.style.display = "none";
   }
 });
+
 
 function renderAcademic(data) {
   if (!Array.isArray(data) || data.length === 0) {
