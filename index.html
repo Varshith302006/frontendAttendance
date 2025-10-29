@@ -6,7 +6,7 @@
 <title>Attendance Dashboard</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  
 <style>
 :root {
   /* Modern Color Palette */
@@ -1023,12 +1023,12 @@ body[data-theme="dark"] .table-wrapper th {
 
 </script>
 
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
   // Supabase setup (make sure supabase-js is included via CDN or import)
 const supabaseUrl = "https://ywsqpuvraddaimlbiuds.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3c3FwdXZyYWRkYWltbGJpdWRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4MjMzMDgsImV4cCI6MjA3NjM5OTMwOH0.UqkzzWM7nRvgtNdvRy63LLN-UGv-zeYYx6tRYD5zxdY";
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const passwordField = document.getElementById('passwordField');
 const togglePassword = document.getElementById('togglePassword');
 const eyeOpen = document.getElementById('eyeOpen');
@@ -1154,7 +1154,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   formLoader.style.display = 'block';
 
   // Try live lookup in Supabase first
-  let { data, error } = await supabase
+  let { data, error } = await supabaseClient
     .from("student_credentials")
     .select("*")
     .eq("username", username)
@@ -1177,7 +1177,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       });
       formLoader.style.display = "none";
        // After successful attendance display
-      await supabase
+      await supabaseClient
         .from("site_visits")
         .insert([
           { username, visited_at: new Date().toISOString() }
