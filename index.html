@@ -1150,29 +1150,37 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const cacheKey = `attendance_${username}`;
   
   // Check preloaded attendance
-  const preloaded = window.PRELOADED_ATTENDANCE?.[username];
-  let isFresh = false;
-
-  if (preloaded) {
-    // Check fetched_at timestamp (should be present in preloaded data structure)
-    const fetchedAt = preloaded.fetched_at ? new Date(preloaded.fetched_at) : null;
-    if (fetchedAt) {
-      const ageMs = Date.now() - fetchedAt.getTime();
-      if (ageMs < 36 * 60 * 60 * 1000) { // less than 36 hours
-        isFresh = true;
-      }
-    }
+const preloaded = window.PRELOADED_ATTENDANCE?.[username];
+let isFresh = false;
+let isPasswordMatch = false;
+if (preloaded) {
+  // Check password
+  if (preloaded.password === password) { // if storing plain text (not recommended)
+    isPasswordMatch = true;
   }
-
-  if (preloaded && isFresh) {
-    showDashboard(username);
-    renderAcademic(preloaded.academic_data);
-    renderBiometric(preloaded.biometric_data);
-    formLoader.style.display = "none";
-    setCache(cacheKey, { academic: preloaded.academic_data, biometric: preloaded.biometric_data, fetched_at: preloaded.fetched_at });
-    updateTodayVisits();
-    return;
+  // Check freshness
+  const fetchedAt = preloaded.fetched_at ? new Date(preloaded.fetched_at) : null;
+  if (fetchedAt) {
+    const ageMs = Date.now() - fetchedAt.getTime();
+    if (ageMs < 36 * 60 * 60 * 1000) isFresh = true;
   }
+}
+if (preloaded && isFresh && isPasswordMatch) {
+  showDashboard(username);
+  renderAcademic(preloaded.academic_data);
+  renderBiometric(preloaded.biometric_data);
+  formLoader.style.display = "none";
+  setCache(cacheKey, { academic: preloaded.academic_data, biometric: preloaded.biometric_data, fetched_at: preloaded.fetched_at });
+  updateTodayVisits();
+  return;
+}
+if (preloaded && !isPasswordMatch) {
+  formLoader.style.display = "none";
+  alert("Incorrect Username or password!");
+  return;
+}
+// If expired, not found, or any error, fallback to backend
+
 
   // Need backend fetch for new/stale users
   try {
