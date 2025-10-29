@@ -1019,6 +1019,8 @@ body[data-theme="dark"] .table-wrapper th {
   } catch (err) {
     status.innerHTML = '❗ Request failed. Check console/logs.';
     console.error(err);
+  }finally {
+    btn.disabled = false; // Always re-enable at the end!
   }
 });
 </script>
