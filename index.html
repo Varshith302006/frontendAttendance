@@ -2178,11 +2178,60 @@ body[data-theme="dark"] .table-wrapper th {
      
   <!-- Dashboard -->
   <div class="dashboard-grid" id="dashboardCards">
+    <button id="loadUsersBtn">Load Users</button>
     <p id="statusMsg" style="margin-top:10px;font-weight:bold;"></p>
     <button id="fetchBtn" style="display: none; padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
       Fetch Attendance Now
     </button>
     <div id="usernameSelectArea" style="display:none; margin-top:16px;"></div>
+    <script>
+  document.getElementById("loadUsersBtn").addEventListener("click", async function() {
+    const btn = this;
+    btn.disabled = true;
+    const status = document.getElementById("statusMsg");
+    const selectArea = document.getElementById("usernameSelectArea");
+
+    status.innerText = "Loading users...";
+    try {
+      const res = await fetch('/api/bulk-attendance'); // Make sure this route is correctly set up
+      if (!res.ok) {
+        throw new Error(`Fetch failed with status ${res.status}`);
+      }
+      const usernames = await res.json();
+      if (!Array.isArray(usernames) || usernames.length === 0) {
+        status.innerText = "No users found.";
+        btn.disabled = false;
+        return;
+      }
+
+      selectArea.innerHTML = `
+        <form id="userForm">
+          <strong>Select users to fetch attendance:</strong><br/>
+          ${usernames.map(name => `
+            <label style="display:block; margin:6px 0;">
+              <input type="checkbox" name="selectedUsers" value="${name}"/> ${name}
+            </label>
+          `).join('')}
+          <button type="submit" style="margin-top: 12px;">Get Attendance</button>
+        </form>
+      `;
+      status.innerText = "";
+
+      // Wire form submit handler to fetch attendance for selected users
+      document.getElementById("userForm").onsubmit = async function(e) {
+        e.preventDefault();
+        const selected = Array.from(
+          document.querySelectorAll('input[name="selectedUsers"]:checked')
+        ).map(input => input.value);
+        if (selected.length === 0) {
+          status.innerText = "Please select at least one user.";
+          return;
+        }
+        status.innerText = "Fetching attendance for selected users...";
+      
+    btn.disabled = false;
+  });
+</script>
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
       <!-- Academic Attendance -->
