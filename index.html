@@ -868,81 +868,155 @@ body[data-theme="dark"] .table-wrapper th {
 </style>
 </head>
 <body>
+<!-- Attendance Dashboard Splash Screen -->
 <div id="splashScreen" style="
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background: radial-gradient(ellipse at 60% 12%, #6366f1 40%, transparent 90%) #1e293b;
-    overflow:hidden;
-    z-index:1000;
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background: radial-gradient(circle at 50% 35%, #6366f1 0%, #4338ca 40%, #1e1b4b 100%);
+  overflow:hidden;
+  z-index:1000;
+  opacity:0;
+  transform:scale(1.05);
+  animation:splashFadeIn 1s ease forwards;
 ">
-  <!-- Decorative blurred shapes for depth and realism -->
+  <!-- Glow Background -->
   <div style="
     position:absolute;
-    left:10vw; top:20vh; width:260px; height:260px;
-    background:radial-gradient(ellipse at center, #8b5cf6 0%, #6366f1 80%, transparent 100%);
-    opacity:.45;
-    filter: blur(60px);
-    border-radius: 50%;
-    z-index:1;
+    width:720px; height:720px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%);
+    top:22%; left:25%;
+    filter: blur(88px);
+    z-index:0;
   "></div>
-  <div style="
-    position:absolute;
-    right:9vw; bottom:15vh; width:180px; height:180px;
-    background:radial-gradient(ellipse at center, #eef2ff 0%, #a5b4fc 85%, transparent 100%);
-    opacity:.32;
-    filter: blur(45px);
-    border-radius: 50%;
-    z-index:1;
-  "></div>
-  <!-- Splash Content -->
-  <div style="
-      position:relative;
-      z-index:4;
-      background:rgba(51, 58, 120,.12);
-      border-radius:28px;
-      padding: 46px 88px 40px 88px;
-      box-shadow: 0 4px 32px 0 rgba(81,57,202,0.21);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-  ">
-    <span style="
-      font-size:2.9em;
-      font-weight:900;
-      letter-spacing:1px;
-      background: linear-gradient(95deg, #fff 18%, #e0e7ff 98%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-fill-color: transparent;
-      animation: splashfadein 1s cubic-bezier(.93,0,.8,1.2);
-    ">
-      Welcome to the website
-    </span>
-    <span id="splash-loading-text" style="margin-top:31px;color:#e0e7ff;font-size:1.16em;opacity:0.88;">
-      Loading<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span>
-    </span>
+
+  <!-- Watermark Icon -->
+  <div style="position:absolute; top:13%; right:7%; width:95px; height:95px; opacity:0.10; z-index:0;">
+    <svg viewBox='0 0 80 80' fill='none'>
+      <circle cx='40' cy='40' r='32' fill='#fff'/>
+      <rect x='27' y='35' width='26' height='14' rx='7' fill='#6366F1'/>
+      <rect x='36' y='41' width='8' height='14' rx='4' fill='#818CF8'/>
+      <rect x='34' y='33' width='12' height='8' rx='4' fill='#A5B4FC'/>
+    </svg>
   </div>
+
+  <!-- Main Title -->
+  <h1 style="
+    font-size:2.4em;
+    font-weight:900;
+    text-transform:uppercase;
+    background:linear-gradient(90deg, #ffffff 12%, #c7d2fe 95%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    letter-spacing:2.5px;
+    text-align:center;
+    margin:0;
+    animation:titleReveal 1.2s cubic-bezier(.83,0,.17,1);
+    z-index:2;
+  ">
+    Attendance<br>Dashboard
+  </h1>
+
+  <!-- Subtitle -->
+  <h2 style="
+    margin:12px 0 0 0;
+    color:#dbeafe;
+    font-size:1.15em;
+    font-weight:500;
+    text-align:center;
+    opacity:0;
+    animation:fadeIn 1.3s ease 0.7s forwards;
+    z-index:2;
+  ">
+    Seamless attendance tracking
+  </h2>
+
+  <!-- Spinner -->
+  <div style="margin-top:28px; z-index:2;">
+    <div style="
+      border:4px solid #c7d2fe;
+      border-radius:50%;
+      border-top:4px solid #6366f1;
+      width:28px; height:28px;
+      animation:spin 0.8s linear infinite;
+      margin: 0 auto;
+    "></div>
+    <div style="font-size:1.05em; color:#c7d2fe; margin-top:4px; text-align:center;">
+    </div>
+  </div>
+
+  <!-- Branding: Always visible with shimmer -->
+  <div style="
+      position: absolute;
+      bottom: 22px;
+      right: 27px;
+      font-size: 1em;
+      font-weight: 600;
+      color: #c7d2fe;
+      opacity: 1;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      z-index: 2;
+  ">
+    <span class="brand-shimmer">VNR Creations</span>
+  </div>
+
+
   <style>
-    @keyframes splashfadein {
-      from { opacity:0; transform: translateY(48px);}
-      to   { opacity:1; transform: translateY(0);}
+    @keyframes splashFadeIn {
+      from {opacity:0; transform:scale(1.05);}
+      to {opacity:1; transform:scale(1);}
     }
-    #splash-loading-text .dot1, #splash-loading-text .dot2, #splash-loading-text .dot3 {
-      animation: blink 1.4s infinite both;
-      opacity: 0.7;
+    @keyframes splashFadeOut {
+      from {opacity:1; transform:scale(1);}
+      to {opacity:0; transform:scale(1.05);}
     }
-    #splash-loading-text .dot2 { animation-delay: 0.18s; }
-    #splash-loading-text .dot3 { animation-delay: 0.35s; }
-    @keyframes blink {
-      0%, 80%, 100% { opacity: 0.2; }
-      40% { opacity: 1; }
+    @keyframes titleReveal {
+      from {opacity:0; transform:translateY(40px);}
+      to {opacity:1; transform:translateY(0);}
+    }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    @keyframes spin { 100% { transform:rotate(360deg); } }
+    @keyframes brandFade {
+      from {opacity:0; transform:translateY(10px);}
+      to {opacity:0.85; transform:translateY(0);}
+    }
+
+    .brand-shimmer {
+      background:linear-gradient(120deg, #c7d2fe 0%, #ffffff 20%, #c7d2fe 40%);
+      background-size:200% auto;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation:shimmer 3s linear infinite;
+    }
+    @keyframes shimmer {
+      0% {background-position:0% 50%;}
+      100% {background-position:200% 50%;}
+    }
+
+    @media (max-width:500px) {
+      #splashScreen h1 { font-size:1.3em; letter-spacing:1px; }
+      #splashScreen h2 { font-size:0.95em; }
+      .brand-shimmer, [style*="bottom:22px"] { font-size:0.82em!important; }
     }
   </style>
+
+  <script>
+    window.addEventListener('load', () => {
+      const splash = document.getElementById('splashScreen');
+      // after 2.6 seconds, fade out smoothly
+      setTimeout(() => {
+        splash.style.animation = 'splashFadeOut 1s ease forwards';
+        setTimeout(() => splash.style.display = 'none', 1000);
+      }, 2000);
+    });
+  </script>
 </div>
+
 <header>
   <div class="header-container">
     <div class="header-title">
@@ -974,7 +1048,7 @@ body[data-theme="dark"] .table-wrapper th {
       Fetch Attendance Now
     </button> -->
     
-    <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p>
+    <!-- <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p> -->
 
     <form id="loginForm" autocomplete="on">
       <div class="field">
@@ -1011,7 +1085,7 @@ body[data-theme="dark"] .table-wrapper th {
      
   <!-- Dashboard -->
   <div class="dashboard-grid" id="dashboardCards">
-    <p id="statusMsg"></p>
+    <p id="statusMsg" style="margin-top:10px;font-weight:bold;"></p>
     <button id="fetchBtn" style="display: none; padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
       Fetch Attendance Now
     </button>
@@ -1068,48 +1142,36 @@ body[data-theme="dark"] .table-wrapper th {
     </div>
   </div>
 </div>
-  <script>
-    window.onload = function() {
-      setTimeout(function() {
-        const splash = document.getElementById("splashScreen");
-        splash.style.transition = "opacity 0.7s";
-        splash.style.opacity = 0;
-        setTimeout(function() {
-          splash.style.display = "none";
-          document.getElementById("loginCard").style.display = "block";
-        }, 700);
-      }, 2000);
-    };
-    </script>
 <script>
-   document.getElementById('fetchBtn').addEventListener('click', async function() {
-  const status = document.getElementById('statusMsg');
-  // Show this message instantly when the button is clicked
-  status.innerHTML = '⏳ Fetching attendance... please wait';
+    document.getElementById('fetchBtn').addEventListener('click', async function() {
+      const btn = this;
+      const status = document.getElementById('statusMsg');
+      // Show this message instantly when the button is clicked
+      status.innerHTML = '⏳ Fetching attendance... please wait';
+      btn.style.display="none";
+      try {
+        // Start the API call
+        const res = await fetch('https://attendance-4rm8.onrender.com/run-cro');
+        const data = await res.json();
 
-  try {
-    // Start the API call
-    const res = await fetch('https://attendance-4rm8.onrender.com/run-cron');
-    const data = await res.json();
-
-    if (data.success) {
-      status.innerHTML = `
-        <b>Attendance Refresh Complete!</b><br>
-        <span style="color: green">Success: ${data.succeeded}</span><br>
-        <span style="color: red">Failures: ${data.skipped}</span><br>
-        <span>Total processed: ${data.processed}</span><br>
-        <span>Time: ${data.time_seconds} sec</span>
-      `;
-    } else {
-      status.innerHTML = `❗ Error: ${data.message}`;
-    }
-  } catch (err) {
-    status.innerHTML = '❗ Request failed. Check console/logs.';
-    console.error(err);
-  }finally {
-    btn.disabled = false; // Always re-enable at the end!
-  }
-});
+        if (data.success) {
+          status.innerHTML = `
+            <b>Attendance Refresh Complete!</b><br>
+            <span style="color: green">Success: ${data.succeeded}</span><br>
+            <span style="color: red">Failures: ${data.skipped}</span><br>
+            <span>Total processed: ${data.processed}</span><br>
+            <span>Time: ${data.time_seconds} sec</span>
+          `;
+        } else {
+          status.innerHTML = `❗ Error: ${data.message}`;
+        }
+      } catch (err) {
+        status.innerHTML = '❗ Request failed. Check console/logs.';
+        console.error(err);
+      }finally {
+        btn.disabled = false; // Always re-enable at the end!
+      }
+    });
 </script>
 
 
