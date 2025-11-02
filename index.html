@@ -1180,13 +1180,23 @@ body[data-theme="dark"] .table-wrapper th {
       }
     });
     document.getElementById('loadUsersBtn').addEventListener('click', async () => {
-      const container = document.getElementById('usernamesList');
-      container.innerHTML = 'Loading usernames...';
+      const password = prompt('Enter password to load users:');
+      if (!password) return; // user cancelled or empty password
     
       try {
-        const response = await fetch('/api/getUsers');
-        const users = await response.json();
+        const response = await fetch('/api/getUsers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        if (!response.ok) {
+          const err = await response.json();
+          alert(err.error || 'Failed to load users');
+          return;
+        }
     
+        const users = await response.json();
+        const container = document.getElementById('usernamesList');
         if (users.length > 0) {
           container.innerHTML = users.map(user => `
             <label style="display: block; margin-bottom: 6px;">
@@ -1199,9 +1209,11 @@ body[data-theme="dark"] .table-wrapper th {
           container.innerHTML = 'No users found.';
         }
       } catch (error) {
-        container.innerHTML = 'Error loading usernames.';
+        alert('Error loading usernames.');
       }
     });
+
+  
     
     document.getElementById('fetchSelectedBtn').addEventListener('click', async function() {
   const btn = this;
