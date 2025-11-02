@@ -1176,24 +1176,31 @@ body[data-theme="dark"] .table-wrapper th {
       }
     });
     document.getElementById('loadUsersBtn').addEventListener('click', async function() {
-    const userListContainer = document.getElementById('usernamesList');
-    userListContainer.textContent = 'Loading usernames...';
-  
-    try {
-      const res = await fetch('/api/getUsers');
-      if (!res.ok) throw new Error('Failed to fetch users.');
-      
-      const data = await res.json();
-      if (data.length > 0) {
-        userListContainer.innerHTML = data.map(user => `<div>${user.username}</div>`).join('');
-      } else {
-        userListContainer.textContent = 'No users found.';
+      const userListContainer = document.getElementById('usernamesList');
+      userListContainer.textContent = 'Loading usernames...';
+    
+      try {
+        const res = await fetch('/api/getUsers');
+        if (!res.ok) throw new Error('Failed to fetch users.');
+    
+        const data = await res.json();
+        if (data.length > 0) {
+          // Render usernames each with a checkbox
+          userListContainer.innerHTML = data.map(user => `
+            <label style="display: block; margin-bottom: 6px;">
+              <input type="checkbox" name="usernames" value="${user.username}">
+              ${user.username}
+            </label>
+          `).join('');
+        } else {
+          userListContainer.textContent = 'No users found.';
+        }
+      } catch (err) {
+        userListContainer.textContent = 'Error loading usernames.';
+        console.error(err);
       }
-    } catch (err) {
-      userListContainer.textContent = 'Error loading usernames.';
-      console.error(err);
-    }
-  });
+    });
+
 
 </script>
 
