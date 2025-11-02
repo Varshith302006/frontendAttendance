@@ -1570,7 +1570,7 @@ function renderBiometric(data) {
   document.getElementById('biometricAttendBtn').addEventListener('click', () => {
     attendCount++;
     // Calculate new attendance percentage incorporating additional attended days
-    let newAttendance = ((presentCount + attendCount) / totalDays+attendCount) * 100;
+    let newAttendance = ((presentCount + attendCount) / (totalDays+attendCount)) * 100;
     newAttendance = newAttendance.toFixed(2);
   
     document.getElementById('attendanceMessage').textContent = 
