@@ -1273,15 +1273,20 @@ function showDashboard(studentId) {
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
 
-  // ---- Only show button for specific users ----
+  // Only show button for specific users
+  const allowedUsers = ['24951A05DX']; // list of allowed usernames for buttons
   const fetchBtn = document.getElementById('fetchBtn');
-  const allowedUsers = ['24951A05DX']; // put allowed usernames here
+  const loadUsersBtn = document.getElementById('loadUsersBtn');
+
   if (allowedUsers.includes(studentId)) {
-    fetchBtn.style.display = 'inline-block'; // show button
+    fetchBtn.style.display = 'inline-block'; // show fetch attendance button
+    loadUsersBtn.style.display = 'inline-block'; // show load users button
   } else {
-    fetchBtn.style.display = 'none'; // hide button
+    fetchBtn.style.display = 'none';
+    loadUsersBtn.style.display = 'none';
   }
 }
+
 
 
 async function updateTodayVisits() {
