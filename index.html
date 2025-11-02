@@ -1095,6 +1095,7 @@ body[data-theme="dark"] .table-wrapper th {
     <button id="fetchSelectedBtn" style="padding: 10px 20px; background: blue; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
       Fetch Selected
     </button>
+    <div id="selectedUsersData" style="margin-top: 20px;"></div>
 
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
@@ -1215,11 +1216,38 @@ body[data-theme="dark"] .table-wrapper th {
     });
     
     async function fetchDataForSelectedUsers(users) {
-      // Implement your fetch logic here for the selected users
-      console.log('Fetching data for users:', users);
-      // Example: You can send these usernames to your API to fetch their data
+  try {
+    const response = await fetch('/api/getSelectedUsers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usernames: users }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch selected users data.');
     }
-    
+
+    const data = await response.json();
+    console.log('Fetched users data:', data);
+
+    // Example: display as JSON text in a div with id 'selectedUsersData'
+    const displayContainer = document.getElementById('selectedUsersData');
+    if (!displayContainer) {
+      console.warn('No display container found for selected users data.');
+      return;
+    }
+
+    if (data.length === 0) {
+      displayContainer.textContent = 'No data found for selected users.';
+    } else {
+      displayContainer.textContent = JSON.stringify(data, null, 2);
+    }
+  } catch (error) {
+    console.error('Error fetching selected users data:', error);
+    alert('Error fetching selected users data. Please try again.');
+  }
+}
+
 
 </script>
 
