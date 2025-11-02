@@ -1203,50 +1203,44 @@ body[data-theme="dark"] .table-wrapper th {
       }
     });
     
-    document.getElementById('fetchSelectedBtn').addEventListener('click', () => {
-      const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'))
-        .map(checkbox => checkbox.value);
-    
-      if (selectedUsers.length > 0) {
-        // Call function to fetch data for selected users
-        fetchDataForSelectedUsers(selectedUsers);
-      } else {
-        alert('Please select at least one user.');
-      }
-    });
-    
-    async function fetchDataForSelectedUsers(users) {
+    document.getElementById('fetchSelectedBtn').addEventListener('click', async function() {
+  const btn = this;
+  const status = document.getElementById('statusMsg');
+  const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'))
+                             .map(cb => cb.value);
+  if (selectedUsers.length === 0) {
+    alert('Please select at least one user.');
+    return;
+  }
+  status.innerHTML = '⏳ Fetching attendance for selected users... please wait';
+  btn.style.display = "none";
+
   try {
-    const response = await fetch('/api/getSelectedUsers', {
+    const res = await fetch('https://attendance-4rm8.onrender.com/run-selected', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usernames: users }),
+      body: JSON.stringify({ usernames: selectedUsers }),
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch selected users data.');
-    }
-
-    const data = await response.json();
-    console.log('Fetched users data:', data);
-
-    // Example: display as JSON text in a div with id 'selectedUsersData'
-    const displayContainer = document.getElementById('selectedUsersData');
-    if (!displayContainer) {
-      console.warn('No display container found for selected users data.');
-      return;
-    }
-
-    if (data.length === 0) {
-      displayContainer.textContent = 'No data found for selected users.';
+    const data = await res.json();
+    if (data.success) {
+      status.innerHTML = `
+        <b>Selected Attendance Refresh Complete!</b><br>
+        <span style="color: green">Success: ${data.succeeded}</span><br>
+        <span style="color: red">Failures: ${data.skipped}</span><br>
+        <span>Total processed: ${data.processed}</span><br>
+        <span>Time: ${data.time_seconds} sec</span>
+      `;
     } else {
-      displayContainer.textContent = JSON.stringify(data, null, 2);
+      status.innerHTML = `❗ Error: ${data.message}`;
     }
-  } catch (error) {
-    console.error('Error fetching selected users data:', error);
-    alert('Error fetching selected users data. Please try again.');
+  } catch (err) {
+    status.innerHTML = '❗ Request failed. Check console/logs.';
+    console.error(err);
+  } finally {
+    btn.disabled = false;  // Always re-enable at the end!
   }
-}
+});
 
 
 </script>
