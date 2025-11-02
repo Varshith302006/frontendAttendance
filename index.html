@@ -1092,6 +1092,9 @@ body[data-theme="dark"] .table-wrapper th {
       Load Users
     </button>
     <div id="usernamesList" style="margin-top: 10px;"></div>
+    <button id="fetchSelectedBtn" style="padding: 10px 20px; background: blue; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
+      Fetch Selected
+    </button>
 
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
@@ -1175,32 +1178,48 @@ body[data-theme="dark"] .table-wrapper th {
         btn.disabled = false; // Always re-enable at the end!
       }
     });
-    document.getElementById('loadUsersBtn').addEventListener('click', async function() {
-      const userListContainer = document.getElementById('usernamesList');
-      userListContainer.textContent = 'Loading usernames...';
+    document.getElementById('loadUsersBtn').addEventListener('click', async () => {
+      const container = document.getElementById('usernamesList');
+      container.innerHTML = 'Loading usernames...';
     
       try {
-        const res = await fetch('/api/getUsers');
-        if (!res.ok) throw new Error('Failed to fetch users.');
+        const response = await fetch('/api/getUsers');
+        const users = await response.json();
     
-        const data = await res.json();
-        if (data.length > 0) {
-          // Render usernames each with a checkbox
-          userListContainer.innerHTML = data.map(user => `
+        if (users.length > 0) {
+          container.innerHTML = users.map(user => `
             <label style="display: block; margin-bottom: 6px;">
-              <input type="checkbox" name="usernames" value="${user.username}">
+              <input type="checkbox" class="userCheckbox" value="${user.username}">
               ${user.username}
             </label>
           `).join('');
+          document.getElementById('fetchSelectedBtn').style.display = 'inline-block'; // Show the button
         } else {
-          userListContainer.textContent = 'No users found.';
+          container.innerHTML = 'No users found.';
         }
-      } catch (err) {
-        userListContainer.textContent = 'Error loading usernames.';
-        console.error(err);
+      } catch (error) {
+        container.innerHTML = 'Error loading usernames.';
       }
     });
-
+    
+    document.getElementById('fetchSelectedBtn').addEventListener('click', () => {
+      const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'))
+        .map(checkbox => checkbox.value);
+    
+      if (selectedUsers.length > 0) {
+        // Call function to fetch data for selected users
+        fetchDataForSelectedUsers(selectedUsers);
+      } else {
+        alert('Please select at least one user.');
+      }
+    });
+    
+    async function fetchDataForSelectedUsers(users) {
+      // Implement your fetch logic here for the selected users
+      console.log('Fetching data for users:', users);
+      // Example: You can send these usernames to your API to fetch their data
+    }
+    
 
 </script>
 
