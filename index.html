@@ -1130,6 +1130,7 @@ body[data-theme="dark"] .table-wrapper th {
         </div>
         <div id="biometricSection">
           <button id="biometricAttendBtn" class="btn attend-btn">Attend</button>
+          <button id="biometricBunkBtn" class="btn bunk-btn">Bunk</button>
           <p id="attendanceMessage"></p>
         </div>
       </div>
@@ -1566,6 +1567,7 @@ function renderBiometric(data) {
   const presentCount = Number(data.presentCount) || 0;
 
   let attendCount = 0;
+  let bunkCount = 0;
 
   document.getElementById('biometricAttendBtn').addEventListener('click', () => {
     attendCount++;
@@ -1574,7 +1576,15 @@ function renderBiometric(data) {
     newAttendance = newAttendance.toFixed(2);
   
     document.getElementById('attendanceMessage').textContent = 
-      `If you attend these ${attendCount} clicked time(s), your attendance will be ${newAttendance}%`;
+      `If you attend ${attendCount} days, your attendance will be ${newAttendance}%`;
+  });
+
+  document.getElementById('biometricBunkBtn').addEventListener('click',() => {
+    bunkCount++;
+    let newAttendance = ((presentCount) / (totalDays + bunkCount))*100;
+    newAttendance = newAttendance.toFixed(2);
+    document.getElementById('attendanceMessage').textContent = 
+      `If you bunk ${bunkCount} days, your attendance will be ${newAttendance}%`;
   });
 
 
