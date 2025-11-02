@@ -20,6 +20,10 @@ export default async function handler(req, res) {
     if (error) return res.status(500).json({ error: error.message });
     if (!data) return res.status(404).json({ error: "Not found" });
 
+    await supabase
+      .from("site_visits")
+      .insert([{ username, visited_at: new Date().toISOString() }]);
+    
     return res.json(data);
   } catch (e) {
     console.error(e);
