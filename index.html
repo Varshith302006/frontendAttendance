@@ -1128,6 +1128,10 @@ body[data-theme="dark"] .table-wrapper th {
           <div class="empty-state-icon">👤</div>
           <p>Login to fetch attendance data</p>
         </div>
+        <div id="biometricSection">
+          <button id="biometricAttendBtn" class="btn attend-btn">Attend</button>
+          <p id="attendanceMessage"></p>
+        </div>
       </div>
     </div>
 
@@ -1560,6 +1564,19 @@ function renderBiometric(data) {
   const pct = Number(data.percentage) || 0;
   const totalDays = Number(data.totalDays) || 0;
   const presentCount = Number(data.presentCount) || 0;
+
+  let attendCount = 0;
+
+  document.getElementById('biometricAttendBtn').addEventListener('click', () => {
+    attendCount++;
+    // Calculate new attendance percentage incorporating additional attended days
+    let newAttendance = ((presentCount + attendCount) / totalDays) * 100;
+    newAttendance = newAttendance.toFixed(2);
+  
+    document.getElementById('attendanceMessage').textContent = 
+      `If you attend these ${attendCount} clicked time(s), your attendance will be ${newAttendance}%`;
+  });
+
 
   const target = 0.75;
   const daysToAttend = Math.max(0, Math.ceil(((target * totalDays) - presentCount) / (1 - target)));
