@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from("student_credentials")
-      .select("*")
+      .select("username, password")
       .in("username", usernames);
 
     if (error) return res.status(500).json({ error: error.message });
