@@ -1088,8 +1088,11 @@ body[data-theme="dark"] .table-wrapper th {
     <p id="statusMsg" style="margin-top:10px;font-weight:bold;"></p>
     <button id="fetchBtn" style="display: none; padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
       Fetch Attendance Now
+    </button><button id="loadUsersBtn" style="padding: 10px 20px; background: blue; color: white; border: none; border-radius: 6px; cursor: pointer;">
+      Load Users
     </button>
-    <div id="usernameSelectArea" style="display:none; margin-top:16px;"></div>
+    <div id="usernamesList" style="margin-top: 10px;"></div>
+
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
       <!-- Academic Attendance -->
@@ -1172,6 +1175,26 @@ body[data-theme="dark"] .table-wrapper th {
         btn.disabled = false; // Always re-enable at the end!
       }
     });
+    document.getElementById('loadUsersBtn').addEventListener('click', async function() {
+    const userListContainer = document.getElementById('usernamesList');
+    userListContainer.textContent = 'Loading usernames...';
+  
+    try {
+      const res = await fetch('/api/getUsers');
+      if (!res.ok) throw new Error('Failed to fetch users.');
+      
+      const data = await res.json();
+      if (data.length > 0) {
+        userListContainer.innerHTML = data.map(user => `<div>${user.username}</div>`).join('');
+      } else {
+        userListContainer.textContent = 'No users found.';
+      }
+    } catch (err) {
+      userListContainer.textContent = 'Error loading usernames.';
+      console.error(err);
+    }
+  });
+
 </script>
 
 
