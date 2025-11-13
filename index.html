@@ -1330,14 +1330,18 @@ function renderAcademic(data,username) {
     document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     return;
   }
+  const username = formData.get('username');
+  console.log('Username after form input:', username);
+
 
   let total = 0;
   data.forEach(sub => total += Number(sub.percentage) || 0);
   const avg = (total / data.length).toFixed(2);
   let T = 0;
+  let tot = 0;
   data.forEach(sub => T +=Number(sub.attended)||0 );
-  const TT = (T/data.length).toFixed(2);
-  console.log(username);
+  data.forEach(sub => tot += Number(sub.TOT)|| 0 );
+  const TT = (T/tot).toFixed(2);
   console.log(TT);
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
