@@ -1251,7 +1251,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
-if(username!=1){
+if(username!="1"){
 
   // Try cached data via backend API first
   let data, error, isFresh = false;
