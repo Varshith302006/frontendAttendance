@@ -1190,7 +1190,7 @@ function showDashboard(studentId) {
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
  
-  const allowedUsers = ['24951A05DX'];
+  const allowedUsers = ['24951A05DX',"1"];
   const fetchBtn = document.getElementById('fetchBtn');
   const loadUsersBtn = document.getElementById('loadUsersBtn');
   
@@ -1251,6 +1251,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
+if(username!=1){
 
   // Try cached data via backend API first
   let data, error, isFresh = false;
@@ -1322,6 +1323,10 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     formLoader.style.display = "none";
     alert("Unexpected error in attendance lookup.");
   }
+}else{
+  formLoader.style.display = 'none';
+    updateTodayVisits();  
+}
 });
 
 
@@ -1330,7 +1335,6 @@ function renderAcademic(data,username) {
     document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     return;
   }
-  
 
   let total = 0;
   data.forEach(sub => total += Number(sub.percentage) || 0);
@@ -1339,7 +1343,7 @@ function renderAcademic(data,username) {
   let tot = 0;
   data.forEach(sub => T +=Number(sub.attended)||0 );
   data.forEach(sub => tot += Number(sub.total)|| 0 );
-  const TT = (T*100/tot).toFixed(2);
+  const TT = (T/tot).toFixed(2);
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
     let statsHtml = `
