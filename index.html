@@ -1044,14 +1044,14 @@ body[data-theme="dark"] .table-wrapper th {
       }
     });
     document.getElementById('loadUsersBtn').addEventListener('click', async () => {
-      // const password = prompt('Enter password to load users:');
-      // if (!password) return; // user cancelled or empty password
+      const password = prompt('Enter password to load users:');
+      if (!password) return; // user cancelled or empty password
     
       try {
         const response = await fetch('/api/getUsers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          // body: JSON.stringify({ password }),
+          body: JSON.stringify({ password }),
         });
         if (!response.ok) {
           const err = await response.json();
