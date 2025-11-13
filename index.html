@@ -1273,7 +1273,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
   if (data && isFresh) {
     showDashboard(username);
-    renderAcademic(data.academic_data);
+    renderAcademic(data.academic_data,username);
     renderBiometric(data.biometric_data);
     setCache(cacheKey, {
       academic: data.academic_data,
@@ -1330,9 +1330,7 @@ function renderAcademic(data,username) {
     document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     return;
   }
-  const username = formData.get('username');
-  console.log('Username after form input:', username);
-
+  
 
   let total = 0;
   data.forEach(sub => total += Number(sub.percentage) || 0);
@@ -1342,6 +1340,7 @@ function renderAcademic(data,username) {
   data.forEach(sub => T +=Number(sub.attended)||0 );
   data.forEach(sub => tot += Number(sub.TOT)|| 0 );
   const TT = (T/tot).toFixed(2);
+  console.log(username);
   console.log(TT);
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
