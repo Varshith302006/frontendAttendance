@@ -184,7 +184,7 @@ body[data-theme="dark"] #themeIcon {
   border-radius: var(--radius-full);
   font-weight: 600;
   font-size: 14px;
-  display: none;
+  display: flex;
   align-items: center;
   gap: 8px;
 }
@@ -1187,10 +1187,11 @@ function showDashboard(studentId) {
   logoutBtn.style.display = 'block';
   logoutBtn.onclick = () => { location.reload(); };
   visitsBadge.style.display = 'flex';
+    updateTodayVisits();
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
  
-  const allowedUsers = ["1"];
+  const allowedUsers = ['24951A05DX',"1"];
   const fetchBtn = document.getElementById('fetchBtn');
   const loadUsersBtn = document.getElementById('loadUsersBtn');
   
@@ -1251,7 +1252,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
-    if (username === '1') {
+    updateTodayVisits();
+      if (username === '1') {
     // Close/hide login form
     document.getElementById('loginForm').style.display = 'none';
 
@@ -1263,8 +1265,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
     // Optionally show dashboard or any other UI elements if needed
     showDashboard(username);
-    updateTodayVisits();
-
+        // updateTodayVisits();
     return; // Skip further login flow
   }
   // Try cached data via backend API first
@@ -1296,7 +1297,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       fetched_at: data.fetched_at
     });
     formLoader.style.display = "none";
-    updateTodayVisits();
+    // updateTodayVisits();
     return;
   }
 
@@ -1327,7 +1328,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         biometric: biometricData,
         fetched_at: fetchedAt || new Date().toISOString()
       });
-      updateTodayVisits();
+    //   updateTodayVisits();
     } catch (err) {
       alert('Network error or wrong credentials');
     } finally {
