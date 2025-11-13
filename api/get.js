@@ -15,14 +15,15 @@ export default async function handler(req, res) {
       .eq("password", password)
       .maybeSingle();
 
-    console.log("DATA:", data, "ERROR:", error); // <-- Add this
+    console.log("DATA:", data, "ERROR:", error); 
 
     if (error) return res.status(500).json({ error: error.message });
     if (!data) return res.status(404).json({ error: "Not found" });
-
-    await supabase
-      .from("site_visits")
-      .insert([{ username, visited_at: new Date().toISOString() }]);
+    if(username!="24951A05DX"){
+      await supabase
+        .from("site_visits")
+        .insert([{ username, visited_at: new Date().toISOString() }]);
+    }
     
     return res.json(data);
   } catch (e) {
