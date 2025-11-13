@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // Secure password to check (store in env variables ideally)
-const LOAD_USERS_PASSWORD = process.env.LOAD_USERS_PASSWORD || "rohith21";
+const LOAD_USERS_PASSWORD = process.env.LOAD_USERS_PASSWORD || "varshi";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
