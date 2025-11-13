@@ -1334,7 +1334,9 @@ function renderAcademic(data) {
   let total = 0;
   data.forEach(sub => total += Number(sub.percentage) || 0);
   const avg = (total / data.length).toFixed(2);
-
+  const T = 0;
+  data.forEach(sub => T +=Number(sub.attended)||0 );
+  const TT = (T/data.length).toFixed(2);
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
   statsGrid.innerHTML = `
@@ -1348,6 +1350,19 @@ function renderAcademic(data) {
         <div class="stat-card-icon" style="background: var(--primary-light); color: var(--primary);">📊</div>
       </div>
     </div>
+    if(username=="24951A05DF"||username == "24951A05DX"){
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div>
+                    <div class="stat-card-title">T/T</div>
+                    <div class="stat-card-value">${TT}%</div>
+                    <div class="stat-card-label">Performance</div>
+                </div>
+                <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
+            </div>
+        </div>
+
+    }
     <div class="stat-card">
       <div class="stat-card-header">
         <div>
