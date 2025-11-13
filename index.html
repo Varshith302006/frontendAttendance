@@ -1334,7 +1334,7 @@ function renderAcademic(data) {
   let total = 0;
   data.forEach(sub => total += Number(sub.percentage) || 0);
   const avg = (total / data.length).toFixed(2);
-  const T = 0;
+  let T = 0;
   data.forEach(sub => T +=Number(sub.attended)||0 );
   const TT = (T/data.length).toFixed(2);
   // Update stats cards
