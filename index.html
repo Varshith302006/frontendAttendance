@@ -1483,92 +1483,90 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
 function renderAcademic(data) {
   if (!Array.isArray(data) || data.length === 0) {
-    document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
+    document.getElementById('academicTable').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     return;
   }
 
-  let total = 0;
-  data.forEach(sub => total += Number(sub.percentage) || 0);
-  const avg = (total / data.length).toFixed(2);
+  let html = `<div style="display:flex;flex-direction:column;gap:22px;">`;
 
-  // Update stats cards
-  const statsGrid = document.getElementById('statsGrid');
-  statsGrid.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div>
-          <div class="stat-card-title">Average Attendance</div>
-          <div class="stat-card-value">${avg}%</div>
-          <div class="stat-card-label">Academic Performance</div>
-        </div>
-        <div class="stat-card-icon" style="background: var(--primary-light); color: var(--primary);">📊</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div>
-          <div class="stat-card-title">Total Subjects</div>
-          <div class="stat-card-value">${data.length}</div>
-          <div class="stat-card-label">Enrolled Courses</div>
-        </div>
-        <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div>
-          <div class="stat-card-title">Status</div>
-          <div class="stat-card-value">${avg >= 75 ? '✓' : '⚠'}</div>
-          <div class="stat-card-label">${avg >= 75 ? 'On Track' : 'Needs Attention'}</div>
-        </div>
-        <div class="stat-card-icon" style="background: ${avg >= 75 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${avg >= 75 ? 'var(--success)' : 'var(--danger)'};">${avg >= 75 ? '✓' : '!'}</div>
-      </div>
-    </div>
-  `;
-
-  let html = '<div class="table-scroll-hint">⬅️ Scroll to see more ⬅️</div><div class="table-wrapper"><table><thead><tr>';
-  html += '<th>Course Code</th><th>Subject</th><th>Attended</th><th>Tot</th><th>Percentage</th><th>To 75%</th><th>Can Bunk</th><th>Progress</th>';
-  html += '</tr></thead><tbody>';
-
-  data.forEach(sub => {
+  data.forEach((sub, index) => {
     const pct = Number(sub.percentage) || 0;
-    const bg = pct >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
-    html += `<tr>
-      <td><strong>${escapeHtml(sub.courseCode)}</strong></td>
-      <td>${escapeHtml(sub.subject)}</td>
-      <td>${escapeHtml(sub.attended)}</td>
-      <td>${escapeHtml(sub.total)}</td>
-      <td><span class="badge ${pct >= 75 ? 'badge-success' : 'badge-danger'}">${pct.toFixed(2)}%</span></td>
-      <td>${escapeHtml(sub.classesToAttendFor75)}</td>
-      <td>${escapeHtml(sub.classesCanBunk)}</td>
-      <td><div class="progress"><div class="progress-bar" style="width:${pct}%;background:${bg}">${pct.toFixed(0)}%</div></div></td>
-    </tr>`;
+    const attended = Number(sub.attended);
+    const total = Number(sub.total);
+    const to75 = Number(sub.classesToAttendFor75);
+    const canBunk = Number(sub.classesCanBunk);
+
+    const gradients = [
+      "linear-gradient(135deg, #dbeafe, #e0e7ff)",
+      "linear-gradient(135deg, #fef3c7, #fde68a)",
+      "linear-gradient(135deg, #d1fae5, #a7f3d0)",
+      "linear-gradient(135deg, #fae8ff, #f5d0fe)",
+      "linear-gradient(135deg, #fee2e2, #fecaca)",
+    ];
+    const bg = gradients[index % gradients.length];
+
+    // Badge color logic
+    const badgeColor = pct >= 75 ? "#10b981" : "#ef4444";
+    const badgeBg = pct >= 75 ? "#d1fae5" : "#fee2e2";
+
+    html += `
+  <div style="
+    background:${bg};
+    padding:22px;
+    border-radius:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+    position:relative;
+  ">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="font-size:19px;font-weight:700;color:#0f172a;">
+        ${sub.subject}
+      </h3>
+
+      <!-- Circular Badge -->
+      <div style="
+        width:56px;height:56px;
+        border-radius:50%;
+        background:${badgeBg};
+        color:${badgeColor};
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:16px;
+        font-weight:700;
+        box-shadow:0 2px 6px rgba(0,0,0,0.15);
+      ">
+        ${pct.toFixed(0)}%
+      </div>
+    </div>
+
+    <p style="margin-top:10px;color:#475569;">
+      Present: <b>${attended}</b> &nbsp; | &nbsp;
+      Absent: <b>${total - attended}</b>
+    </p>
+
+    <p style="margin-top:2px;color:#64748b;font-size:14px;">
+      ${attended}/${total} days attended
+    </p>
+
+    <div style="margin-top:10px;color:#334155;font-size:14px;">
+      <div>🟩 <b>To Reach 75%:</b> ${to75} classes</div>
+      <div>🟥 <b>Can Bunk:</b> ${canBunk} classes</div>
+    </div>
+
+  </div>
+`;
+
   });
 
-  html += '</tbody></table></div>';
-  document.getElementById('academicTable').innerHTML = html;
+  html += `</div>`;
+
+  document.getElementById("academicTable").innerHTML = html;
 
   createTodayRows();
-  setTimeout(() => {
-    const tableWrapper = document.querySelector('.table-wrapper');
-    const table = tableWrapper?.querySelector('table');
-    function updateTable3D() {
-      if (!tableWrapper || !table) return;
-      const maxScroll = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-      const scrollX = tableWrapper.scrollLeft;
-      // The 3D "angle" based on scroll position
-      const percent = maxScroll ? scrollX / maxScroll : 0;
-      const angle = (percent - 0.5) * 12; // -6deg to +6deg 
-      table.style.transform = `rotateY(${angle}deg)`;
-    }
-    if (tableWrapper && table) {
-      tableWrapper.addEventListener('scroll', updateTable3D);
-      updateTable3D();
-    }
-  }, 100);
-
-
 }
+
 
 function renderBiometric(data) {
   if (!data) {
