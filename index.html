@@ -1357,7 +1357,7 @@ function renderAcademic(data,username) {
   let tot = 0;
   data.forEach(sub => T +=Number(sub.attended)||0 );
   data.forEach(sub => tot += Number(sub.total)|| 0 );
-  const TT = (T/tot).toFixed(2);
+  const TT = (T*100/tot).toFixed(2);
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
     let statsHtml = `
