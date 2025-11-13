@@ -1340,8 +1340,6 @@ function renderAcademic(data,username) {
   data.forEach(sub => T +=Number(sub.attended)||0 );
   data.forEach(sub => tot += Number(sub.total)|| 0 );
   const TT = (T*100/tot).toFixed(2);
-  console.log(username);
-  console.log(TT);
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
     let statsHtml = `
