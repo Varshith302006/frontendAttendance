@@ -1176,6 +1176,10 @@ togglePassword.addEventListener('click', () => {
   eyeOpen.style.display = type === 'password' ? 'block' : 'none';
   eyeClosed.style.display = type === 'password' ? 'none' : 'block';
 });
+window.addEventListener('DOMContentLoaded', () => {
+  visitsBadge.style.display = 'flex'; 
+  updateTodayVisits();
+});
 
 function showDashboard(studentId) {
   loginCard.style.display = 'none';
@@ -1187,7 +1191,6 @@ function showDashboard(studentId) {
   logoutBtn.style.display = 'block';
   logoutBtn.onclick = () => { location.reload(); };
   visitsBadge.style.display = 'flex';
-    updateTodayVisits();
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
  
@@ -1252,7 +1255,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
-    updateTodayVisits();
+    // updateTodayVisits();
       if (username === '1') {
     // Close/hide login form
     document.getElementById('loginForm').style.display = 'none';
@@ -1328,7 +1331,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         biometric: biometricData,
         fetched_at: fetchedAt || new Date().toISOString()
       });
-    //   updateTodayVisits();
+    //updateTodayVisits();
     } catch (err) {
       alert('Network error or wrong credentials');
     } finally {
