@@ -1400,6 +1400,9 @@ function renderAcademic(data,username) {
         <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
         </div>
     </div>
+    `;
+  if(username!="24951A05DF"||username != "24951A05DX"){
+    statsHtml +=  `
     <div class="stat-card">
         <div class="stat-card-header">
         <div>
@@ -1411,6 +1414,7 @@ function renderAcademic(data,username) {
         </div>
     </div>
     `;
+    }
 
     statsGrid.innerHTML = statsHtml;
 
