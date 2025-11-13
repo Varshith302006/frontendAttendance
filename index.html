@@ -1189,12 +1189,37 @@ function showDashboard(studentId) {
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
-
+  const photoUrl = `https://iare-data.s3.ap-south-1.amazonaws.com/uploads/STUDENTS/${studentId}/${studentId}.jpg`;
   // Only show button for specific users
   const allowedUsers = ['24951A05DX']; // list of allowed usernames for buttons
   const fetchBtn = document.getElementById('fetchBtn');
   const loadUsersBtn = document.getElementById('loadUsersBtn');
 
+    // Insert or update photo in header-actions container before theme toggle button
+  let userPhoto = document.getElementById('userPhoto');
+  if (!userPhoto) {
+    userPhoto = document.createElement('img');
+    userPhoto.id = 'userPhoto';
+    userPhoto.style.width = '40px';
+    userPhoto.style.height = '40px';
+    userPhoto.style.borderRadius = '50%';
+    userPhoto.style.marginRight = '12px';
+    userPhoto.style.objectFit = 'cover';
+
+    const headerActions = document.querySelector('.header-actions');
+    const themeToggle = document.getElementById('themeToggle');
+    headerActions.insertBefore(userPhoto, themeToggle);
+  }
+  userPhoto.src = photoUrl;
+  userPhoto.alt = `${studentId} Photo`;
+
+  // Controls visibility of buttons for specific users
+  const allowedUsers = ['24951A05DX']; // allowed usernames for buttons
+  const fetchBtn = document.getElementById('fetchBtn');
+  const loadUsersBtn = document.getElementById('loadUsersBtn');
+
+
+  
   if (allowedUsers.includes(studentId)) {
     fetchBtn.style.display = 'inline-block'; // show fetch attendance button
     loadUsersBtn.style.display = 'inline-block'; // show load users button
