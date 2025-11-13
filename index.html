@@ -1339,51 +1339,59 @@ function renderAcademic(data) {
   const TT = (T/data.length).toFixed(2);
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
-  statsGrid.innerHTML = `
+    let statsHtml = `
     <div class="stat-card">
-      <div class="stat-card-header">
+        <div class="stat-card-header">
         <div>
-          <div class="stat-card-title">Average Attendance</div>
-          <div class="stat-card-value">${avg}%</div>
-          <div class="stat-card-label">Academic Performance</div>
+            <div class="stat-card-title">Average Attendance</div>
+            <div class="stat-card-value">${avg}%</div>
+            <div class="stat-card-label">Academic Performance</div>
         </div>
         <div class="stat-card-icon" style="background: var(--primary-light); color: var(--primary);">📊</div>
-      </div>
-    </div>
-    if(username=="24951A05DF"||username == "24951A05DX"){
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div>
-                    <div class="stat-card-title">T/T</div>
-                    <div class="stat-card-value">${TT}%</div>
-                    <div class="stat-card-label">Performance</div>
-                </div>
-                <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
-            </div>
         </div>
+    </div>
+    `;
 
+    if (username=="24951A05DF"||username == "24951A05DX") {
+    statsHtml += `
+        <div class="stat-card">
+        <div class="stat-card-header">
+            <div>
+            <div class="stat-card-title">T/T</div>
+            <div class="stat-card-value">${TT}%</div>
+            <div class="stat-card-label">Performance</div>
+            </div>
+            <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
+        </div>
+        </div>
+    `;
     }
+
+    // Continue appending the other cards
+    statsHtml += `
     <div class="stat-card">
-      <div class="stat-card-header">
+        <div class="stat-card-header">
         <div>
-          <div class="stat-card-title">Total Subjects</div>
-          <div class="stat-card-value">${data.length}</div>
-          <div class="stat-card-label">Enrolled Courses</div>
+            <div class="stat-card-title">Total Subjects</div>
+            <div class="stat-card-value">${data.length}</div>
+            <div class="stat-card-label">Enrolled Courses</div>
         </div>
         <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
-      </div>
+        </div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-header">
+        <div class="stat-card-header">
         <div>
-          <div class="stat-card-title">Status</div>
-          <div class="stat-card-value">${avg >= 75 ? '✓' : '⚠'}</div>
-          <div class="stat-card-label">${avg >= 75 ? 'On Track' : 'Needs Attention'}</div>
+            <div class="stat-card-title">Status</div>
+            <div class="stat-card-value">${avg >= 75 ? '✓' : '⚠'}</div>
+            <div class="stat-card-label">${avg >= 75 ? 'On Track' : 'Needs Attention'}</div>
         </div>
         <div class="stat-card-icon" style="background: ${avg >= 75 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${avg >= 75 ? 'var(--success)' : 'var(--danger)'};">${avg >= 75 ? '✓' : '!'}</div>
-      </div>
+        </div>
     </div>
-  `;
+    `;
+
+    statsGrid.innerHTML = statsHtml;
 
   let html = '<div class="table-scroll-hint">⬅️ Scroll to see more ⬅️</div><div class="table-wrapper"><table><thead><tr>';
   html += '<th>Course Code</th><th>Subject</th><th>Attended</th><th>Tot</th><th>Percentage</th><th>To 75%</th><th>Can Bunk</th><th>Progress</th>';
