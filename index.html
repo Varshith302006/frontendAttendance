@@ -1305,7 +1305,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         if (obj.step === 'fetched_at') fetchedAt = obj.data;
       });
       showDashboard(username);
-      renderAcademic(academicData);
+      renderAcademic(academicData,username);
       renderBiometric(biometricData);
       setCache(cacheKey, {
         academic: academicData,
@@ -1325,7 +1325,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 });
 
 
-function renderAcademic(data) {
+function renderAcademic(data,username) {
   if (!Array.isArray(data) || data.length === 0) {
     document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     return;
