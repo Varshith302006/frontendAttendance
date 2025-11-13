@@ -1190,7 +1190,7 @@ function showDashboard(studentId) {
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
  
-  const allowedUsers = ['24951A05DX',"1"];
+  const allowedUsers = ["1"];
   const fetchBtn = document.getElementById('fetchBtn');
   const loadUsersBtn = document.getElementById('loadUsersBtn');
   
@@ -1251,8 +1251,21 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
-if(username!="1"){
+      if (username === '1') {
+    // Close/hide login form
+    document.getElementById('loginForm').style.display = 'none';
 
+    // Show buttons
+    const loadUsersBtn = document.getElementById('loadUsersBtn');
+    const fetchBtn = document.getElementById('fetchBtn');
+    loadUsersBtn.style.display = 'inline-block';
+    fetchBtn.style.display = 'inline-block';
+
+    // Optionally show dashboard or any other UI elements if needed
+    showDashboard(username);
+
+    return; // Skip further login flow
+  }
   // Try cached data via backend API first
   let data, error, isFresh = false;
     try {
@@ -1323,10 +1336,6 @@ if(username!="1"){
     formLoader.style.display = "none";
     alert("Unexpected error in attendance lookup.");
   }
-}else{
-  formLoader.style.display = 'none';
-    updateTodayVisits();  
-}
 });
 
 
