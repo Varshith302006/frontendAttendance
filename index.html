@@ -870,7 +870,7 @@ body[data-theme="dark"] .table-wrapper th {
 </head>
 <body>
 <div style="position: fixed; bottom: 10px; right: 10px; z-index: 999; font-size: 12px; color: #999;">
-    VISHWA CREATIONS
+    UMA CREATIONS
 </div>
 
 </div>
@@ -939,77 +939,6 @@ body[data-theme="dark"] .table-wrapper th {
       </div>
     </form>
     
-  </div>
-  <!-- Place this after your login form -->
-   <h4 style="text-align:center; margin:28px 0 18px 0; font-size:1.08em; font-weight:600; color:#6366f1; letter-spacing:1px;">
-  Created by
-</h4>
-<div style="
-  margin-top: 40px; 
-  display: flex; 
-  justify-content: center;
-">
-  <div style="
-    background: #192841;
-    border-radius: 18px;
-    padding: 32px 24px;
-    box-shadow: 0 10px 28px rgba(25, 40, 65, 0.35);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 280px;
-    max-width: 330px;
-    transition: box-shadow 0.3s;
-  ">
-    <img src="https://iare-data.s3.ap-south-1.amazonaws.com/uploads/STUDENTS/24951A05ER/24951A05ER.jpg" alt="Profile" style="
-      width: 92px;
-      height: 92px;
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.26);
-      margin-bottom: 18px;
-      border: 3px solid #4f46e5;
-    ">
-    <h2 style="
-      color: #fff;
-      font-size: 1.28em;
-      font-weight: 700;
-      letter-spacing: 1px;
-      margin-bottom: 7px;
-      text-align: center;
-      text-transform: uppercase;
-    ">VISHWA TEJA</h2>
-    <span style="
-      color: #60a5fa;
-      font-size: 1em;
-      font-weight: 500;
-      margin-bottom: 14px;
-      text-align: center;
-      letter-spacing: 0.5px;
-    ">Full Stack Engineer</span>
-    <div style="
-      margin-top: 10px;
-      display: flex;
-      gap: 14px;
-      font-size: 1.42em;
-      color: #60a5fa;
-      justify-content: center;
-    ">
-      <!-- Example SVG icons for LinkedIn and GitHub -->
-     <a href="https://www.linkedin.com/in/YOUR_USERNAME" target="_blank" rel="noopener noreferrer" title="LinkedIn" style="color:inherit; text-decoration:none;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-linkedin" aria-hidden="true">
-            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-            <rect width="4" height="12" x="2" y="9"></rect>
-            <circle cx="4" cy="4" r="2"></circle>
-        </svg>
-        </a>
-      <a href="https://github.com/YOUR_GITHUB_USERNAME" target="_blank" rel="noopener noreferrer" title="GitHub" style="color:inherit; text-decoration:none;">
-        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2C6.477 2 2 6.484 2 12c0 4.418 2.868 8.167 6.839 9.489.5.091.682-.217.682-.483 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.343-3.369-1.343-.454-1.156-1.109-1.464-1.109-1.464-.908-.621.069-.609.069-.609 1.004.07 1.533 1.032 1.533 1.032.892 1.529 2.341 1.089 2.91.833.091-.647.35-1.09.635-1.341-2.22-.252-4.555-1.114-4.555-4.953 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.27.098-2.647 0 0 .84-.27 2.75 1.026A9.553 9.553 0 0112 7.07a9.54 9.54 0 012.504.338c1.909-1.296 2.748-1.026 2.748-1.026.546 1.377.202 2.394.1 2.647.64.7 1.028 1.595 1.028 2.688 0 3.847-2.338 4.698-4.566 4.946.359.309.678.919.678 1.853 0 1.337-.012 2.419-.012 2.747 0 .269.18.579.688.481C19.135 20.163 22 16.416 22 12c0-5.516-4.477-10-10-10z"/>
-        </svg>
-        </a>
-
-    </div>
   </div>
 </div>
 
@@ -1264,6 +1193,7 @@ function showDashboard(studentId) {
   document.querySelector('header h2').textContent = `${studentId}'s Dashboard`;
   logoutBtn.style.display = 'block';
   logoutBtn.onclick = () => { location.reload(); };
+  document.getElementById("creatorCard").style.display = "none";
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
