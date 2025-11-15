@@ -1193,7 +1193,7 @@ function showDashboard(studentId) {
   document.querySelector('header h2').textContent = `${studentId}'s Dashboard`;
   logoutBtn.style.display = 'block';
   logoutBtn.onclick = () => { location.reload(); };
-  document.getElementById("creatorCard").style.display = "none";
+
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
