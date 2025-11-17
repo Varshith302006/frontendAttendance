@@ -1286,7 +1286,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     if (res.ok) {
       data = await res.json();
       const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
-      isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 36 * 60 * 60 * 1000);
+      isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 7 * 60 * 60 * 1000);
     }
   } catch (err) {
     // ignore, fallback to backend
