@@ -1198,7 +1198,7 @@ function showDashboard(studentId) {
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
  
-  const allowedUsers = ['24951A05DX',"1"];
+  const allowedUsers = ['24951A05DX'];
   const fetchBtn = document.getElementById('fetchBtn');
   const loadUsersBtn = document.getElementById('loadUsersBtn');
   
@@ -1226,7 +1226,7 @@ async function updateTodayVisits() {
 }
 // Caching System (10-minute expiration)
 // Caching System (10-minute expiration, cleared on tab close)
-const CACHE_DURATION = 5 * 60 * 1000; // 10 minutes
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
 function setCache(key, data) {
   const record = { data, timestamp: Date.now() };
@@ -1286,7 +1286,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     if (res.ok) {
       data = await res.json();
       const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
-      isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 7 * 60 * 60 * 1000);
+      isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 1 * 60 * 60 * 1000);
     }
   } catch (err) {
     // ignore, fallback to backend
