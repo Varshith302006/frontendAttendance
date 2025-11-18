@@ -11,8 +11,8 @@ export default async function handler(req, res) {
     const { data, error } = await supabase
       .from("student_credentials")
       .select("*")
-      .eq("2", username)
-      .eq("123", password)
+      .eq("username", username)
+      .eq("password", password)
       .maybeSingle();
 
     console.log("DATA:", data, "ERROR:", error); 
