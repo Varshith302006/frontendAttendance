@@ -1377,12 +1377,11 @@ function renderAcademic(data,username) {
     </div>
     `;
 
-    if (username=="24951A05DF"||username == "24951A05DX") {
     statsHtml += `
         <div class="stat-card">
         <div class="stat-card-header">
             <div>
-            <div class="stat-card-title">T/T</div>
+            <div class="stat-card-title">Total Attend/Total</div>
             <div class="stat-card-value">${TT}%</div>
             <div class="stat-card-label">Performance</div>
             </div>
@@ -1390,7 +1389,6 @@ function renderAcademic(data,username) {
         </div>
         </div>
     `;
-    }
 
     // Continue appending the other cards
     statsHtml += `
@@ -1405,20 +1403,20 @@ function renderAcademic(data,username) {
         </div>
     </div>
     `;
-  if(username!="24951A05DF"&&username != "24951A05DX"){
-    statsHtml +=  `
-    <div class="stat-card">
-        <div class="stat-card-header">
-        <div>
-            <div class="stat-card-title">Status</div>
-            <div class="stat-card-value">${avg >= 75 ? '✓' : '⚠'}</div>
-            <div class="stat-card-label">${avg >= 75 ? 'On Track' : 'Needs Attention'}</div>
-        </div>
-        <div class="stat-card-icon" style="background: ${avg >= 75 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${avg >= 75 ? 'var(--success)' : 'var(--danger)'};">${avg >= 75 ? '✓' : '!'}</div>
-        </div>
-    </div>
-    `;
-    }
+  // if(username!="24951A05DF"&&username != "24951A05DX"){
+  //   statsHtml +=  `
+  //   <div class="stat-card">
+  //       <div class="stat-card-header">
+  //       <div>
+  //           <div class="stat-card-title">Status</div>
+  //           <div class="stat-card-value">${avg >= 75 ? '✓' : '⚠'}</div>
+  //           <div class="stat-card-label">${avg >= 75 ? 'On Track' : 'Needs Attention'}</div>
+  //       </div>
+  //       <div class="stat-card-icon" style="background: ${avg >= 75 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${avg >= 75 ? 'var(--success)' : 'var(--danger)'};">${avg >= 75 ? '✓' : '!'}</div>
+  //       </div>
+  //   </div>
+  //   `;
+  //   }
 
     statsGrid.innerHTML = statsHtml;
 
