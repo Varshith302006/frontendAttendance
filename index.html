@@ -1619,6 +1619,7 @@ function calculateNewOverall() {
 
   const subjectMap = {};
   const trEls = document.querySelectorAll('#academicTable table tbody tr');
+
   trEls.forEach(tr => {
     const tds = tr.querySelectorAll('td');
     const sub = tds[1].textContent.trim();
@@ -1628,11 +1629,13 @@ function calculateNewOverall() {
     };
   });
 
+  // Apply simulation selections
   rows.forEach(row => {
     const attendBtn = row.querySelector('.attend-btn');
     const bunkBtn = row.querySelector('.bunk-btn');
     const select = row.querySelector('select');
     const sub = select.value;
+
     if (!subjectMap[sub]) return;
 
     if (attendBtn.dataset.status === 'attend') {
@@ -1643,29 +1646,68 @@ function calculateNewOverall() {
     }
   });
 
+  // ----------------------------------------
+  // 1️⃣ SUBJECT-WISE AVERAGE (old method)
+  // ----------------------------------------
   let sumPct = 0;
   let count = 0;
+
   for (const sub in subjectMap) {
     const s = subjectMap[sub];
     const pct = s.total ? (s.attended / s.total) * 100 : 0;
     sumPct += pct;
     count++;
   }
-  const newAvg = (sumPct / count).toFixed(2);
-  const color = newAvg >= 75 ? 'var(--success)' : 'var(--danger)';
-  const bg = newAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
+
+  const subjectAvg = (sumPct / count).toFixed(2);
+  const subColor = subjectAvg >= 75 ? 'var(--success)' : 'var(--danger)';
+  const subBg = subjectAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
+
+  // ----------------------------------------
+  // 2️⃣ TOTAL PRESENT / TOTAL CLASSES (correct)
+  // ----------------------------------------
+  let totalPresent = 0;
+  let totalClasses = 0;
+
+  for (const sub in subjectMap) {
+    const s = subjectMap[sub];
+    totalPresent += s.attended;
+    totalClasses += s.total;
+  }
+
+  const overallAvg = totalClasses ? ((totalPresent / totalClasses) * 100).toFixed(2) : 0;
+  const overColor = overallAvg >= 75 ? 'var(--success)' : 'var(--danger)';
+  const overBg = overallAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
+
+  // ----------------------------------------
+  // UI OUTPUT → SHOW BOTH BARS
+  // ----------------------------------------
   newOverallEl.innerHTML = `
-    Predicted Overall Attendance: ${newAvg}%<br>
-    <div class="progress" style="margin-top:16px;">
-      <div class="progress-bar" style="width:${newAvg}%;background:${bg};color: white;">
-        ${newAvg}%
+    <div style="margin-bottom:12px;">
+      <b>Subject-wise Average:</b> ${subjectAvg}%<br>
+      <div class="progress" style="margin-top:6px;">
+        <div class="progress-bar" style="width:${subjectAvg}%; background:${subBg}; color:white;">
+          ${subjectAvg}%
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <b>Total Present / Total Classes:</b> ${overallAvg}%<br>
+      <div class="progress" style="margin-top:6px;">
+        <div class="progress-bar" style="width:${overallAvg}%; background:${overBg}; color:white;">
+          ${overallAvg}%
+        </div>
       </div>
     </div>
   `;
-  newOverallEl.style.background = newAvg >= 75 ? 'var(--success-light)' : 'var(--danger-light)';
-  newOverallEl.style.color = color;
-  newOverallEl.style.borderColor = color;
+
+  // Style card
+  newOverallEl.style.background = overallAvg >= 75 ? 'var(--success-light)' : 'var(--danger-light)';
+  newOverallEl.style.color = overColor;
+  newOverallEl.style.borderColor = overColor;
 }
+
 
 function escapeHtml(v) {
   if (v === undefined || v === null) return '';
