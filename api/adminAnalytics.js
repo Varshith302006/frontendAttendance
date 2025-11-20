@@ -1,17 +1,28 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+/* ---------------------------------------
+   ADMIN PASSWORD (Set your own here)
+--------------------------------------- */
+const ADMIN_PASSWORD = "rohith21";   // <-- Change this to your desired password
+
+/* ---------------------------------------
+   SUPABASE CLIENT
+--------------------------------------- */
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL"),
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") // service role key is required for analytics
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
 );
 
+/* ---------------------------------------
+   MAIN ANALYTICS ENDPOINT
+--------------------------------------- */
 export async function POST(req) {
   try {
     const { password } = await req.json();
 
-    // Simple security: admin must enter a secret
-    if (password !== Deno.env.get("ADMIN_SECRET")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    // Validate password
+    if (password !== ADMIN_PASSWORD) {
+      return new Response(JSON.stringify({ error: "Wrong Password" }), { status: 401 });
     }
 
     // Fetch all users
@@ -25,7 +36,9 @@ export async function POST(req) {
 
     const total_users = students.length;
 
-    // Fetch today's logins from site_visits
+    /* ---------------------------------------
+       Today Login Count
+    --------------------------------------- */
     const today = new Date().toISOString().slice(0, 10);
     const { data: visitData } = await supabase
       .from("site_visits")
@@ -35,7 +48,9 @@ export async function POST(req) {
 
     const today_logins = visitData?.count || 0;
 
-    // Attendance calculations
+    /* ---------------------------------------
+       Attendance Calculations
+    --------------------------------------- */
     const attendanceList = students.map((s) => {
       let avg = 0;
 
@@ -48,19 +63,16 @@ export async function POST(req) {
       return { username: s.username, avg };
     });
 
-    // Lowest 5 attendance
     const low_attendance = attendanceList
       .filter(x => x.avg > 0)
       .sort((a, b) => a.avg - b.avg)
       .slice(0, 5);
 
-    // Highest 5
     const high_attendance = attendanceList
       .filter(x => x.avg > 0)
       .sort((a, b) => b.avg - a.avg)
       .slice(0, 5);
 
-    // Distribution
     const dist = { "<50": 0, "50-60": 0, "60-70": 0, "70-80": 0, "80-90": 0, "90-100": 0 };
 
     attendanceList.forEach(a => {
@@ -72,6 +84,9 @@ export async function POST(req) {
       else dist["90-100"]++;
     });
 
+    /* ---------------------------------------
+       Return Final Analytics JSON
+    --------------------------------------- */
     return new Response(
       JSON.stringify({
         total_users,
