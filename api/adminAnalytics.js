@@ -9,8 +9,8 @@ const ADMIN_PASSWORD = "rohith21";   // <-- Change this to your desired password
    SUPABASE CLIENT
 --------------------------------------- */
 const supabase = createClient(
-  Deno.env.get("SUPABASE_URL"),
-  Deno.env.get("SUPABASE_KEY")
+  process.env.SUPABASE_URL, 
+  process.env.SUPABASE_KEY
 );
 
 /* ---------------------------------------
