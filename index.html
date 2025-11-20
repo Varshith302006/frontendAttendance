@@ -1217,9 +1217,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         if (obj.step === 'biometric') biometricData = obj.data;
         if (obj.step === 'fetched_at') fetchedAt = obj.data;
       });
-      
-      showDashboard(username);
       document.getElementById('skeletonLoader').style.display = 'none';
+      showDashboard(username);
       renderAcademic(academicData,username);
       renderBiometric(biometricData);
       setCache(cacheKey, {
