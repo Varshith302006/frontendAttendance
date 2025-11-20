@@ -1079,21 +1079,6 @@ function showDashboard(studentId) {
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
  
-  const allowedUsers = ['24951A05DX'];
-  const fetchBtn = document.getElementById('fetchBtn');
-  const loadUsersBtn = document.getElementById('loadUsersBtn');
-  
-  if (allowedUsers.includes(studentId)) {
-    fetchBtn.style.display = 'inline-block'; 
-    loadUsersBtn.style.display = 'inline-block'; 
-  } else {
-    fetchBtn.style.display = 'none';
-    loadUsersBtn.style.display = 'none';
-  }
-}
-
-
-
 async function updateTodayVisits() {
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
