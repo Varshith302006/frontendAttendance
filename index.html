@@ -131,7 +131,7 @@ header h2 {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 #themeToggle {
@@ -207,6 +207,24 @@ body[data-theme="dark"] #themeIcon {
   background: #dc2626;
   transform: translateY(-1px);
   box-shadow: var(--shadow);
+}
+
+/* NEW: Debug button */
+#debugBtn {
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  display: none; /* only shown for admin in JS */
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+}
+#debugBtn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 /* Container */
@@ -865,73 +883,101 @@ body[data-theme="dark"] .table-wrapper th {
   color: var(--text-secondary);
 }
 
-/* Debug modal */
-.debug-modal {
+/* 🔧 DEBUG MODAL STYLES */
+.debug-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15,23,42,0.65);
+  background: rgba(15,23,42,0.55);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 200;
-  backdrop-filter: blur(4px);
 }
-.debug-modal.show {
+
+.debug-modal-overlay.show {
   display: flex;
 }
-.debug-modal-content {
-  width: min(900px, 95vw);
+
+.debug-modal {
+  width: min(960px, 95vw);
   max-height: 90vh;
-  overflow: auto;
   background: var(--bg-secondary);
   border-radius: 16px;
   box-shadow: var(--shadow-xl);
-  padding: 20px 24px;
   border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
 }
+
 .debug-modal-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
 }
+
 .debug-modal-header h3 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
 .debug-close-btn {
   border: none;
   background: transparent;
-  font-size: 22px;
   cursor: pointer;
-  color: var(--text-secondary);
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 999px;
 }
 .debug-close-btn:hover {
-  color: var(--danger);
-}
-.debug-sections details {
-  margin-top: 8px;
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
-  padding: 6px 10px;
   background: var(--bg-primary);
 }
-.debug-sections summary {
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-}
-.debug-sections pre {
-  white-space: pre-wrap;
-  max-height: 200px;
-  overflow: auto;
-  font-size: 12px;
-  margin-top: 6px;
-  background: rgba(15,23,42,0.03);
-  padding: 8px;
-  border-radius: 8px;
+
+.debug-modal-body {
+  padding: 12px 16px 16px;
+  overflow-y: auto;
 }
 
+.debug-section {
+  margin-bottom: 10px;
+}
+
+.debug-section summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 6px 0;
+}
+
+.debug-pre {
+  font-family: "JetBrains Mono", "Consolas", "SF Mono", monospace;
+  font-size: 12px;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 210px;
+  overflow: auto;
+}
+
+.debug-pre.logs {
+  background: #020617;
+  color: #e5e7eb;
+  border-color: #1f2937;
+}
+
+@media (max-width: 640px) {
+  .debug-modal {
+    width: 96vw;
+    max-height: 92vh;
+  }
+}
 </style>
 </head>
 <body>
@@ -950,24 +996,16 @@ body[data-theme="dark"] .table-wrapper th {
       <button id="themeToggle" title="Toggle dark mode" style="display: flex !important;">
         <span id="themeIcon">🌙</span>
       </button>
+
+      <!-- Admin-only debug button (shown in JS when admin logs in) -->
+      <button id="debugBtn" title="Admin Debug Panel">
+        🛠 Debug
+      </button>
+
       <div id="visitsBadge">
         <span>👥</span>
         <span id="visitsCount">0</span>
       </div>
-      <!-- Debug button: only shown for admin in JS -->
-      <button id="debugBtn" style="
-        display:none;
-        padding:8px 14px;
-        border:none;
-        border-radius:12px;
-        background:#0f172a;
-        color:#e5e7eb;
-        font-size:13px;
-        font-weight:600;
-        cursor:pointer;
-      ">
-        🛠 Debug
-      </button>
       <button id="logoutBtn">Logout</button>
     </div>
   </div>
@@ -1020,21 +1058,26 @@ body[data-theme="dark"] .table-wrapper th {
 <!-- Dashboard -->
 <div class="dashboard-grid" id="dashboardCards">
   <p id="statusMsg" style="margin-top:10px;font-weight:bold;"></p>
+
   <button id="fetchBtn" style="display: none; padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
     Fetch Attendance Now
   </button>
-  <button id="loadUsersBtn" style="padding: 10px 20px; background: blue; color: white; border: none; border-radius: 6px; cursor: pointer;">
+
+  <button id="loadUsersBtn" style="padding: 10px 20px; background: blue; color: white; border: none; border-radius: 6px; cursor: pointer; display:none;">
     Load Users
   </button>
+
   <div id="usernamesList" style="margin-top: 10px;"></div>
+
   <button id="fetchSelectedBtn" style="padding: 10px 20px; background: blue; color: white; border: none; border-radius: 6px; cursor: pointer; display: none;">
     Fetch Selected
   </button>
+
   <div id="selectedUsersData" style="margin-top: 20px;"></div>
 
   <!-- Stats Cards -->
   <div class="stats-grid" id="statsGrid"></div>
-
+  
   <!-- Academic Attendance -->
   <div class="card" id="academicCard">
     <div class="card-header">
@@ -1092,33 +1135,38 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 
-<!-- Debug modal (floating panel, admin only) -->
-<div id="debugModal" class="debug-modal">
-  <div class="debug-modal-content">
+<!-- 🔧 DEBUG MODAL HTML -->
+<div id="debugModal" class="debug-modal-overlay">
+  <div class="debug-modal">
     <div class="debug-modal-header">
-      <h3>🛠 Debug Panel</h3>
-      <button id="debugClose" class="debug-close-btn">&times;</button>
+      <h3>🛠 Debug Panel <span style="font-size:12px;color:var(--text-secondary);">Admin only</span></h3>
+      <button id="debugCloseBtn" class="debug-close-btn">✕</button>
     </div>
-    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
-      Visible only for admin (24951A05DX). Inspect raw data and logs here.
-    </p>
-    <div class="debug-sections">
-      <details open>
-        <summary>Academic JSON</summary>
-        <pre id="debugAcademic">No data yet.</pre>
-      </details>
-      <details>
-        <summary>Biometric JSON</summary>
-        <pre id="debugBiometric">No data yet.</pre>
-      </details>
-      <details>
-        <summary>API Logs</summary>
-        <pre id="debugApi">No logs yet.</pre>
-      </details>
-      <details>
-        <summary>Cache Snapshot</summary>
-        <pre id="debugCache">No cache yet.</pre>
-      </details>
+    <div class="debug-modal-body">
+      <div class="debug-section">
+        <details open>
+          <summary>📚 Academic JSON</summary>
+          <pre id="debugAcademic" class="debug-pre">{}</pre>
+        </details>
+      </div>
+      <div class="debug-section">
+        <details>
+          <summary>🔐 Biometric JSON</summary>
+          <pre id="debugBiometric" class="debug-pre">{}</pre>
+        </details>
+      </div>
+      <div class="debug-section">
+        <details>
+          <summary>🧰 Cache Snapshot</summary>
+          <pre id="debugCache" class="debug-pre">{}</pre>
+        </details>
+      </div>
+      <div class="debug-section">
+        <details open>
+          <summary>📜 Logs</summary>
+          <pre id="debugLogs" class="debug-pre logs">[logs will appear here]</pre>
+        </details>
+      </div>
     </div>
   </div>
 </div>
@@ -1142,7 +1190,7 @@ body[data-theme="dark"] .table-wrapper th {
           <span>Time: ${data.time_seconds} sec</span>
         `;
       } else {
-        status.innerHTML = \`❗ Error: \${data.message}\`;
+        status.innerHTML = `❗ Error: ${data.message}`;
       }
     } catch (err) {
       status.innerHTML = '❗ Request failed. Check console/logs.';
@@ -1155,7 +1203,7 @@ body[data-theme="dark"] .table-wrapper th {
   document.getElementById('loadUsersBtn').addEventListener('click', async () => {
     const password = prompt('Enter password to load users:');
     if (!password) return;
-  
+
     try {
       const response = await fetch('/api/getUsers', {
         method: 'POST',
@@ -1167,7 +1215,7 @@ body[data-theme="dark"] .table-wrapper th {
         alert(err.error || 'Failed to load users');
         return;
       }
-  
+
       const users = await response.json();
       const container = document.getElementById('usernamesList');
       if (users.length > 0) {
@@ -1190,7 +1238,7 @@ body[data-theme="dark"] .table-wrapper th {
     const btn = this;
     const status = document.getElementById('statusMsg');
     const selectedUsers = Array.from(document.querySelectorAll('.userCheckbox:checked'))
-                               .map(cb => cb.value);
+                              .map(cb => cb.value);
     if (selectedUsers.length === 0) {
       alert('Please select at least one user.');
       return;
@@ -1215,7 +1263,7 @@ body[data-theme="dark"] .table-wrapper th {
           <span>Time: ${data.time_seconds} sec</span>
         `;
       } else {
-        status.innerHTML = \`❗ Error: \${data.message}\`;
+        status.innerHTML = `❗ Error: ${data.message}`;
       }
     } catch (err) {
       status.innerHTML = '❗ Request failed. Check console/logs.';
@@ -1242,30 +1290,20 @@ const todayContainer = document.getElementById('todayClassesContainer');
 const newOverallEl = document.getElementById('newOverallAttendance');
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
+
+/* Admin + Debug Elements */
+const ADMIN_USERNAME = '24951A05DX';
 const debugBtn = document.getElementById('debugBtn');
 const debugModal = document.getElementById('debugModal');
-const debugClose = document.getElementById('debugClose');
-const debugAcademic = document.getElementById('debugAcademic');
-const debugBiometric = document.getElementById('debugBiometric');
-const debugApi = document.getElementById('debugApi');
-const debugCache = document.getElementById('debugCache');
+const debugCloseBtn = document.getElementById('debugCloseBtn');
+const debugAcademicEl = document.getElementById('debugAcademic');
+const debugBiometricEl = document.getElementById('debugBiometric');
+const debugCacheEl = document.getElementById('debugCache');
+const debugLogsEl = document.getElementById('debugLogs');
 
-const ADMIN_ID = '24951A05DX';
+let isAdmin = false;
 
-// Debug helpers
-function debugLog(message) {
-  if (!debugApi) return;
-  if (debugApi.textContent === 'No logs yet.') debugApi.textContent = '';
-  debugApi.textContent += message + '\n';
-}
-
-function updateDebugCacheSnapshot(cacheKey) {
-  if (!debugCache) return;
-  const snap = getCache(cacheKey);
-  debugCache.textContent = snap ? JSON.stringify(snap, null, 2) : 'No cache or expired.';
-}
-
-// Theme
+// Theme Management - Initialize on page load
 function initTheme() {
   const currentTheme = localStorage.getItem('theme') || 
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -1278,7 +1316,6 @@ function initTheme() {
     themeIcon.textContent = '🌙';
   }
 }
-
 initTheme();
 
 themeToggle.addEventListener('click', () => {
@@ -1306,31 +1343,85 @@ window.addEventListener('DOMContentLoaded', () => {
   updateTodayVisits();
 });
 
-// Debug modal events
-if (debugBtn) {
-  debugBtn.addEventListener('click', () => {
-    if (debugModal) debugModal.classList.add('show');
-  });
+/* 🔧 DEBUG HELPERS */
+
+function openDebugModal() {
+  if (!isAdmin) return;
+  if (debugModal) debugModal.classList.add('show');
 }
-if (debugClose) {
-  debugClose.addEventListener('click', () => {
-    if (debugModal) debugModal.classList.remove('show');
-  });
+
+function closeDebugModal() {
+  if (debugModal) debugModal.classList.remove('show');
+}
+
+if (debugBtn) {
+  debugBtn.addEventListener('click', openDebugModal);
+}
+if (debugCloseBtn) {
+  debugCloseBtn.addEventListener('click', closeDebugModal);
 }
 if (debugModal) {
   debugModal.addEventListener('click', (e) => {
     if (e.target === debugModal) {
-      debugModal.classList.remove('show');
+      closeDebugModal();
     }
   });
 }
 
+function debugLog(message) {
+  if (!isAdmin || !debugLogsEl) return;
+  const ts = new Date().toLocaleTimeString();
+  const line = `[${ts}] ${message}\n`;
+  if (debugLogsEl.textContent === '[logs will appear here]') {
+    debugLogsEl.textContent = line;
+  } else {
+    debugLogsEl.textContent += line;
+  }
+  debugLogsEl.scrollTop = debugLogsEl.scrollHeight;
+}
+
+function updateDebugAcademic(data) {
+  if (!isAdmin || !debugAcademicEl) return;
+  try {
+    debugAcademicEl.textContent = JSON.stringify(data ?? {}, null, 2);
+  } catch {
+    debugAcademicEl.textContent = 'Unable to serialize academic data';
+  }
+}
+
+function updateDebugBiometric(data) {
+  if (!isAdmin || !debugBiometricEl) return;
+  try {
+    debugBiometricEl.textContent = JSON.stringify(data ?? {}, null, 2);
+  } catch {
+    debugBiometricEl.textContent = 'Unable to serialize biometric data';
+  }
+}
+
+function updateDebugCacheSnapshot(cacheKey) {
+  if (!isAdmin || !debugCacheEl) return;
+  const raw = sessionStorage.getItem(cacheKey);
+  if (!raw) {
+    debugCacheEl.textContent = `No cache stored yet for key: ${cacheKey}`;
+    return;
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    debugCacheEl.textContent = JSON.stringify(parsed, null, 2);
+  } catch {
+    debugCacheEl.textContent = raw;
+  }
+}
+
 function showDashboard(studentId) {
+  isAdmin = studentId === ADMIN_USERNAME;
+
   loginCard.style.display = 'none';
   dashboardCards.style.display = 'block';
   setTimeout(() => {
     dashboardCards.classList.add('show');
   }, 10);
+
   document.querySelector('header h2').textContent = `${studentId}'s Dashboard`;
   logoutBtn.style.display = 'block';
   logoutBtn.onclick = () => { location.reload(); };
@@ -1338,24 +1429,19 @@ function showDashboard(studentId) {
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
- 
-  const allowedUsers = ['24951A05DX'];
+
   const fetchBtn = document.getElementById('fetchBtn');
   const loadUsersBtn = document.getElementById('loadUsersBtn');
-  
-  if (allowedUsers.includes(studentId)) {
-    fetchBtn.style.display = 'inline-block'; 
-    loadUsersBtn.style.display = 'inline-block'; 
-  } else {
-    fetchBtn.style.display = 'none';
-    loadUsersBtn.style.display = 'none';
-  }
 
-  // Debug button only for admin
-  if (studentId === ADMIN_ID) {
-    debugBtn.style.display = 'inline-flex';
+  if (isAdmin) {
+    if (fetchBtn) fetchBtn.style.display = 'inline-block';
+    if (loadUsersBtn) loadUsersBtn.style.display = 'inline-block';
+    if (debugBtn) debugBtn.style.display = 'inline-flex';
+    debugLog(`Admin logged in as ${studentId}`);
   } else {
-    debugBtn.style.display = 'none';
+    if (fetchBtn) fetchBtn.style.display = 'none';
+    if (loadUsersBtn) loadUsersBtn.style.display = 'none';
+    if (debugBtn) debugBtn.style.display = 'none';
   }
 }
 
@@ -1371,12 +1457,16 @@ async function updateTodayVisits() {
   }
 }
 
-// Caching
-const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+/* Caching System (2-minute expiration, cleared on tab close) */
+const CACHE_DURATION = 2 * 60 * 1000;
 
 function setCache(key, data) {
   const record = { data, timestamp: Date.now() };
   sessionStorage.setItem(key, JSON.stringify(record));
+  if (isAdmin) {
+    debugLog(`Cache updated for key: ${key}`);
+    updateDebugCacheSnapshot(key);
+  }
 }
 
 function getCache(key) {
@@ -1403,13 +1493,11 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const username = formData.get('username');
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
-  const isAdmin = username === ADMIN_ID;
-
   formLoader.style.display = 'block';
 
   let data, isFresh = false;
   try {
-    const res = await fetch('/api/get',{
+    const res = await fetch('/api/get', {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
@@ -1418,25 +1506,24 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       data = await res.json();
       const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
       isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 1 * 60 * 1000);
-      if (isAdmin) {
-        debugLog('✅ /api/get responded OK');
-      }
-    } else if (isAdmin) {
-      debugLog('⚠️ /api/get responded with non-OK status');
+      debugLog(`Response from /api/get for ${username}, fresh: ${!!isFresh}`);
     }
   } catch (err) {
-    if (isAdmin) debugLog('❌ /api/get failed: ' + err.message);
+    debugLog(`Error calling /api/get: ${err?.message || err}`);
   }
 
   let shouldFetchFromBackend = !data || !isFresh;
 
   if (data && isFresh) {
+    isAdmin = username === ADMIN_USERNAME;
+
     if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
       alert("Check Username and Password");
+      debugLog("Fresh cache had empty academic_data → invalid credentials?");
       formLoader.style.display = "none";
-      if (isAdmin) debugLog('⛔ Cached data had empty academic_data, aborting dashboard.');
       return;
     }
+
     showDashboard(username);
     renderAcademic(data.academic_data, username);
     renderBiometric(data.biometric_data);
@@ -1446,18 +1533,17 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       fetched_at: data.fetched_at
     });
     if (isAdmin) {
-      debugAcademic.textContent = JSON.stringify(data.academic_data, null, 2);
-      debugBiometric.textContent = JSON.stringify(data.biometric_data, null, 2);
+      updateDebugAcademic(data.academic_data);
+      updateDebugBiometric(data.biometric_data);
       updateDebugCacheSnapshot(cacheKey);
-      debugLog('💾 Loaded from /api/get (fresh cache).');
     }
     formLoader.style.display = "none";
     return;
   }
 
-  // Fallback to backend
   if (shouldFetchFromBackend) {
     try {
+      debugLog(`Falling back to backend /get-attendance for ${username}`);
       const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
         method: 'POST',
         body: new URLSearchParams({ username, password })
@@ -1473,19 +1559,23 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         if (obj.step === 'academic') academicData = obj.data;
         if (obj.step === 'biometric') biometricData = obj.data;
         if (obj.step === 'fetched_at') fetchedAt = obj.data;
-        if (obj.step === 'error' && isAdmin) {
-          debugLog('❌ Backend error step: ' + JSON.stringify(obj.data));
+        if (obj.step === 'error') {
+          debugLog(`Backend error step: ${JSON.stringify(obj.data)}`);
         }
       });
-      if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
-      alert("Check Username and Password");
-      formLoader.style.display = "none";
-      if (isAdmin) debugLog('⛔ Cached data had empty academic_data, aborting dashboard.');
-      return;
-    }
+
+      if (!Array.isArray(academicData) || academicData.length === 0) {
+        alert("Check Username and Password");
+        debugLog("Backend returned empty academicData → invalid credentials?");
+        formLoader.style.display = "none";
+        return;
+      }
+
+      isAdmin = username === ADMIN_USERNAME;
       showDashboard(username);
       renderAcademic(academicData, username);
       renderBiometric(biometricData);
+
       setCache(cacheKey, {
         academic: academicData,
         biometric: biometricData,
@@ -1493,28 +1583,27 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       });
 
       if (isAdmin) {
-        debugAcademic.textContent = JSON.stringify(academicData, null, 2);
-        debugBiometric.textContent = JSON.stringify(biometricData, null, 2);
+        updateDebugAcademic(academicData);
+        updateDebugBiometric(biometricData);
         updateDebugCacheSnapshot(cacheKey);
-        debugLog('🌐 Loaded from /get-attendance (live scrape).');
       }
-
     } catch (err) {
+      debugLog(`Catch in backend fallback: ${err?.message || err}`);
       alert('Network error or wrong credentials');
-      if (isAdmin) debugLog('❌ /get-attendance failed: ' + err.message);
     } finally {
       formLoader.style.display = "none";
     }
   } else {
     formLoader.style.display = "none";
     alert("Unexpected error in attendance lookup.");
-    if (isAdmin) debugLog('⚠️ Unexpected state in attendance lookup.');
+    debugLog("Reached unexpected else branch in login flow");
   }
 });
 
 function renderAcademic(data, username) {
   if (!Array.isArray(data) || data.length === 0) {
-    document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
+    document.getElementById('academicTable').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     alert("Check Username and Password");
     return;
   }
@@ -1522,11 +1611,12 @@ function renderAcademic(data, username) {
   let total = 0;
   data.forEach(sub => total += Number(sub.percentage) || 0);
   const avg = (total / data.length).toFixed(2);
+
   let T = 0;
   let tot = 0;
-  data.forEach(sub => T += Number(sub.attended) || 0 );
-  data.forEach(sub => tot += Number(sub.total) || 0 );
-  const TT = (T * 100 / tot).toFixed(2);
+  data.forEach(sub => T += Number(sub.attended) || 0);
+  data.forEach(sub => tot += Number(sub.total) || 0);
+  const TT = tot ? (T * 100 / tot).toFixed(2) : 0;
 
   const statsGrid = document.getElementById('statsGrid');
   let statsHtml = `
@@ -1613,7 +1703,8 @@ function renderAcademic(data, username) {
 
 function renderBiometric(data) {
   if (!data) {
-    document.getElementById('biometricTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No biometric data available</p></div>';
+    document.getElementById('biometricTable').innerHTML =
+      '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No biometric data available</p></div>';
     return;
   }
 
@@ -1636,7 +1727,7 @@ function renderBiometric(data) {
   document.getElementById('biometricBunkBtn').addEventListener('click', () => {
     bunkCount++;
     attendCount = 0;
-    let newAttendance = (presentCount / (totalDays + bunkCount)) * 100;
+    let newAttendance = ((presentCount) / (totalDays + bunkCount)) * 100;
     newAttendance = newAttendance.toFixed(2);
     document.getElementById('attendanceMessage').textContent = 
       `If you bunk ${bunkCount} days, your attendance will be ${newAttendance}%`;
@@ -1798,7 +1889,7 @@ function calculateNewOverall() {
     count++;
   }
 
-  const subjectAvg = (sumPct / count).toFixed(2);
+  const subjectAvg = count ? (sumPct / count).toFixed(2) : "0.00";
   const subBg = subjectAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
 
   let totalPresent = 0;
@@ -1810,7 +1901,7 @@ function calculateNewOverall() {
     totalClasses += s.total;
   }
 
-  const overallAvg = totalClasses ? ((totalPresent / totalClasses) * 100).toFixed(2) : 0;
+  const overallAvg = totalClasses ? ((totalPresent / totalClasses) * 100).toFixed(2) : "0.00";
   const overBg = overallAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
   const overColor = overallAvg >= 75 ? 'var(--success)' : 'var(--danger)';
 
