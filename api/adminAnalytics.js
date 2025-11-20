@@ -40,20 +40,22 @@ export default async function handler(req, res) {
 
     const total_users = students.length;
 
-    // Today's logins
-    const today = new Date().toISOString().slice(0, 10);
-
-    const { data: visitData, error: visitError } = await supabase
+    /* ---------------------------------------
+       Today Login Count
+    --------------------------------------- */
+    const todayIso = new Date().toISOString().slice(0, 10);
+    
+    const { data: visitRows, error: visitError } = await supabase
       .from("site_visits")
-      .select("count")
-      .eq("date", today)
-      .maybeSingle();
-
+      .select("*")
+      .like("visited_at", `${todayIso}%`);
+    
     if (visitError) {
-      return res.status(500).json({ error: visitError.message });
+      return new Response(JSON.stringify({ error: visitError.message }), { status: 500 });
     }
+    
+    const today_logins = visitRows.length;
 
-    const today_logins = visitData?.count || 0;
 
     // Attendance calculations
     const attendanceList = students.map((s) => {
