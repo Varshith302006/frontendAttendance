@@ -1149,6 +1149,15 @@ body[data-theme="dark"] .table-wrapper th {
           <pre id="debugLogs" class="debug-pre logs">[logs will appear here]</pre>
         </details>
       </div>
+      <div class="debug-section">
+        <details>
+          <summary>📊 Admin Analytics</summary>
+          <button id="loadAnalyticsBtn" style="margin:8px 0; padding:6px 12px; border-radius:8px; cursor:pointer;">
+            Load Analytics
+          </button>
+          <pre id="debugAnalytics" class="debug-pre">{}</pre>
+        </details>
+      </div>
     </div>
   </div>
 </div>
@@ -1181,6 +1190,38 @@ const debugAcademicEl = document.getElementById('debugAcademic');
 const debugBiometricEl = document.getElementById('debugBiometric');
 const debugCacheEl = document.getElementById('debugCache');
 const debugLogsEl = document.getElementById('debugLogs');
+const debugAnalyticsEl = document.getElementById("debugAnalytics");
+const loadAnalyticsBtn = document.getElementById("loadAnalyticsBtn");
+
+if (loadAnalyticsBtn) {
+  loadAnalyticsBtn.addEventListener("click", async () => {
+    if (!isAdmin) return alert("Admin only");
+
+    const pass = prompt("Enter Admin Secret Key:");
+    if (!pass) return;
+
+    try {
+      const res = await fetch("/api/adminAnalytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pass })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        debugAnalyticsEl.textContent = "Error: " + data.error;
+        return;
+      }
+
+      debugAnalyticsEl.textContent = JSON.stringify(data, null, 2);
+      debugLog("Loaded admin analytics");
+
+    } catch (err) {
+      debugAnalyticsEl.textContent = "Error loading analytics";
+    }
+  });
+}
 
 let isAdmin = false;
 
