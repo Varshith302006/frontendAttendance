@@ -131,9 +131,8 @@ header h2 {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
-
 #themeToggle {
   width: 52px;
   height: 28px;
@@ -207,24 +206,6 @@ body[data-theme="dark"] #themeIcon {
   background: #dc2626;
   transform: translateY(-1px);
   box-shadow: var(--shadow);
-}
-
-/* NEW: Debug button */
-#debugBtn {
-  padding: 8px 14px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  font-size: 13px;
-  cursor: pointer;
-  display: none; /* only shown for admin in JS */
-  align-items: center;
-  gap: 6px;
-  box-shadow: var(--shadow-sm);
-}
-#debugBtn:hover {
-  background: var(--primary-light);
-  color: var(--primary);
 }
 
 /* Container */
@@ -799,20 +780,20 @@ tr:hover {
     padding: 16px;
   }
   /* Academic Attendance Table - 3D Horizontal Scroll Effect */
-  .table-wrapper {
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(40,37,86,0.10);
-    border-radius: 18px;
-    background: var(--bg-secondary);
-    padding: 8px 0;
-    perspective: 800px;
-  }
-  .table-wrapper table {
-    background: transparent;
-    border-radius: 18px;
-    overflow: hidden;
-    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
-    box-shadow: 0 1px 10px rgba(25,40,60,0.06);
-  }
+.table-wrapper {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 4px rgba(40,37,86,0.10);
+  border-radius: 18px;
+  background: var(--bg-secondary);
+  padding: 8px 0;
+  perspective: 800px;
+}
+.table-wrapper table {
+  background: transparent;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 1px 10px rgba(25,40,60,0.06);
+}
 }
 
 /* Loading State */
@@ -866,7 +847,9 @@ tr:hover {
   margin: 0 4px 6px 4px;
   padding: 0 2px;
 }
-
+/* .card, .table-wrapper {
+  background: #fff;
+} */
 body[data-theme="dark"] .table-wrapper {
   box-shadow: 0 4px 24px rgba(0,0,0,0.18), 0 1.5px 4px rgba(10,18,40,0.22);
   background: var(--bg-secondary);
@@ -883,101 +866,6 @@ body[data-theme="dark"] .table-wrapper th {
   color: var(--text-secondary);
 }
 
-/* 🔧 DEBUG MODAL STYLES */
-.debug-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15,23,42,0.55);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-}
-
-.debug-modal-overlay.show {
-  display: flex;
-}
-
-.debug-modal {
-  width: min(960px, 95vw);
-  max-height: 90vh;
-  background: var(--bg-secondary);
-  border-radius: 16px;
-  box-shadow: var(--shadow-xl);
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-}
-
-.debug-modal-header {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.debug-modal-header h3 {
-  font-size: 16px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.debug-close-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 18px;
-  padding: 4px 8px;
-  border-radius: 999px;
-}
-.debug-close-btn:hover {
-  background: var(--bg-primary);
-}
-
-.debug-modal-body {
-  padding: 12px 16px 16px;
-  overflow-y: auto;
-}
-
-.debug-section {
-  margin-bottom: 10px;
-}
-
-.debug-section summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--text-secondary);
-  padding: 6px 0;
-}
-
-.debug-pre {
-  font-family: "JetBrains Mono", "Consolas", "SF Mono", monospace;
-  font-size: 12px;
-  background: var(--bg-primary);
-  border-radius: 10px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-height: 210px;
-  overflow: auto;
-}
-
-.debug-pre.logs {
-  background: #020617;
-  color: #e5e7eb;
-  border-color: #1f2937;
-}
-
-@media (max-width: 640px) {
-  .debug-modal {
-    width: 96vw;
-    max-height: 92vh;
-  }
-}
 </style>
 </head>
 <body>
@@ -996,12 +884,6 @@ body[data-theme="dark"] .table-wrapper th {
       <button id="themeToggle" title="Toggle dark mode" style="display: flex !important;">
         <span id="themeIcon">🌙</span>
       </button>
-
-      <!-- Admin-only debug button (shown in JS when admin logs in) -->
-      <button id="debugBtn" title="Admin Debug Panel">
-        🛠 Debug
-      </button>
-
       <div id="visitsBadge">
         <span>👥</span>
         <span id="visitsCount">0</span>
@@ -1019,6 +901,11 @@ body[data-theme="dark"] .table-wrapper th {
       <h3>Student Login</h3>
       <p>Enter your credentials to view your attendance</p>
     </div>
+    <!-- <button id="fetchBtn" style="padding: 10px 20px; background: green; color: white; border: none; border-radius: 6px; cursor: pointer;">
+      Fetch Attendance Now
+    </button> -->
+    
+    <!-- <p id="statusMsg" style="margin-top: 10px; font-weight: bold;"></p> -->
 
     <form id="loginForm" autocomplete="on">
       <div class="field">
@@ -1055,132 +942,72 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 
-<!-- Dashboard -->
-<div class="dashboard-grid" id="dashboardCards">
-   <!-- Stats Cards -->
-  <div class="stats-grid" id="statsGrid"></div>
-  
-  <!-- Academic Attendance -->
-  <div class="card" id="academicCard">
-    <div class="card-header">
-      <h3>
-        <span>📚</span>
-        Academic Attendance
-      </h3>
-    </div>
-    <div class="card-body">
-      <div id="academicTable" class="empty-state">
-        <div class="empty-state-icon">📊</div>
-        <p>Login to fetch attendance data</p>
+     
+  <!-- Dashboard -->
+  <div class="dashboard-grid" id="dashboardCards">
+    <!-- Stats Cards -->
+    <div class="stats-grid" id="statsGrid"></div>
+      <!-- Academic Attendance -->
+    <div class="card" id="academicCard">
+      <div class="card-header">
+        <h3>
+          <span>📚</span>
+          Academic Attendance
+        </h3>
       </div>
-    </div>
-  </div>
-
-  <!-- Biometric Attendance -->
-  <div class="card" id="biometricCard">
-    <div class="card-header">
-      <h3>
-        <span>🔐</span>
-        Biometric Attendance
-      </h3>
-    </div>
-    <div class="card-body">
-      <div id="biometricTable" class="empty-state">
-        <div class="empty-state-icon">👤</div>
-        <p>Login to fetch attendance data</p>
-      </div>
-      <div id="biometricSection">
-        <div class="btn-container">
-          <button id="biometricAttendBtn" class="btn attend-btn">Attend</button>
-          <button id="biometricBunkBtn" class="btn bunk-btn">Bunk</button>
+      <div class="card-body">
+        <div id="academicTable" class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <p>Login to fetch attendance data</p>
         </div>
-        <p id="attendanceMessage"></p>
       </div>
     </div>
-  </div>
 
-  <!-- Attendance Simulation -->
-  <div class="card" id="todayClassesCard">
-    <div class="card-header">
-      <h3>
-        <span>🎯</span>
-        Attendance Simulator
-      </h3>
-      <div class="simulation-controls">
-        <button id="resetTodayBtn" title="Reset selections">↻</button>
+    <!-- Biometric Attendance -->
+    <div class="card" id="biometricCard">
+      <div class="card-header">
+        <h3>
+          <span>🔐</span>
+          Biometric Attendance
+        </h3>
       </div>
-    </div>
-    <div class="card-body">
-      <div id="todayClassesContainer"></div>
-      <div id="newOverallAttendance"></div>
-    </div>
-  </div>
-</div>
-
-<!-- 🔧 DEBUG MODAL HTML -->
-<div id="debugModal" class="debug-modal-overlay">
-  <div class="debug-modal">
-    <div class="debug-modal-header">
-      <h3>🛠 Debug Panel <span style="font-size:12px;color:var(--text-secondary);">Admin only</span></h3>
-      <button id="debugCloseBtn" class="debug-close-btn">✕</button>
-    </div>
-    <div class="debug-modal-body">
-      <div class="debug-section">
-        <details open>
-          <summary>📚 Academic JSON</summary>
-          <pre id="debugAcademic" class="debug-pre">{}</pre>
-        </details>
-      </div>
-      <div class="debug-section">
-        <details>
-          <summary>🔐 Biometric JSON</summary>
-          <pre id="debugBiometric" class="debug-pre">{}</pre>
-        </details>
-      </div>
-      <div class="debug-section">
-        <details>
-          <summary>🧰 Cache Snapshot</summary>
-          <pre id="debugCache" class="debug-pre">{}</pre>
-        </details>
-      </div>
-
-      <!-- 🔍 VIEW ANY STUDENT (NEW) -->
-      <div class="debug-section">
-        <details open>
-          <summary>🔍 View Any Student</summary>
-          <div style="margin:10px 0;">
-            <input id="adminUserSearch" 
-                   placeholder="Enter Student ID (e.g., 24951A05DX)"
-                   style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);">
+      <div class="card-body">
+        <div id="biometricTable" class="empty-state">
+          <div class="empty-state-icon">👤</div>
+          <p>Login to fetch attendance data</p>
+        </div>
+        <div id="biometricSection">
+          <div class="btn-container">
+            <button id="biometricAttendBtn" class="btn attend-btn">Attend</button>
+            <button id="biometricBunkBtn" class="btn bunk-btn">Bunk</button>
           </div>
-          <button id="adminSearchBtn" class="btn" style="margin-bottom:10px;">Load User Data</button>
-          <pre id="adminUserOutput" class="debug-pre">{}</pre>
-        </details>
+          <p id="attendanceMessage"></p>
+        </div>
       </div>
+    </div>
 
-      <div class="debug-section">
-        <details open>
-          <summary>📜 Logs</summary>
-          <pre id="debugLogs" class="debug-pre logs">[logs will appear here]</pre>
-        </details>
+    <!-- Attendance Simulation -->
+    <div class="card" id="todayClassesCard">
+      <div class="card-header">
+        <h3>
+          <span>🎯</span>
+          Attendance Simulator
+        </h3>
+        <div class="simulation-controls">
+          <button id="resetTodayBtn" title="Reset selections">↻</button>
+        </div>
       </div>
-
-      <div class="debug-section">
-        <details>
-          <summary>📊 Admin Analytics</summary>
-          <button id="loadAnalyticsBtn" style="margin:8px 0; padding:6px 12px; border-radius:8px; cursor:pointer;">
-            Load Analytics
-          </button>
-          <pre id="debugAnalytics" class="debug-pre">{}</pre>
-        </details>
+      <div class="card-body">
+        <div id="todayClassesContainer"></div>
+        <div id="newOverallAttendance"></div>
       </div>
     </div>
   </div>
 </div>
-
 
 
 <script>
+
 const passwordField = document.getElementById('passwordField');
 const togglePassword = document.getElementById('togglePassword');
 const eyeOpen = document.getElementById('eyeOpen');
@@ -1197,98 +1024,6 @@ const newOverallEl = document.getElementById('newOverallAttendance');
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
 
-/* Admin + Debug Elements */
-const ADMIN_USERNAME = '24951A05DX';
-const debugBtn = document.getElementById('debugBtn');
-const debugModal = document.getElementById('debugModal');
-const debugCloseBtn = document.getElementById('debugCloseBtn');
-const debugAcademicEl = document.getElementById('debugAcademic');
-const debugBiometricEl = document.getElementById('debugBiometric');
-const debugCacheEl = document.getElementById('debugCache');
-const debugLogsEl = document.getElementById('debugLogs');
-const debugAnalyticsEl = document.getElementById("debugAnalytics");
-const loadAnalyticsBtn = document.getElementById("loadAnalyticsBtn");
-
-/* NEW: View Any Student DOM refs */
-const adminUserSearch = document.getElementById("adminUserSearch");
-const adminSearchBtn = document.getElementById("adminSearchBtn");
-const adminUserOutput = document.getElementById("adminUserOutput");
-
-if (loadAnalyticsBtn) {
-  loadAnalyticsBtn.addEventListener("click", async () => {
-    if (!isAdmin) return alert("Admin only");
-
-    const pass = prompt("Enter Admin Secret Key:");
-    if (!pass) return;
-
-    try {
-      const res = await fetch("/api/adminAnalytics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: pass })
-      });
-
-      const data = await res.json();
-
-      if (data.error) {
-        debugAnalyticsEl.textContent = "Error: " + data.error;
-        return;
-      }
-
-      debugAnalyticsEl.textContent = JSON.stringify(data, null, 2);
-      debugLog("Loaded admin analytics");
-
-    } catch (err) {
-      debugAnalyticsEl.textContent = "Error loading analytics";
-    }
-  });
-}
-
-/* 🔍 NEW: View Any Student handler */
-if (adminSearchBtn && adminUserSearch && adminUserOutput) {
-  adminSearchBtn.addEventListener("click", async () => {
-    if (!isAdmin) {
-      alert("Admin only");
-      return;
-    }
-
-    const userId = adminUserSearch.value.trim();
-    if (!userId) {
-      alert("Enter a student ID");
-      return;
-    }
-
-    const pass = prompt("Enter admin password:");
-    if (!pass) return;
-
-    adminUserOutput.textContent = "Loading...";
-
-    try {
-      const res = await fetch("/api/adminGetUser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, password: pass })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || data.error) {
-        adminUserOutput.textContent = "Error: " + (data.error || res.statusText);
-        debugLog(`Error loading user ${userId}: ${data.error || res.statusText}`);
-        return;
-      }
-
-      adminUserOutput.textContent = JSON.stringify(data, null, 2);
-      debugLog(`Loaded user data for ${userId}`);
-    } catch (err) {
-      adminUserOutput.textContent = "Error loading user data";
-      debugLog(`Exception in adminGetUser for ${userId}: ${err?.message || err}`);
-    }
-  });
-}
-
-let isAdmin = false;
-
 // Theme Management - Initialize on page load
 function initTheme() {
   const currentTheme = localStorage.getItem('theme') || 
@@ -1302,6 +1037,8 @@ function initTheme() {
     themeIcon.textContent = '🌙';
   }
 }
+
+// Initialize theme immediately
 initTheme();
 
 themeToggle.addEventListener('click', () => {
@@ -1323,91 +1060,17 @@ togglePassword.addEventListener('click', () => {
   eyeOpen.style.display = type === 'password' ? 'block' : 'none';
   eyeClosed.style.display = type === 'password' ? 'none' : 'block';
 });
-
 window.addEventListener('DOMContentLoaded', () => {
   visitsBadge.style.display = 'flex'; 
   updateTodayVisits();
 });
 
-/* 🔧 DEBUG HELPERS */
-
-function openDebugModal() {
-  if (!isAdmin) return;
-  if (debugModal) debugModal.classList.add('show');
-}
-
-function closeDebugModal() {
-  if (debugModal) debugModal.classList.remove('show');
-}
-
-if (debugBtn) {
-  debugBtn.addEventListener('click', openDebugModal);
-}
-if (debugCloseBtn) {
-  debugCloseBtn.addEventListener('click', closeDebugModal);
-}
-if (debugModal) {
-  debugModal.addEventListener('click', (e) => {
-    if (e.target === debugModal) {
-      closeDebugModal();
-    }
-  });
-}
-
-function debugLog(message) {
-  if (!isAdmin || !debugLogsEl) return;
-  const ts = new Date().toLocaleTimeString();
-  const line = `[${ts}] ${message}\n`;
-  if (debugLogsEl.textContent === '[logs will appear here]') {
-    debugLogsEl.textContent = line;
-  } else {
-    debugLogsEl.textContent += line;
-  }
-  debugLogsEl.scrollTop = debugLogsEl.scrollHeight;
-}
-
-function updateDebugAcademic(data) {
-  if (!isAdmin || !debugAcademicEl) return;
-  try {
-    debugAcademicEl.textContent = JSON.stringify(data ?? {}, null, 2);
-  } catch {
-    debugAcademicEl.textContent = 'Unable to serialize academic data';
-  }
-}
-
-function updateDebugBiometric(data) {
-  if (!isAdmin || !debugBiometricEl) return;
-  try {
-    debugBiometricEl.textContent = JSON.stringify(data ?? {}, null, 2);
-  } catch {
-    debugBiometricEl.textContent = 'Unable to serialize biometric data';
-  }
-}
-
-function updateDebugCacheSnapshot(cacheKey) {
-  if (!isAdmin || !debugCacheEl) return;
-  const raw = sessionStorage.getItem(cacheKey);
-  if (!raw) {
-    debugCacheEl.textContent = `No cache stored yet for key: ${cacheKey}`;
-    return;
-  }
-  try {
-    const parsed = JSON.parse(raw);
-    debugCacheEl.textContent = JSON.stringify(parsed, null, 2);
-  } catch {
-    debugCacheEl.textContent = raw;
-  }
-}
-
 function showDashboard(studentId) {
-  isAdmin = studentId === ADMIN_USERNAME;
-
   loginCard.style.display = 'none';
   dashboardCards.style.display = 'block';
   setTimeout(() => {
     dashboardCards.classList.add('show');
   }, 10);
-
   document.querySelector('header h2').textContent = `${studentId}'s Dashboard`;
   logoutBtn.style.display = 'block';
   logoutBtn.onclick = () => { location.reload(); };
@@ -1415,21 +1078,21 @@ function showDashboard(studentId) {
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
-
+ 
+  const allowedUsers = ['24951A05DX'];
   const fetchBtn = document.getElementById('fetchBtn');
   const loadUsersBtn = document.getElementById('loadUsersBtn');
-
-  if (isAdmin) {
-    if (fetchBtn) fetchBtn.style.display = 'inline-block';
-    if (loadUsersBtn) loadUsersBtn.style.display = 'inline-block';
-    if (debugBtn) debugBtn.style.display = 'inline-flex';
-    debugLog(`Admin logged in as ${studentId}`);
+  
+  if (allowedUsers.includes(studentId)) {
+    fetchBtn.style.display = 'inline-block'; 
+    loadUsersBtn.style.display = 'inline-block'; 
   } else {
-    if (fetchBtn) fetchBtn.style.display = 'none';
-    if (loadUsersBtn) loadUsersBtn.style.display = 'none';
-    if (debugBtn) debugBtn.style.display = 'none';
+    fetchBtn.style.display = 'none';
+    loadUsersBtn.style.display = 'none';
   }
 }
+
+
 
 async function updateTodayVisits() {
   try {
@@ -1442,17 +1105,13 @@ async function updateTodayVisits() {
     visitsCount.textContent = '?';
   }
 }
-
-/* Caching System (30-minute expiration, cleared on tab close) */
-const CACHE_DURATION = 30 * 60 * 1000;
+// Caching System (10-minute expiration)
+// Caching System (10-minute expiration, cleared on tab close)
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
 function setCache(key, data) {
   const record = { data, timestamp: Date.now() };
   sessionStorage.setItem(key, JSON.stringify(record));
-  if (isAdmin) {
-    debugLog(`Cache updated for key: ${key}`);
-    updateDebugCacheSnapshot(key);
-  }
 }
 
 function getCache(key) {
@@ -1473,6 +1132,7 @@ function getCache(key) {
   }
 }
 
+
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const formData = new FormData(e.target);
@@ -1480,56 +1140,48 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
-
-  let data, isFresh = false;
-  try {
-    const res = await fetch('/api/get', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+  // Try cached data via backend API first
+  let data, error, isFresh = false;
+    try {
+    const res = await fetch('/api/get',{
+    method: 'POST',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
     if (res.ok) {
       data = await res.json();
       const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
       isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 1 * 60 * 1000);
-      debugLog(`Response from /api/get for ${username}, fresh: ${!!isFresh}`);
     }
   } catch (err) {
-    debugLog(`Error calling /api/get: ${err?.message || err}`);
+    // ignore, fallback to backend
   }
 
   let shouldFetchFromBackend = !data || !isFresh;
 
   if (data && isFresh) {
-    isAdmin = username === ADMIN_USERNAME;
-
-    if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
-      alert("Check Username and Password");
-      debugLog("Fresh cache had empty academic_data → invalid credentials?");
-      formLoader.style.display = "none";
-      return;
-    }
-
+      // ❗ VALIDATE academic data BEFORE loading dashboard
+      if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
+        alert("Check Username and Password");
+        formLoader.style.display = "none";
+        return;
+      }
     showDashboard(username);
-    renderAcademic(data.academic_data, username);
+    renderAcademic(data.academic_data,username);
     renderBiometric(data.biometric_data);
     setCache(cacheKey, {
       academic: data.academic_data,
       biometric: data.biometric_data,
       fetched_at: data.fetched_at
     });
-    if (isAdmin) {
-      updateDebugAcademic(data.academic_data);
-      updateDebugBiometric(data.biometric_data);
-      updateDebugCacheSnapshot(cacheKey);
-    }
     formLoader.style.display = "none";
+    // updateTodayVisits();
     return;
   }
 
+  // Fallback to backend for live fetch
   if (shouldFetchFromBackend) {
     try {
-      debugLog(`Falling back to backend /get-attendance for ${username}`);
       const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
         method: 'POST',
         body: new URLSearchParams({ username, password })
@@ -1545,36 +1197,17 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         if (obj.step === 'academic') academicData = obj.data;
         if (obj.step === 'biometric') biometricData = obj.data;
         if (obj.step === 'fetched_at') fetchedAt = obj.data;
-        if (obj.step === 'error') {
-          debugLog(`Backend error step: ${JSON.stringify(obj.data)}`);
-        }
       });
-
-      if (!Array.isArray(academicData) || academicData.length === 0) {
-        alert("Check Username and Password");
-        debugLog("Backend returned empty academicData → invalid credentials?");
-        formLoader.style.display = "none";
-        return;
-      }
-
-      isAdmin = username === ADMIN_USERNAME;
       showDashboard(username);
-      renderAcademic(academicData, username);
+      renderAcademic(academicData,username);
       renderBiometric(biometricData);
-
       setCache(cacheKey, {
         academic: academicData,
         biometric: biometricData,
         fetched_at: fetchedAt || new Date().toISOString()
       });
-
-      if (isAdmin) {
-        updateDebugAcademic(academicData);
-        updateDebugBiometric(biometricData);
-        updateDebugCacheSnapshot(cacheKey);
-      }
+    //updateTodayVisits();
     } catch (err) {
-      debugLog(`Catch in backend fallback: ${err?.message || err}`);
       alert('Network error or wrong credentials');
     } finally {
       formLoader.style.display = "none";
@@ -1582,14 +1215,13 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   } else {
     formLoader.style.display = "none";
     alert("Unexpected error in attendance lookup.");
-    debugLog("Reached unexpected else branch in login flow");
   }
 });
 
-function renderAcademic(data, username) {
+
+function renderAcademic(data,username) {
   if (!Array.isArray(data) || data.length === 0) {
-    document.getElementById('academicTable').innerHTML =
-      '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
+    document.getElementById('academicTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No academic data available</p></div>';
     alert("Check Username and Password");
     return;
   }
@@ -1597,54 +1229,68 @@ function renderAcademic(data, username) {
   let total = 0;
   data.forEach(sub => total += Number(sub.percentage) || 0);
   const avg = (total / data.length).toFixed(2);
-
   let T = 0;
   let tot = 0;
-  data.forEach(sub => T += Number(sub.attended) || 0);
-  data.forEach(sub => tot += Number(sub.total) || 0);
-  const TT = tot ? (T * 100 / tot).toFixed(2) : 0;
-
+  data.forEach(sub => T +=Number(sub.attended)||0 );
+  data.forEach(sub => tot += Number(sub.total)|| 0 );
+  const TT = (T*100/tot).toFixed(2);
+  // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
-  let statsHtml = `
+    let statsHtml = `
     <div class="stat-card">
-      <div class="stat-card-header">
+        <div class="stat-card-header">
         <div>
-          <div class="stat-card-title">Average Attendance</div>
-          <div class="stat-card-value">${avg}%</div>
-          <div class="stat-card-label">Academic Performance</div>
+            <div class="stat-card-title">Average Attendance</div>
+            <div class="stat-card-value">${avg}%</div>
+            <div class="stat-card-label">Academic Performance</div>
         </div>
         <div class="stat-card-icon" style="background: var(--primary-light); color: var(--primary);">📊</div>
-      </div>
+        </div>
     </div>
-  `;
+    `;
 
-  statsHtml += `
+    statsHtml += `
+        <div class="stat-card">
+        <div class="stat-card-header">
+            <div>
+            <div class="stat-card-title">Total Attend/Total</div>
+            <div class="stat-card-value">${TT}%</div>
+            <div class="stat-card-label">Performance</div>
+            </div>
+            <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
+        </div>
+        </div>
+    `;
+
+    // Continue appending the other cards
+    statsHtml += `
     <div class="stat-card">
-      <div class="stat-card-header">
+        <div class="stat-card-header">
         <div>
-          <div class="stat-card-title">Total Attend/Total</div>
-          <div class="stat-card-value">${TT}%</div>
-          <div class="stat-card-label">Performance</div>
+            <div class="stat-card-title">Total Subjects</div>
+            <div class="stat-card-value">${data.length}</div>
+            <div class="stat-card-label">Enrolled Courses</div>
         </div>
         <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
-      </div>
-    </div>
-  `;
-
-  statsHtml += `
-    <div class="stat-card">
-      <div class="stat-card-header">
-        <div>
-          <div class="stat-card-title">Total Subjects</div>
-          <div class="stat-card-value">${data.length}</div>
-          <div class="stat-card-label">Enrolled Courses</div>
         </div>
-        <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
-      </div>
     </div>
-  `;
+    `;
+  // if(username!="24951A05DF"&&username != "24951A05DX"){
+  //   statsHtml +=  `
+  //   <div class="stat-card">
+  //       <div class="stat-card-header">
+  //       <div>
+  //           <div class="stat-card-title">Status</div>
+  //           <div class="stat-card-value">${avg >= 75 ? '✓' : '⚠'}</div>
+  //           <div class="stat-card-label">${avg >= 75 ? 'On Track' : 'Needs Attention'}</div>
+  //       </div>
+  //       <div class="stat-card-icon" style="background: ${avg >= 75 ? 'var(--success-light)' : 'var(--danger-light)'}; color: ${avg >= 75 ? 'var(--success)' : 'var(--danger)'};">${avg >= 75 ? '✓' : '!'}</div>
+  //       </div>
+  //   </div>
+  //   `;
+  //   }
 
-  statsGrid.innerHTML = statsHtml;
+    statsGrid.innerHTML = statsHtml;
 
   let html = '<div class="table-scroll-hint">⬅️ Scroll to see more ⬅️</div><div class="table-wrapper"><table><thead><tr>';
   html += '<th>Course Code</th><th>Subject</th><th>Attended</th><th>Tot</th><th>Percentage</th><th>To 75%</th><th>Can Bunk</th><th>Progress</th>';
@@ -1676,8 +1322,9 @@ function renderAcademic(data, username) {
       if (!tableWrapper || !table) return;
       const maxScroll = tableWrapper.scrollWidth - tableWrapper.clientWidth;
       const scrollX = tableWrapper.scrollLeft;
+      // The 3D "angle" based on scroll position
       const percent = maxScroll ? scrollX / maxScroll : 0;
-      const angle = (percent - 0.5) * 12;
+      const angle = (percent - 0.5) * 12; // -6deg to +6deg 
       table.style.transform = `rotateY(${angle}deg)`;
     }
     if (tableWrapper && table) {
@@ -1685,12 +1332,13 @@ function renderAcademic(data, username) {
       updateTable3D();
     }
   }, 100);
+
+
 }
 
 function renderBiometric(data) {
   if (!data) {
-    document.getElementById('biometricTable').innerHTML =
-      '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No biometric data available</p></div>';
+    document.getElementById('biometricTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No biometric data available</p></div>';
     return;
   }
 
@@ -1704,20 +1352,23 @@ function renderBiometric(data) {
   document.getElementById('biometricAttendBtn').addEventListener('click', () => {
     attendCount++;
     bunkCount = 0;
-    let newAttendance = ((presentCount + attendCount) / (totalDays + attendCount)) * 100;
+    // Calculate new attendance percentage incorporating additional attended days
+    let newAttendance = ((presentCount + attendCount) / (totalDays+attendCount)) * 100;
     newAttendance = newAttendance.toFixed(2);
+  
     document.getElementById('attendanceMessage').textContent = 
       `If you attend ${attendCount} days, your attendance will be ${newAttendance}%`;
   });
 
-  document.getElementById('biometricBunkBtn').addEventListener('click', () => {
+  document.getElementById('biometricBunkBtn').addEventListener('click',() => {
     bunkCount++;
     attendCount = 0;
-    let newAttendance = ((presentCount) / (totalDays + bunkCount)) * 100;
+    let newAttendance = ((presentCount) / (totalDays + bunkCount))*100;
     newAttendance = newAttendance.toFixed(2);
     document.getElementById('attendanceMessage').textContent = 
       `If you bunk ${bunkCount} days, your attendance will be ${newAttendance}%`;
   });
+
 
   const target = 0.75;
   const daysToAttend = Math.max(0, Math.ceil(((target * totalDays) - presentCount) / (1 - target)));
@@ -1757,6 +1408,7 @@ function renderBiometric(data) {
     </div>
   `;
 }
+
 
 function createTodayRows() {
   todayContainer.innerHTML = '';
@@ -1849,6 +1501,7 @@ function calculateNewOverall() {
     };
   });
 
+  // Apply simulation selections
   rows.forEach(row => {
     const attendBtn = row.querySelector('.attend-btn');
     const bunkBtn = row.querySelector('.bunk-btn');
@@ -1865,6 +1518,9 @@ function calculateNewOverall() {
     }
   });
 
+  // ----------------------------------------
+  // 1️⃣ SUBJECT-WISE AVERAGE (old method)
+  // ----------------------------------------
   let sumPct = 0;
   let count = 0;
 
@@ -1875,9 +1531,13 @@ function calculateNewOverall() {
     count++;
   }
 
-  const subjectAvg = count ? (sumPct / count).toFixed(2) : "0.00";
+  const subjectAvg = (sumPct / count).toFixed(2);
+  const subColor = subjectAvg >= 75 ? 'var(--success)' : 'var(--danger)';
   const subBg = subjectAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
 
+  // ----------------------------------------
+  // 2️⃣ TOTAL PRESENT / TOTAL CLASSES (correct)
+  // ----------------------------------------
   let totalPresent = 0;
   let totalClasses = 0;
 
@@ -1887,10 +1547,13 @@ function calculateNewOverall() {
     totalClasses += s.total;
   }
 
-  const overallAvg = totalClasses ? ((totalPresent / totalClasses) * 100).toFixed(2) : "0.00";
-  const overBg = overallAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
+  const overallAvg = totalClasses ? ((totalPresent / totalClasses) * 100).toFixed(2) : 0;
   const overColor = overallAvg >= 75 ? 'var(--success)' : 'var(--danger)';
+  const overBg = overallAvg >= 75 ? 'var(--gradient-success)' : 'var(--gradient-danger)';
 
+  // ----------------------------------------
+  // UI OUTPUT → SHOW BOTH BARS
+  // ----------------------------------------
   newOverallEl.innerHTML = `
     <div style="margin-bottom:12px;">
       <b>Subject-wise Average:</b> ${subjectAvg}%<br>
@@ -1911,10 +1574,12 @@ function calculateNewOverall() {
     </div>
   `;
 
+  // Style card
   newOverallEl.style.background = overallAvg >= 75 ? 'var(--success-light)' : 'var(--danger-light)';
   newOverallEl.style.color = overColor;
   newOverallEl.style.borderColor = overColor;
 }
+
 
 function escapeHtml(v) {
   if (v === undefined || v === null) return '';
