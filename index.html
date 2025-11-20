@@ -1259,22 +1259,22 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
-    // updateTodayVisits();
-      if (username === '1') {
-    // Close/hide login form
-    document.getElementById('loginForm').style.display = 'none';
+  //   // updateTodayVisits();
+  //     if (username === '1') {
+  //   // Close/hide login form
+  //   document.getElementById('loginForm').style.display = 'none';
 
-    // Show buttons
-    const loadUsersBtn = document.getElementById('loadUsersBtn');
-    const fetchBtn = document.getElementById('fetchBtn');
-    loadUsersBtn.style.display = 'inline-block';
-    fetchBtn.style.display = 'inline-block';
+  //   // Show buttons
+  //   const loadUsersBtn = document.getElementById('loadUsersBtn');
+  //   const fetchBtn = document.getElementById('fetchBtn');
+  //   loadUsersBtn.style.display = 'inline-block';
+  //   fetchBtn.style.display = 'inline-block';
 
-    // Optionally show dashboard or any other UI elements if needed
-    showDashboard(username);
-        // updateTodayVisits();
-    return; // Skip further login flow
-  }
+  //   // Optionally show dashboard or any other UI elements if needed
+  //   showDashboard(username);
+  //       // updateTodayVisits();
+  //   return; // Skip further login flow
+  // }
   // Try cached data via backend API first
   let data, error, isFresh = false;
     try {
@@ -1295,6 +1295,12 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   let shouldFetchFromBackend = !data || !isFresh;
 
   if (data && isFresh) {
+      // ❗ VALIDATE academic data BEFORE loading dashboard
+      if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
+        alert("Check Username and Password");
+        formLoader.style.display = "none";
+        return;
+      }
     showDashboard(username);
     renderAcademic(data.academic_data,username);
     renderBiometric(data.biometric_data);
@@ -1316,7 +1322,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         body: new URLSearchParams({ username, password })
       });
 
-      if (!res.ok) throw new Error("Network error or bad credentials.");
+      if (!res.ok) throw new Error("Network error or Wrong credentials.");
       const text = await res.text();
       const lines = text.split('\n');
       let academicData, biometricData, fetchedAt;
