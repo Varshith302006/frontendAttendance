@@ -1477,7 +1477,12 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
           debugLog('❌ Backend error step: ' + JSON.stringify(obj.data));
         }
       });
-
+      if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
+      alert("Check Username and Password");
+      formLoader.style.display = "none";
+      if (isAdmin) debugLog('⛔ Cached data had empty academic_data, aborting dashboard.');
+      return;
+    }
       showDashboard(username);
       renderAcademic(academicData, username);
       renderBiometric(biometricData);
