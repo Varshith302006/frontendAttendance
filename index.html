@@ -1179,6 +1179,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
     if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
       document.getElementById('skeletonLoader').style.display = 'none';
+      loginCard.style.display = "block";   // show login again
+      dashboardCards.style.display = "none"; // hide dashboard (safety)
       alert("Check Username and Password");
       return;
     }
@@ -1214,6 +1216,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
       if (!academicData || academicData.length === 0) {
         document.getElementById('skeletonLoader').style.display = 'none';
+        loginCard.style.display = "block";   // show login again
+        dashboardCards.style.display = "none"; // hide dashboard (safety)
         alert("Check Username and Password");
         return;
       }
@@ -1226,6 +1230,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
     } catch (err) {
       document.getElementById('skeletonLoader').style.display = 'none';
+      loginCard.style.display = "block";
+      dashboardCards.style.display = "none";
       alert("Invalid credentials or network issue");
     }
   }
