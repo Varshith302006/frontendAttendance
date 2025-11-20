@@ -865,6 +865,31 @@ body[data-theme="dark"] .table-wrapper th {
   background: var(--bg-primary);
   color: var(--text-secondary);
 }
+/* Skeleton Loader */
+.skeleton-container {
+  margin-top: 40px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.skeleton-card {
+  height: 140px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, var(--border-light) 25%, var(--border) 50%, var(--border-light) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.4s infinite;
+}
+
+.skeleton-card.wide {
+  height: 300px;
+  grid-column: span 2;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 </style>
 </head>
@@ -942,7 +967,12 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 
-     
+  <div id="skeletonLoader" class="skeleton-container" style="display:none;">
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card wide"></div>
+  </div>
+
   <!-- Dashboard -->
   <div class="dashboard-grid" id="dashboardCards">
     <!-- Stats Cards -->
@@ -1125,6 +1155,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
   formLoader.style.display = 'block';
+  document.getElementById('skeletonLoader').style.display = 'grid';
+
   // Try cached data via backend API first
   let data, error, isFresh = false;
     try {
@@ -1145,12 +1177,14 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   let shouldFetchFromBackend = !data || !isFresh;
 
   if (data && isFresh) {
+    document.getElementById('skeletonLoader').style.display = 'none';
       // ❗ VALIDATE academic data BEFORE loading dashboard
       if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
         alert("Check Username and Password");
         formLoader.style.display = "none";
         return;
       }
+    
     showDashboard(username);
     renderAcademic(data.academic_data,username);
     renderBiometric(data.biometric_data);
@@ -1183,7 +1217,9 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         if (obj.step === 'biometric') biometricData = obj.data;
         if (obj.step === 'fetched_at') fetchedAt = obj.data;
       });
+      
       showDashboard(username);
+      document.getElementById('skeletonLoader').style.display = 'none';
       renderAcademic(academicData,username);
       renderBiometric(biometricData);
       setCache(cacheKey, {
@@ -1194,6 +1230,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     //updateTodayVisits();
     } catch (err) {
       alert('Network error or wrong credentials');
+      document.getElementById('skeletonLoader').style.display = 'none';
+      formLoader.style.display = "none";
     } finally {
       formLoader.style.display = "none";
     }
