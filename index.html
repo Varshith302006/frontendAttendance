@@ -1143,12 +1143,28 @@ body[data-theme="dark"] .table-wrapper th {
           <pre id="debugCache" class="debug-pre">{}</pre>
         </details>
       </div>
+
+      <!-- 🔍 VIEW ANY STUDENT (NEW) -->
+      <div class="debug-section">
+        <details open>
+          <summary>🔍 View Any Student</summary>
+          <div style="margin:10px 0;">
+            <input id="adminUserSearch" 
+                   placeholder="Enter Student ID (e.g., 24951A05DX)"
+                   style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);">
+          </div>
+          <button id="adminSearchBtn" class="btn" style="margin-bottom:10px;">Load User Data</button>
+          <pre id="adminUserOutput" class="debug-pre">{}</pre>
+        </details>
+      </div>
+
       <div class="debug-section">
         <details open>
           <summary>📜 Logs</summary>
           <pre id="debugLogs" class="debug-pre logs">[logs will appear here]</pre>
         </details>
       </div>
+
       <div class="debug-section">
         <details>
           <summary>📊 Admin Analytics</summary>
@@ -1193,6 +1209,11 @@ const debugLogsEl = document.getElementById('debugLogs');
 const debugAnalyticsEl = document.getElementById("debugAnalytics");
 const loadAnalyticsBtn = document.getElementById("loadAnalyticsBtn");
 
+/* NEW: View Any Student DOM refs */
+const adminUserSearch = document.getElementById("adminUserSearch");
+const adminSearchBtn = document.getElementById("adminSearchBtn");
+const adminUserOutput = document.getElementById("adminUserOutput");
+
 if (loadAnalyticsBtn) {
   loadAnalyticsBtn.addEventListener("click", async () => {
     if (!isAdmin) return alert("Admin only");
@@ -1219,6 +1240,49 @@ if (loadAnalyticsBtn) {
 
     } catch (err) {
       debugAnalyticsEl.textContent = "Error loading analytics";
+    }
+  });
+}
+
+/* 🔍 NEW: View Any Student handler */
+if (adminSearchBtn && adminUserSearch && adminUserOutput) {
+  adminSearchBtn.addEventListener("click", async () => {
+    if (!isAdmin) {
+      alert("Admin only");
+      return;
+    }
+
+    const userId = adminUserSearch.value.trim();
+    if (!userId) {
+      alert("Enter a student ID");
+      return;
+    }
+
+    const pass = prompt("Enter admin password:");
+    if (!pass) return;
+
+    adminUserOutput.textContent = "Loading...";
+
+    try {
+      const res = await fetch("/api/adminGetUser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, password: pass })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        adminUserOutput.textContent = "Error: " + (data.error || res.statusText);
+        debugLog(`Error loading user ${userId}: ${data.error || res.statusText}`);
+        return;
+      }
+
+      adminUserOutput.textContent = JSON.stringify(data, null, 2);
+      debugLog(`Loaded user data for ${userId}`);
+    } catch (err) {
+      adminUserOutput.textContent = "Error loading user data";
+      debugLog(`Exception in adminGetUser for ${userId}: ${err?.message || err}`);
     }
   });
 }
@@ -1379,7 +1443,7 @@ async function updateTodayVisits() {
   }
 }
 
-/* Caching System (2-minute expiration, cleared on tab close) */
+/* Caching System (30-minute expiration, cleared on tab close) */
 const CACHE_DURATION = 30 * 60 * 1000;
 
 function setCache(key, data) {
