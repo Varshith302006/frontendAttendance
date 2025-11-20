@@ -1154,51 +1154,45 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   const username = formData.get('username');
   const password = formData.get('password');
   const cacheKey = `attendance_${username}`;
-  formLoader.style.display = 'block';
+
+  // SHOW ONLY DASHBOARD SKELETON
   document.getElementById('skeletonLoader').style.display = 'grid';
 
-  // Try cached data via backend API first
-  let data, error, isFresh = false;
-    try {
+  let data, isFresh = false;
+
+  try {
     const res = await fetch('/api/get',{
-    method: 'POST',
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password })
-  });
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
     if (res.ok) {
       data = await res.json();
       const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
       isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 1 * 60 * 1000);
     }
-  } catch (err) {
-    // ignore, fallback to backend
-  }
+  } catch (err) {}
 
   let shouldFetchFromBackend = !data || !isFresh;
 
+  // CASE 1: Cached data fresh
   if (data && isFresh) {
+
+    if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
+      document.getElementById('skeletonLoader').style.display = 'none';
+      alert("Check Username and Password");
+      return;
+    }
+
     document.getElementById('skeletonLoader').style.display = 'none';
-      // ❗ VALIDATE academic data BEFORE loading dashboard
-      if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
-        alert("Check Username and Password");
-        formLoader.style.display = "none";
-        return;
-      }
-    
     showDashboard(username);
-    renderAcademic(data.academic_data,username);
+    renderAcademic(data.academic_data, username);
     renderBiometric(data.biometric_data);
-    setCache(cacheKey, {
-      academic: data.academic_data,
-      biometric: data.biometric_data,
-      fetched_at: data.fetched_at
-    });
-    formLoader.style.display = "none";
-    // updateTodayVisits();
     return;
   }
 
-  // Fallback to backend for live fetch
+  // CASE 2: Backend fetch
   if (shouldFetchFromBackend) {
     try {
       const res = await fetch('https://attendance-4rm8.onrender.com/get-attendance', {
@@ -1206,10 +1200,12 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         body: new URLSearchParams({ username, password })
       });
 
-      if (!res.ok) throw new Error("Network error or Wrong credentials.");
+      if (!res.ok) throw new Error("Wrong credentials");
+
       const text = await res.text();
       const lines = text.split('\n');
       let academicData, biometricData, fetchedAt;
+
       lines.forEach(line => {
         if (!line.trim()) return;
         const obj = JSON.parse(line);
@@ -1217,28 +1213,26 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         if (obj.step === 'biometric') biometricData = obj.data;
         if (obj.step === 'fetched_at') fetchedAt = obj.data;
       });
+
+      if (!academicData || academicData.length === 0) {
+        document.getElementById('skeletonLoader').style.display = 'none';
+        alert("Check Username and Password");
+        return;
+      }
+
+      // SUCCESS → SHOW DASHBOARD
       document.getElementById('skeletonLoader').style.display = 'none';
       showDashboard(username);
-      renderAcademic(academicData,username);
+      renderAcademic(academicData, username);
       renderBiometric(biometricData);
-      setCache(cacheKey, {
-        academic: academicData,
-        biometric: biometricData,
-        fetched_at: fetchedAt || new Date().toISOString()
-      });
-    //updateTodayVisits();
+
     } catch (err) {
-      alert('Network error or wrong credentials');
       document.getElementById('skeletonLoader').style.display = 'none';
-      formLoader.style.display = "none";
-    } finally {
-      formLoader.style.display = "none";
+      alert("Invalid credentials or network issue");
     }
-  } else {
-    formLoader.style.display = "none";
-    alert("Unexpected error in attendance lookup.");
   }
 });
+
 
 
 function renderAcademic(data,username) {
