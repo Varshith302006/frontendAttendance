@@ -1463,46 +1463,56 @@ function renderBiometric(data) {
   `;
 }
 
-function renderLatestAttendance(periods) {
-  const statsGrid = document.getElementById("periodStatsGrid");
-  statsGrid.innerHTML = "";  
+function renderLatestAttendance(rows) {
+  const container = document.getElementById("periodStatsGrid");
+  container.innerHTML = "";
 
-  // Always prepare an empty 6-period structure
-  const display = {
-    1: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
-    2: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
-    3: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
-    4: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
-    5: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
-    6: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" }
+  // Prepare empty 6 periods
+  const periods = {
+    1: { status: "NOT UPDATED", subject: "-", date: "-" },
+    2: { status: "NOT UPDATED", subject: "-", date: "-" },
+    3: { status: "NOT UPDATED", subject: "-", date: "-" },
+    4: { status: "NOT UPDATED", subject: "-", date: "-" },
+    5: { status: "NOT UPDATED", subject: "-", date: "-" },
+    6: { status: "NOT UPDATED", subject: "-", date: "-" }
   };
 
-  // Today's formatted date
+  // Today's date format
   const today = new Date();
   const todayStr = today.toLocaleString("en-US", {
-    day: "2-digit", month: "short", year: "numeric"
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
   });
 
-  // Process backend rows (each row → {period, subject, date, status, topic})
-  periods.forEach(row => {
-    if (!row.period) return;
-    const p = Number(row.period);
+  // Group rows by subject
+  const subjectMap = {};
+  rows.forEach(r => {
+    if (!subjectMap[r.subject]) subjectMap[r.subject] = [];
+    subjectMap[r.subject].push(r);
+  });
+
+  // Process each subject (only its first 3 rows)
+  Object.values(subjectMap).forEach(subjectRows => {
+    const top3 = subjectRows.slice(0, 3);
+
+    // Find TODAY inside first 3 rows
+    const todayRow = top3.find(r => r.date.includes(todayStr));
+    if (!todayRow) return;  // ← Skip this subject fully
+
+    const p = Number(todayRow.period);
     if (p < 1 || p > 6) return;
 
-    // Check first 3 rows only (backend already sends first 3 per subject)
-    if (row.date.includes(todayStr)) {
-      display[p] = {
-        status: row.status.toUpperCase(),
-        subject: row.subject || "-",
-        date: row.date || "-",
-        topic: row.topic || "-"
-      };
-    }
+    periods[p] = {
+      status: todayRow.status?.toUpperCase() || "NOT UPDATED",
+      subject: todayRow.subject,
+      date: todayRow.date
+    };
   });
 
-  // Insert into UI
+  // Rendering the 6 boxes
   for (let p = 1; p <= 6; p++) {
-    const info = display[p];
+    const info = periods[p];
 
     let color = "var(--warning)";
     let bg = "var(--warning-light)";
@@ -1515,7 +1525,7 @@ function renderLatestAttendance(periods) {
       bg = "var(--danger-light)";
     }
 
-    statsGrid.innerHTML += `
+    container.innerHTML += `
       <div class="stat-card">
         <div class="stat-card-header">
           <div>
