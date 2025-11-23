@@ -1283,18 +1283,18 @@ function renderAcademic(data,username) {
     `;
 
     // Continue appending the other cards
-    statsHtml += `
-    <div class="stat-card">
-        <div class="stat-card-header">
-        <div>
-            <div class="stat-card-title">Total Subjects</div>
-            <div class="stat-card-value">${data.length}</div>
-            <div class="stat-card-label">Enrolled Courses</div>
-        </div>
-        <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
-        </div>
-    </div>
-    `;
+    // statsHtml += `
+    // <div class="stat-card">
+    //     <div class="stat-card-header">
+    //     <div>
+    //         <div class="stat-card-title">Total Subjects</div>
+    //         <div class="stat-card-value">${data.length}</div>
+    //         <div class="stat-card-label">Enrolled Courses</div>
+    //     </div>
+    //     <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
+    //     </div>
+    // </div>
+    // `;
   // if(username!="24951A05DF"&&username != "24951A05DX"){
   //   statsHtml +=  `
   //   <div class="stat-card">
@@ -1363,6 +1363,21 @@ function renderBiometric(data) {
   }
 
   const pct = Number(data.percentage) || 0;
+  // Inject biometric card into stats grid
+const statsGrid = document.getElementById("statsGrid");
+statsGrid.innerHTML += `
+  <div class="stat-card">
+      <div class="stat-card-header">
+        <div>
+          <div class="stat-card-title">Biometric %</div>
+          <div class="stat-card-value">${pct.toFixed(2)}%</div>
+          <div class="stat-card-label">Overall Biometric Attendance</div>
+        </div>
+        <div class="stat-card-icon" style="background: var(--info); color: white;">🔐</div>
+      </div>
+  </div>
+`;
+
   const totalDays = Number(data.totalDays) || 0;
   const presentCount = Number(data.presentCount) || 0;
 
