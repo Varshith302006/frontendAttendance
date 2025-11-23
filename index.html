@@ -1233,20 +1233,21 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       // Load latest attendance AFTER dashboard loads
       setTimeout(async () => {
         try {
-          fetch('https://attendance-4rm8.onrender.com/get-latest', {
+          const latestRes = await fetch('https://attendance-4rm8.onrender.com/get-latest', {
             method: 'POST',
             body: new URLSearchParams({ username, password })
           });
-
       
-          const data = await res.json();
-          if (data.success) {
-            renderLatestAttendance(data.latest);
+          const latestData = await latestRes.json();
+      
+          if (latestData.success) {
+            renderLatestAttendance(latestData.latest);
           }
         } catch (err) {
           console.error("Latest attendance failed", err);
         }
-      }, 500); // slight delay for smoother UI
+      }, 500);
+
 
 
     } catch (err) {
