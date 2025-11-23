@@ -1465,28 +1465,59 @@ function renderBiometric(data) {
 function renderLatestAttendance(periods) {
   const statsGrid = document.getElementById("statsGrid");
 
+  // Always prepare an empty 6-period structure
+  const display = {
+    1: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
+    2: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
+    3: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
+    4: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
+    5: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" },
+    6: { status: "NOT UPDATED", subject: "-", date: "-", topic: "-" }
+  };
+
+  // Today's formatted date
+  const today = new Date();
+  const todayStr = today.toLocaleString("en-US", {
+    day: "2-digit", month: "short", year: "numeric"
+  });
+
+  // Process backend rows (each row → {period, subject, date, status, topic})
+  periods.forEach(row => {
+    if (!row.period) return;
+    const p = Number(row.period);
+    if (p < 1 || p > 6) return;
+
+    // Check first 3 rows only (backend already sends first 3 per subject)
+    if (row.date.includes(todayStr)) {
+      display[p] = {
+        status: row.status.toUpperCase(),
+        subject: row.subject || "-",
+        date: row.date || "-",
+        topic: row.topic || "-"
+      };
+    }
+  });
+
+  // Insert into UI
   for (let p = 1; p <= 6; p++) {
-    const info = periods[p];
+    const info = display[p];
 
-    const color =
-      info.status === "PRESENT"
-        ? "var(--success)"
-        : info.status === "ABSENT"
-        ? "var(--danger)"
-        : "var(--warning)";
+    let color = "var(--warning)";
+    let bg = "var(--warning-light)";
 
-    const bg =
-      info.status === "PRESENT"
-        ? "var(--success-light)"
-        : info.status === "ABSENT"
-        ? "var(--danger-light)"
-        : "var(--warning-light)";
+    if (info.status === "PRESENT") {
+      color = "var(--success)";
+      bg = "var(--success-light)";
+    } else if (info.status === "ABSENT") {
+      color = "var(--danger)";
+      bg = "var(--danger-light)";
+    }
 
     statsGrid.innerHTML += `
       <div class="stat-card">
         <div class="stat-card-header">
           <div>
-            <div class="stat-card-title">Period ${p}</div>
+            <div class="stat-card-title">PERIOD ${p}</div>
             <div class="stat-card-value" style="color:${color};">
               ${info.status}
             </div>
