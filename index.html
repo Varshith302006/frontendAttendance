@@ -1233,11 +1233,14 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       // Load latest attendance AFTER dashboard loads
       setTimeout(async () => {
         try {
-          const latestRes = await fetch('https://attendance-4rm8.onrender.com/get-latest', {
-            method: 'POST',
-            body: new URLSearchParams({ username, password })
-          });
-      
+          const latestRes = await fetch(
+            "https://attendance-4rm8.onrender.com/get-latest",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password })
+            }
+          );
           const latestData = await latestRes.json();
       
           if (latestData.success) {
