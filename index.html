@@ -1233,10 +1233,11 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       // Load latest attendance AFTER dashboard loads
       setTimeout(async () => {
         try {
-          const res = await fetch('https://attendance-4rm8.onrender.com/get-latest', {
+          fetch('https://attendance-4rm8.onrender.com/get-latest', {
             method: 'POST',
-            body: JSON.stringify({ username, password })
+            body: new URLSearchParams({ username, password })
           });
+
       
           const data = await res.json();
           if (data.success) {
