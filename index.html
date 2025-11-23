@@ -1189,6 +1189,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     showDashboard(username);
     renderAcademic(data.academic_data, username);
     renderBiometric(data.biometric_data);
+    renderLatestAttendance(latestAttendance);
     return;
   }
 
@@ -1211,6 +1212,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
         const obj = JSON.parse(line);
         if (obj.step === 'academic') academicData = obj.data;
         if (obj.step === 'biometric') biometricData = obj.data;
+        if (obj.step === 'latest') latestAttendance = obj.data;  
         if (obj.step === 'fetched_at') fetchedAt = obj.data;
       });
 
@@ -1227,6 +1229,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       showDashboard(username);
       renderAcademic(academicData, username);
       renderBiometric(biometricData);
+      renderLatestAttendance(latestAttendance);
 
     } catch (err) {
       document.getElementById('skeletonLoader').style.display = 'none';
@@ -1459,6 +1462,35 @@ function renderBiometric(data) {
   `;
 }
 
+function renderLatestAttendance(info) {
+  if (!info) return;
+
+  const { subject, date, period, status } = info;
+  const color = status.toLowerCase() === "present"
+    ? "var(--success)"
+    : "var(--danger)";
+  const bg = status.toLowerCase() === "present"
+    ? "var(--success-light)"
+    : "var(--danger-light)";
+
+  const card = `
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div>
+          <div class="stat-card-title">Latest Attendance</div>
+          <div class="stat-card-value" style="color:${color};">${status}</div>
+          <div class="stat-card-label">
+            <strong>${subject}</strong><br>
+            <small>${date} — Period ${period}</small>
+          </div>
+        </div>
+        <div class="stat-card-icon" style="background:${bg}; color:${color};">📘</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("statsGrid").innerHTML += card;
+}
 
 function createTodayRows() {
   todayContainer.innerHTML = '';
