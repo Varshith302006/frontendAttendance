@@ -1364,19 +1364,44 @@ function renderBiometric(data) {
 
   const pct = Number(data.percentage) || 0;
   // Inject biometric card into stats grid
-const statsGrid = document.getElementById("statsGrid");
-statsGrid.innerHTML += `
-  <div class="stat-card">
-      <div class="stat-card-header">
-        <div>
-          <div class="stat-card-title">Biometric %</div>
-          <div class="stat-card-value">${pct.toFixed(2)}%</div>
-          <div class="stat-card-label">Overall Biometric Attendance</div>
+  const statsGrid = document.getElementById("statsGrid");
+  statsGrid.innerHTML += `
+    <div class="stat-card">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-card-title">Biometric %</div>
+            <div class="stat-card-value">${pct.toFixed(2)}%</div>
+            <div class="stat-card-label">Biometric Attendance</div>
+          </div>
+  
+          <div class="stat-card-icon" style="background: var(--primary-light); display:flex;align-items:center;justify-content:center;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="fpGradient" x1="0" y1="0" x2="24" y2="24">
+                  <stop offset="0%" stop-color="#6366F1"/>
+                  <stop offset="50%" stop-color="#8B5CF6"/>
+                  <stop offset="100%" stop-color="#EC4899"/>
+                </linearGradient>
+              </defs>
+  
+              <path d="M12 11a4 4 0 0 1 4 4 8 8 0 0 1-8 8"
+                    stroke="url(#fpGradient)" stroke-width="2" stroke-linecap="round"/>
+  
+              <path d="M12 3a9 9 0 0 1 9 9c0 4.97-2.43 9-6 11"
+                    stroke="url(#fpGradient)" stroke-width="2" stroke-linecap="round"/>
+  
+              <path d="M3 12a9 9 0 0 1 9-9"
+                    stroke="url(#fpGradient)" stroke-width="2" stroke-linecap="round"/>
+  
+              <path d="M6 12a6 6 0 0 1 6-6"
+                    stroke="url(#fpGradient)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+  
         </div>
-        <div class="stat-card-icon" style="background: var(--info); color: white;">🔐</div>
-      </div>
-  </div>
-`;
+    </div>
+  `;
+  
 
   const totalDays = Number(data.totalDays) || 0;
   const presentCount = Number(data.presentCount) || 0;
