@@ -1159,40 +1159,40 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
   let data, isFresh = false;
 
-  try {
-    const res = await fetch('/api/get',{
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+  // try {
+  //   const res = await fetch('/api/get',{
+  //     method: 'POST',
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ username, password })
+  //   });
 
-    if (res.ok) {
-      data = await res.json();
-      const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
-      isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 0 * 60 * 1000);
-    }
-  } catch (err) {}
+  //   if (res.ok) {
+  //     data = await res.json();
+  //     const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
+  //     isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 0 * 60 * 1000);
+  //   }
+  // } catch (err) {}
 
   let shouldFetchFromBackend = !data || !isFresh;
 
-  // CASE 1: Cached data fresh
-  if (data && isFresh) {
+  // // CASE 1: Cached data fresh
+  // if (data && isFresh) {
 
-    if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
-      document.getElementById('skeletonLoader').style.display = 'none';
-      loginCard.style.display = "block";   // show login again
-      dashboardCards.style.display = "none"; // hide dashboard (safety)
-      alert("Check Username and Password");
-      return;
-    }
+  //   if (!Array.isArray(data.academic_data) || data.academic_data.length === 0) {
+  //     document.getElementById('skeletonLoader').style.display = 'none';
+  //     loginCard.style.display = "block";   // show login again
+  //     dashboardCards.style.display = "none"; // hide dashboard (safety)
+  //     alert("Check Username and Password");
+  //     return;
+  //   }
 
-    document.getElementById('skeletonLoader').style.display = 'none';
-    showDashboard(username);
-    renderAcademic(data.academic_data, username);
-    renderBiometric(data.biometric_data);
-    renderLatestAttendance(latestAttendance);
-    return;
-  }
+  //   document.getElementById('skeletonLoader').style.display = 'none';
+  //   showDashboard(username);
+  //   renderAcademic(data.academic_data, username);
+  //   renderBiometric(data.biometric_data);
+  //   renderLatestAttendance(latestAttendance);
+  //   return;
+  // }
 
   // CASE 2: Backend fetch
   if (shouldFetchFromBackend) {
