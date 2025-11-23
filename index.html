@@ -1169,7 +1169,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
     if (res.ok) {
       data = await res.json();
       const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : null;
-      isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 1 * 60 * 1000);
+      isFresh = fetchedAt && (Date.now() - fetchedAt.getTime() < 0 * 60 * 1000);
     }
   } catch (err) {}
 
@@ -1230,10 +1230,24 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       showDashboard(username);
       renderAcademic(academicData, username);
       renderBiometric(biometricData);
-      document.getElementById("dashboardCards").style.display = "block";
-      setTimeout(() => {
-        renderLatestAttendance(latestAttendance);
-      }, 150);
+      // Load latest attendance AFTER dashboard loads
+      setTimeout(async () => {
+        try {
+          const res = await fetch('https://attendance-4rm8.onrender.com/get-latest', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+          });
+      
+          const data = await res.json();
+          if (data.success) {
+            renderLatestAttendance(data.latest);
+          }
+        } catch (err) {
+          console.error("Latest attendance failed", err);
+        }
+      }, 500); // slight delay for smoother UI
+
 
     } catch (err) {
       document.getElementById('skeletonLoader').style.display = 'none';
