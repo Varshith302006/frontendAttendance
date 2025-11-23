@@ -1010,7 +1010,8 @@ body[data-theme="dark"] .table-wrapper th {
     </div>
 </div>
  
- 
+ <div class="stats-grid" id="periodStatsGrid"></div>
+
 
     <!-- Attendance Simulation -->
     <div class="card" id="todayClassesCard">
@@ -1463,7 +1464,8 @@ function renderBiometric(data) {
 }
 
 function renderLatestAttendance(periods) {
-  const statsGrid = document.getElementById("statsGrid");
+  const statsGrid = document.getElementById("periodStatsGrid");
+  statsGrid.innerHTML = "";  
 
   // Always prepare an empty 6-period structure
   const display = {
