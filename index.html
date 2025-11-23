@@ -1462,37 +1462,46 @@ function renderBiometric(data) {
   `;
 }
 
-function renderLatestAttendance(list) {
-  if (!Array.isArray(list)) return;
+function renderLatestAttendance(periods) {
+  const statsGrid = document.getElementById("statsGrid");
 
-  list.forEach(info => {
-    const { subject, date, period, status } = info;
+  for (let p = 1; p <= 6; p++) {
+    const info = periods[p];
 
-    const color = status.toLowerCase() === "present"
-      ? "var(--success)"
-      : "var(--danger)";
-    const bg = status.toLowerCase() === "present"
-      ? "var(--success-light)"
-      : "var(--danger-light)";
+    const color =
+      info.status === "PRESENT"
+        ? "var(--success)"
+        : info.status === "ABSENT"
+        ? "var(--danger)"
+        : "var(--warning)";
 
-    const card = `
+    const bg =
+      info.status === "PRESENT"
+        ? "var(--success-light)"
+        : info.status === "ABSENT"
+        ? "var(--danger-light)"
+        : "var(--warning-light)";
+
+    statsGrid.innerHTML += `
       <div class="stat-card">
         <div class="stat-card-header">
           <div>
-            <div class="stat-card-title">${subject}</div>
-            <div class="stat-card-value" style="color:${color};">${status}</div>
+            <div class="stat-card-title">Period ${p}</div>
+            <div class="stat-card-value" style="color:${color};">
+              ${info.status}
+            </div>
             <div class="stat-card-label">
-              <small>${date} — Period ${period}</small>
+              <strong>${info.subject}</strong><br>
+              <small>${info.date}</small>
             </div>
           </div>
           <div class="stat-card-icon" style="background:${bg}; color:${color};">📘</div>
         </div>
       </div>
     `;
-
-    document.getElementById("statsGrid").innerHTML += card;
-  });
+  }
 }
+
 
 
 function createTodayRows() {
