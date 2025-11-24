@@ -1801,7 +1801,9 @@ function escapeHtml(v) {
 const screens = {
   "dashboard": [
     document.getElementById("dashboardCards"),
-    document.getElementById("academicCard")
+    document.getElementById("academicCard"),
+    document.getElementById("biometricCard"),
+    document.getElementById("periodStatsGrid")
   ],
 
   "biometric": [
@@ -1813,6 +1815,7 @@ const screens = {
   ],
 
   "academic": [
+    document.getElementById("academicCard"),
     document.getElementById("todayClassesCard")
   ]
 };
