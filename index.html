@@ -1497,16 +1497,17 @@ function renderLatestAttendance(rows) {
     6: { status: "NOT UPDATED", subject: "-", date: "-" }
   };
 
-  // Use IST always
+  // Today IST
   const today = new Date();
   const day = today.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit" });
   const month = today.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", month: "short" });
   const year = today.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", year: "numeric" });
+
   const todayStr = `${day} ${month}, ${year}`;
 
   const normalize = (s) =>
     s
-      .replace(/[\u00A0\u2007\u202F]/g, " ") // all NBSP types
+      .replace(/[\u00A0\u2007\u202F]/g, " ")
       .replace(/,/g, "")
       .replace(/\s+/g, " ")
       .trim()
@@ -1514,29 +1515,30 @@ function renderLatestAttendance(rows) {
 
   const todayNorm = normalize(todayStr);
 
+  // GROUP rows by subject
   const subjectMap = {};
   rows.forEach(r => {
     if (!subjectMap[r.subject]) subjectMap[r.subject] = [];
     subjectMap[r.subject].push(r);
   });
 
+  // PROCESS ALL TODAY ROWS (not only one)
   Object.values(subjectMap).forEach(subjectRows => {
-    const top3 = subjectRows.slice(0, 3);
+    subjectRows.forEach(r => {
+      if (normalize(r.date) !== todayNorm) return;
 
-    const todayRow = top3.find(r => normalize(r.date) === todayNorm);
-    if (!todayRow) return;
-
-    const p = Number(todayRow.period);
-    if (p >= 1 && p <= 6) {
-      periods[p] = {
-        status: todayRow.status?.toUpperCase() || "NOT UPDATED",
-        subject: todayRow.subject,
-        date: todayRow.date
-      };
-    }
+      const p = Number(r.period);
+      if (p >= 1 && p <= 6) {
+        periods[p] = {
+          status: r.status?.toUpperCase() || "NOT UPDATED",
+          subject: r.subject,
+          date: r.date
+        };
+      }
+    });
   });
 
-  // Render
+  // Render Cards
   for (let p = 1; p <= 6; p++) {
     const info = periods[p];
 
@@ -1570,6 +1572,7 @@ function renderLatestAttendance(rows) {
     `;
   }
 }
+
 
 
 
