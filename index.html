@@ -1485,6 +1485,9 @@ function renderBiometric(data) {
 }
 
 function renderLatestAttendance(rows) {
+  console.log("Latest Attendance Rows:", rows);
+console.log("Today:", todayStr);
+
   const container = document.getElementById("periodStatsGrid");
   container.innerHTML = "";
 
