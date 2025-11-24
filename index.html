@@ -890,6 +890,39 @@ body[data-theme="dark"] .table-wrapper th {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+  .bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 999;
+}
+
+.bottom-nav button {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--text-secondary);
+  flex: 1;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.bottom-nav button.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 
 </style>
 </head>
@@ -1030,6 +1063,13 @@ body[data-theme="dark"] .table-wrapper th {
       </div>
     </div>
   </div>
+</div>
+<!-- Bottom Navigation -->
+<div id="bottomNav" class="bottom-nav">
+  <button data-screen="dashboard" class="active">🏠 Dashboard</button>
+  <button data-screen="biometric">🔐 Biometric</button>
+  <button data-screen="latest">📘 Latest</button>
+  <button data-screen="academic">📚 Academic</button>
 </div>
 
 
@@ -1485,7 +1525,7 @@ function renderBiometric(data) {
 }
 
 function renderLatestAttendance(rows) {
-  const container = document.getElementById("statsGrid");
+  const container = document.getElementById("periodStatsGrid");
   container.innerHTML = "";
 
   const periods = {
@@ -1756,6 +1796,26 @@ function escapeHtml(v) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+const screens = {
+  "dashboard": document.getElementById("dashboardCards"),
+  "biometric": document.getElementById("biometricCard"),
+  "latest": document.getElementById("periodStatsGrid"),
+  "academic": document.getElementById("academicCard")
+};
+
+function showScreen(name) {
+  Object.values(screens).forEach(scr => scr.style.display = "none");
+  screens[name].style.display = "block";
+
+  document.querySelectorAll('.bottom-nav button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.screen === name);
+  });
+}
+
+document.querySelectorAll('.bottom-nav button').forEach(btn => {
+  btn.addEventListener("click", () => showScreen(btn.dataset.screen));
+});
+
 </script>
 </body>
 </html>
