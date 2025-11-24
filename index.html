@@ -1065,7 +1065,7 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 <!-- Bottom Navigation -->
-<div id="bottomNav" class="bottom-nav">
+<div id="bottomNav" class="bottom-nav" style="display:none;">
   <button data-screen="dashboard" class="active">🏠 Dashboard</button>
   <button data-screen="biometric">🔐 Biometric</button>
   <button data-screen="latest">📘 Latest</button>
@@ -1145,6 +1145,8 @@ function showDashboard(studentId) {
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
+  document.getElementById("bottomNav").style.display = "flex";
+
 }
 async function updateTodayVisits() {
   try {
