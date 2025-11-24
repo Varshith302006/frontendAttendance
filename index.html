@@ -1485,9 +1485,6 @@ function renderBiometric(data) {
 }
 
 function renderLatestAttendance(rows) {
-  console.log("Latest Attendance Rows:", rows);
-console.log("Today:", todayStr);
-
   const container = document.getElementById("periodStatsGrid");
   container.innerHTML = "";
 
@@ -1500,15 +1497,22 @@ console.log("Today:", todayStr);
     6: { status: "NOT UPDATED", subject: "-", date: "-" }
   };
 
+  // Use IST always
   const today = new Date();
-  const day = today.toLocaleString("en-GB", { day: "2-digit" });
-  const month = today.toLocaleString("en-GB", { month: "short" });
-  const year = today.toLocaleString("en-GB", { year: "numeric" });
-
-  const todayStr = `${day} ${month}, ${year}`; // EXACT FORMAT: 24 Aug, 2025
+  const day = today.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit" });
+  const month = today.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", month: "short" });
+  const year = today.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", year: "numeric" });
+  const todayStr = `${day} ${month}, ${year}`;
 
   const normalize = (s) =>
-    s.replace(/,/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+    s
+      .replace(/[\u00A0\u2007\u202F]/g, " ") // all NBSP types
+      .replace(/,/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
+  const todayNorm = normalize(todayStr);
 
   const subjectMap = {};
   rows.forEach(r => {
@@ -1519,7 +1523,7 @@ console.log("Today:", todayStr);
   Object.values(subjectMap).forEach(subjectRows => {
     const top3 = subjectRows.slice(0, 3);
 
-    const todayRow = top3.find(r => normalize(r.date) === normalize(todayStr));
+    const todayRow = top3.find(r => normalize(r.date) === todayNorm);
     if (!todayRow) return;
 
     const p = Number(todayRow.period);
@@ -1532,6 +1536,7 @@ console.log("Today:", todayStr);
     }
   });
 
+  // Render
   for (let p = 1; p <= 6; p++) {
     const info = periods[p];
 
