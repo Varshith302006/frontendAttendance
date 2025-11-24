@@ -1488,7 +1488,6 @@ function renderLatestAttendance(rows) {
   const container = document.getElementById("periodStatsGrid");
   container.innerHTML = "";
 
-  // Prepare empty 6 periods
   const periods = {
     1: { status: "NOT UPDATED", subject: "-", date: "-" },
     2: { status: "NOT UPDATED", subject: "-", date: "-" },
@@ -1498,40 +1497,38 @@ function renderLatestAttendance(rows) {
     6: { status: "NOT UPDATED", subject: "-", date: "-" }
   };
 
-  // Today's date format
   const today = new Date();
-  const todayStr = today.toLocaleString("en-US", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
+  const day = today.toLocaleString("en-GB", { day: "2-digit" });
+  const month = today.toLocaleString("en-GB", { month: "short" });
+  const year = today.toLocaleString("en-GB", { year: "numeric" });
 
-  // Group rows by subject
+  const todayStr = `${day} ${month}, ${year}`; // EXACT FORMAT: 24 Aug, 2025
+
+  const normalize = (s) =>
+    s.replace(/,/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+
   const subjectMap = {};
   rows.forEach(r => {
     if (!subjectMap[r.subject]) subjectMap[r.subject] = [];
     subjectMap[r.subject].push(r);
   });
 
-  // Process each subject (only its first 3 rows)
   Object.values(subjectMap).forEach(subjectRows => {
     const top3 = subjectRows.slice(0, 3);
 
-    // Find TODAY inside first 3 rows
-    const todayRow = top3.find(r => r.date.includes(todayStr));
-    if (!todayRow) return;  // ← Skip this subject fully
+    const todayRow = top3.find(r => normalize(r.date) === normalize(todayStr));
+    if (!todayRow) return;
 
     const p = Number(todayRow.period);
-    if (p < 1 || p > 6) return;
-
-    periods[p] = {
-      status: todayRow.status?.toUpperCase() || "NOT UPDATED",
-      subject: todayRow.subject,
-      date: todayRow.date
-    };
+    if (p >= 1 && p <= 6) {
+      periods[p] = {
+        status: todayRow.status?.toUpperCase() || "NOT UPDATED",
+        subject: todayRow.subject,
+        date: todayRow.date
+      };
+    }
   });
 
-  // Rendering the 6 boxes
   for (let p = 1; p <= 6; p++) {
     const info = periods[p];
 
