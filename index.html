@@ -1800,30 +1800,37 @@ function escapeHtml(v) {
 }
 const screens = {
   "dashboard": [
-    document.getElementById("dashboardCards"),   // stats, academic table, biometric %
-    document.getElementById("academicCard")      // academic table inside dashboard
+    document.getElementById("dashboardCards"),
+    document.getElementById("academicCard")
   ],
+
   "biometric": [
-    document.getElementById("biometricCard")     // only biometric card
+    document.getElementById("biometricCard")
   ],
+
   "latest": [
-    document.getElementById("periodStatsGrid")   // latest attendance (6 period cards)
+    document.getElementById("periodStatsGrid")
   ],
+
   "academic": [
-    document.getElementById("todayClassesCard")  // attendance simulator
+    document.getElementById("todayClassesCard")
   ]
 };
 
+
+
 function showScreen(name) {
-  // Hide everything first
-  Object.values(screens).forEach(arr => {
-    arr.forEach(el => el.style.display = "none");
+  // Hide ALL screens first
+  Object.values(screens).forEach(screenGroup => {
+    if (Array.isArray(screenGroup)) {
+      screenGroup.forEach(el => el.style.display = "none");
+    }
   });
 
-  // Show required page elements
+  // Show selected screen(s)
   screens[name].forEach(el => el.style.display = "block");
 
-  // Update bottom nav active button
+  // Highlight active nav button
   document.querySelectorAll('.bottom-nav button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.screen === name);
   });
