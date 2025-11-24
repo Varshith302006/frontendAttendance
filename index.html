@@ -1799,24 +1799,37 @@ function escapeHtml(v) {
     .replace(/'/g, '&#039;');
 }
 const screens = {
-  "dashboard": document.getElementById("dashboardCards"),
-  "biometric": document.getElementById("biometricCard"),
-  "latest": document.getElementById("periodStatsGrid"),
-  "academic": document.getElementById("academicCard")
+  "dashboard": [
+    document.getElementById("dashboardCards"),
+    document.getElementById("academicCard")
+  ],
+  "biometric": [
+    document.getElementById("biometricCard")
+  ],
+  "latest": [
+    document.getElementById("periodStatsGrid")
+  ],
+  "academic": [
+    document.getElementById("todayClassesCard")
+  ]
 };
 
+
 function showScreen(name) {
-  Object.values(screens).forEach(scr => scr.style.display = "none");
-  screens[name].style.display = "block";
+  // hide all screens first
+  Object.values(screens).flat().forEach(el => {
+    el.style.display = "none";
+  });
+
+  // show selected group
+  screens[name].forEach(el => {
+    el.style.display = "block";
+  });
 
   document.querySelectorAll('.bottom-nav button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.screen === name);
   });
 }
-
-document.querySelectorAll('.bottom-nav button').forEach(btn => {
-  btn.addEventListener("click", () => showScreen(btn.dataset.screen));
-});
 
 </script>
 </body>
