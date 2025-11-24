@@ -1800,36 +1800,35 @@ function escapeHtml(v) {
 }
 const screens = {
   "dashboard": [
-    document.getElementById("dashboardCards"),
-    document.getElementById("academicCard")
+    document.getElementById("dashboardCards"),   // stats, academic table, biometric %
+    document.getElementById("academicCard")      // academic table inside dashboard
   ],
   "biometric": [
-    document.getElementById("biometricCard")
+    document.getElementById("biometricCard")     // only biometric card
   ],
   "latest": [
-    document.getElementById("periodStatsGrid")
+    document.getElementById("periodStatsGrid")   // latest attendance (6 period cards)
   ],
   "academic": [
-    document.getElementById("todayClassesCard")
+    document.getElementById("todayClassesCard")  // attendance simulator
   ]
 };
 
-
 function showScreen(name) {
-  // hide all screens first
-  Object.values(screens).flat().forEach(el => {
-    el.style.display = "none";
+  // Hide everything first
+  Object.values(screens).forEach(arr => {
+    arr.forEach(el => el.style.display = "none");
   });
 
-  // show selected group
-  screens[name].forEach(el => {
-    el.style.display = "block";
-  });
+  // Show required page elements
+  screens[name].forEach(el => el.style.display = "block");
 
+  // Update bottom nav active button
   document.querySelectorAll('.bottom-nav button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.screen === name);
   });
 }
+
 
 </script>
 </body>
