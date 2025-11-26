@@ -1307,7 +1307,8 @@ document.getElementById("compressPdfBtn").onclick = async () => {
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = `compressed_${targetMB}MB.pdf`;
+  const originalName = file.name.replace(/\.pdf$/i, "");
+  a.download = `${originalName}_compressed.pdf`;
   a.click();
 
   setTimeout(() => (status.style.display = "none"), 2000);
