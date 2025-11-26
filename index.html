@@ -912,6 +912,29 @@ body[data-theme="dark"] .table-wrapper th {
 #biometricResetIcon:active {
   transform: scale(0.95);
 }
+.biometric-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reset-icon-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.reset-icon-btn:hover {
+  background: var(--bg-primary);
+  color: var(--primary);
+  border-color: var(--primary);
+}
 
 
 </style>
@@ -1026,11 +1049,11 @@ body[data-theme="dark"] .table-wrapper th {
           <div class="btn-container">
             <button id="biometricAttendBtn" class="btn attend-btn">Attend</button>
             <button id="biometricBunkBtn" class="btn bunk-btn">Bunk</button>
+            <button id="biometricResetIcon" title="Reset Biometric Simulation" class="reset-icon-btn">
+              ↻
+            </button>
           </div>
-          <button id="biometricResetIcon" 
-                  title="Reset Biometric Simulation">
-            ↻
-          </button>
+          
 
           <p id="attendanceMessage"></p>
         </div>
