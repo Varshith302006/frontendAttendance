@@ -1163,7 +1163,10 @@ body[data-theme="dark"] .table-wrapper th {
   </div>
 </div>
 <div id="sideMenu" class="side-menu">
-  <h3>Menu</h3>
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h3>Menu</h3>
+    <button id="closeMenuBtn" class="menu-btn" style="font-size:20px; padding:4px 10px;">✖</button>
+  </div>
 
   <button id="openPdfCompressor" class="side-menu-btn">
     📄 PDF Compressor
@@ -1309,6 +1312,19 @@ document.getElementById("compressPdfBtn").onclick = async () => {
 
   setTimeout(() => (status.style.display = "none"), 2000);
 };
+// Close button inside menu
+document.getElementById("closeMenuBtn").onclick = () => {
+  sideMenu.classList.remove("open");
+};
+
+// Click outside to close
+document.addEventListener("click", (e) => {
+  if (!sideMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+    sideMenu.classList.remove("open");
+  }
+});
+
+  
 // Theme Management - Initialize on page load
 function initTheme() {
   const currentTheme = localStorage.getItem('theme') || 
