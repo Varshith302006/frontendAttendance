@@ -890,6 +890,29 @@ body[data-theme="dark"] .table-wrapper th {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+  #biometricResetIcon {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+
+#biometricResetIcon:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--primary);
+}
+
+#biometricResetIcon:active {
+  transform: scale(0.95);
+}
+
 
 </style>
 </head>
@@ -1004,6 +1027,11 @@ body[data-theme="dark"] .table-wrapper th {
             <button id="biometricAttendBtn" class="btn attend-btn">Attend</button>
             <button id="biometricBunkBtn" class="btn bunk-btn">Bunk</button>
           </div>
+          <button id="biometricResetIcon" 
+                  title="Reset Biometric Simulation">
+            ↻
+          </button>
+
           <p id="attendanceMessage"></p>
         </div>
       </div>
@@ -1474,6 +1502,16 @@ document.getElementById('biometricBunkBtn').addEventListener('click', () => {
   document.getElementById('attendanceMessage').textContent = message;
 });
 
+document.getElementById('biometricResetIcon').addEventListener('click', () => {
+  attendCount = 0;
+  bunkCount = 0;
+
+  let original = ((presentCount / totalDays) * 100).toFixed(2);
+
+  document.getElementById('attendanceMessage').textContent = "";
+
+  document.getElementById('attendanceMessage').style.color = "var(--text-primary)";
+});
 
 
   const target = 0.75;
