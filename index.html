@@ -1424,25 +1424,56 @@ function renderBiometric(data) {
   let attendCount = 0;
   let bunkCount = 0;
 
-  document.getElementById('biometricAttendBtn').addEventListener('click', () => {
-    attendCount++;
-    bunkCount = 0;
-    // Calculate new attendance percentage incorporating additional attended days
-    let newAttendance = ((presentCount + attendCount) / (totalDays+attendCount)) * 100;
-    newAttendance = newAttendance.toFixed(2);
-  
-    document.getElementById('attendanceMessage').textContent = 
-      `If you attend ${attendCount} days, your attendance will be ${newAttendance}%`;
-  });
+document.getElementById('biometricAttendBtn').addEventListener('click', () => {
+  attendCount++;
+  bunkCount = 0;
 
-  document.getElementById('biometricBunkBtn').addEventListener('click',() => {
-    bunkCount++;
-    attendCount = 0;
-    let newAttendance = ((presentCount) / (totalDays + bunkCount))*100;
-    newAttendance = newAttendance.toFixed(2);
-    document.getElementById('attendanceMessage').textContent = 
-      `If you bunk ${bunkCount} days, your attendance will be ${newAttendance}%`;
-  });
+  let newTotal = totalDays + attendCount;
+  let newPresent = presentCount + attendCount;
+
+  let newAttendance = ((newPresent / newTotal) * 100).toFixed(2);
+
+  let message = `If you attend ${attendCount} day(s), your attendance will be ${newAttendance}%. `;
+
+  // Additional logic
+  if (newAttendance < 75) {
+    // days required to reach 75
+    let needed = Math.ceil((0.75 * newTotal - newPresent) / (1 - 0.75));
+    message += `📉 You need to attend ${needed} more day(s) to reach 75%.`;
+  } else {
+    // days can bunk
+    let canBunk = Math.floor((newPresent - 0.75 * newTotal) / 0.75);
+    message += `🎉 You can bunk ${canBunk} future day(s) and still stay above 75%.`;
+  }
+
+  document.getElementById('attendanceMessage').textContent = message;
+});
+
+document.getElementById('biometricBunkBtn').addEventListener('click', () => {
+  bunkCount++;
+  attendCount = 0;
+
+  let newTotal = totalDays + bunkCount;
+  let newPresent = presentCount;
+
+  let newAttendance = ((newPresent / newTotal) * 100).toFixed(2);
+
+  let message = `If you bunk ${bunkCount} day(s), your attendance will be ${newAttendance}%. `;
+
+  // Additional logic
+  if (newAttendance < 75) {
+    // days needed to reach 75
+    let needed = Math.ceil((0.75 * newTotal - newPresent) / (1 - 0.75));
+    message += `⚠️ Attendance will fall below 75%. You must attend ${needed} day(s) to recover.`;
+  } else {
+    // days can bunk
+    let canBunk = Math.floor((newPresent - 0.75 * newTotal) / 0.75);
+    message += `🎉 You can still bunk ${canBunk} more day(s) and stay above 75%.`;
+  }
+
+  document.getElementById('attendanceMessage').textContent = message;
+});
+
 
 
   const target = 0.75;
