@@ -1389,6 +1389,7 @@ async function updateTodayVisits() {
     if (!res.ok) throw new Error('Failed to fetch today visits');
     const data = await res.json();
     visitsCount.textContent = data.today_logins || 0;
+    console.log(data.today_logins);
   } catch (err) {
     console.error('Error fetching today visits:', err);
     visitsCount.textContent = '?';
