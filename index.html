@@ -1307,7 +1307,7 @@ document.getElementById("compressPdfBtn").onclick = async () => {
   fd.append("targetMB", targetMB);
 
   try {
-    const response = await fetch("https://attendance-4rm8.onrender.com/compress", {
+    const response = await fetch("https://attendance-4rm8.onrender.com/compress-pdf", {
       method: "POST",
       body: fd
     });
