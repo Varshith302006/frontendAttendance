@@ -1300,7 +1300,7 @@ document.getElementById("compressPdfBtn").onclick = async () => {
   if (!targetMB) return alert("Enter target MB");
 
   status.style.display = "block";
-  status.textContent = "⏳ Uploading to server…";
+  status.textContent = "Compressing....";
 
   const fd = new FormData();
   fd.append("pdf", file);
