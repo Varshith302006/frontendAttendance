@@ -1178,7 +1178,7 @@ body[data-theme="dark"] .table-wrapper th {
     <h3>Menu</h3>
     <button id="closeMenuBtn" class="menu-btn" style="font-size:20px; padding:4px 10px;">✖</button>
   </div>
-   <div id="latestPopup" class="pdf-popup">
+   <!-- <div id="latestPopup" class="pdf-popup">
       <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
     
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -1198,7 +1198,7 @@ body[data-theme="dark"] .table-wrapper th {
         </div>
     
       </div>
-    </div>
+    </div> -->
 
   <button id="openPdfCompressor" class="side-menu-btn">
     📄 PDF Compressor
@@ -1224,6 +1224,27 @@ body[data-theme="dark"] .table-wrapper th {
     <button id="closePdfPopup" class="side-menu-btn" style="background: var(--danger-light); color: var(--danger);">Close</button>
   </div>
 </div>
+ <div id="latestPopup" class="pdf-popup">
+      <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
+    
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3>📅 Today’s Attendance</h3>
+          <button id="closeLatestBtn" class="menu-btn">✖</button>
+        </div>
+    
+        <!-- Loader -->
+        <div id="latestLoader" class="loading-state">
+          <div class="loader"></div>
+          <p>Loading today’s attendance...</p>
+        </div>
+    
+        <!-- Data -->
+        <div class="stats-grid" id="latestAttendanceGrid" style="display:none;">
+          <!-- Period cards injected here -->
+        </div>
+    
+      </div>
+    </div>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -1255,6 +1276,8 @@ const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
 const menuToggle = document.getElementById("menuToggle");
 const sideMenu = document.getElementById("sideMenu");
+let CACHED_LATEST_ATTENDANCE = null;
+let LATEST_RENDERED = false;
 
 menuToggle.addEventListener("click", () => {
   sideMenu.classList.toggle("open");
@@ -1407,7 +1430,21 @@ function showDashboard(studentId) {
   }, 10);
   document.querySelector('header h2').textContent = `${studentId}'s Dashboard`;
   logoutBtn.style.display = 'block';
-  logoutBtn.onclick = () => { location.reload(); };
+   logoutBtn.onclick = () => {
+    CACHED_LATEST_ATTENDANCE = null;
+    LATEST_RENDERED = false;
+  
+    const grid = document.getElementById("latestAttendanceGrid");
+    const loader = document.getElementById("latestLoader");
+  
+    if (grid) grid.innerHTML = "";
+    if (loader) loader.style.display = "flex";
+  
+    sessionStorage.clear();
+    location.reload();
+  };
+
+
 
   visitsBadge.style.display = 'flex';
   document.getElementById('todayClassesCard').style.display = 'block';
@@ -1551,7 +1588,9 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
           const latestData = await latestRes.json();
       
           if (latestData.success) {
+            CACHED_LATEST_ATTENDANCE = latestData.latest;
             renderLatestAttendance(latestData.latest);
+            LATEST_RENDERED = true;
           }
         } catch (err) {
           console.error("Latest attendance failed", err);
@@ -1840,18 +1879,52 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
     </div>
   `;
 }
-document.getElementById("openLatestBtn").addEventListener("click", () => {
-  document.getElementById("latestPopup").style.display = "flex";
+document.addEventListener("DOMContentLoaded", () => {
+  const openBtn = document.getElementById("openLatestBtn");
+  const popup = document.getElementById("latestPopup");
 
-  // Show loader, hide data
-  document.getElementById("latestLoader").style.display = "flex";
-  document.getElementById("latestAttendanceGrid").style.display = "none";
+  if (!openBtn || !popup) return;
+
+  openBtn.addEventListener("click", () => {
+    popup.style.display = "flex";
+
+    const loader = document.getElementById("latestLoader");
+    const grid = document.getElementById("latestAttendanceGrid");
+
+   if (CACHED_LATEST_ATTENDANCE) {
+      loader.style.display = "none";
+      grid.style.display = "grid";
+    } else {
+      loader.style.display = "flex";
+      grid.style.display = "none";
+    }
+
+    } else {
+      loader.style.display = "flex";
+      grid.style.display = "none";
+    }
+  });
 });
 
 
-document.getElementById("closeLatestBtn").addEventListener("click", () => {
-  document.getElementById("latestPopup").style.display = "none";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.getElementById("closeLatestBtn");
+  const popup = document.getElementById("latestPopup");
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      popup.style.display = "none";
+    });
+  }
+
+  if (popup) {
+    popup.addEventListener("click", (e) => {
+      if (e.target === popup) popup.style.display = "none";
+    });
+  }
 });
+
 
 document.getElementById("latestPopup").addEventListener("click", (e) => {
   if (e.target.id === "latestPopup") {
