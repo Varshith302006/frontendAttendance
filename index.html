@@ -1277,7 +1277,7 @@ const themeIcon = document.getElementById('themeIcon');
 const menuToggle = document.getElementById("menuToggle");
 const sideMenu = document.getElementById("sideMenu");
 let CACHED_LATEST_ATTENDANCE = null;
-let LATEST_RENDERED = false;
+
 
 menuToggle.addEventListener("click", () => {
   sideMenu.classList.toggle("open");
@@ -1432,7 +1432,6 @@ function showDashboard(studentId) {
   logoutBtn.style.display = 'block';
    logoutBtn.onclick = () => {
     CACHED_LATEST_ATTENDANCE = null;
-    LATEST_RENDERED = false;
   
     const grid = document.getElementById("latestAttendanceGrid");
     const loader = document.getElementById("latestLoader");
@@ -1890,20 +1889,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const loader = document.getElementById("latestLoader");
     const grid = document.getElementById("latestAttendanceGrid");
 
-    if (CACHED_LATEST_ATTENDANCE) {
-      loader.style.display = "none";
-      grid.style.display = "grid";
-
-      if (!LATEST_RENDERED) {
-        renderLatestAttendance(CACHED_LATEST_ATTENDANCE);
-        LATEST_RENDERED = true;
-      }
+    if (Array.isArray(CACHED_LATEST_ATTENDANCE)) {
+      renderLatestAttendance(CACHED_LATEST_ATTENDANCE);
     } else {
       loader.style.display = "flex";
       grid.style.display = "none";
     }
   });
 });
+
 
 
 
@@ -1933,6 +1927,18 @@ document.getElementById("latestPopup").addEventListener("click", (e) => {
 });
 
 function renderLatestAttendance(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+  document.getElementById("latestAttendanceGrid").innerHTML = `
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <p>No attendance updated for today</p>
+    </div>
+  `;
+  document.getElementById("latestLoader").style.display = "none";
+  document.getElementById("latestAttendanceGrid").style.display = "grid";
+  return;
+}
+
   const container = document.getElementById("latestAttendanceGrid");
   container.innerHTML = "";
 
@@ -2018,9 +2024,12 @@ function renderLatestAttendance(rows) {
         </div>
       </div>
     `;
-    // Hide loader, show data
-    document.getElementById("latestLoader").style.display = "none";
-    document.getElementById("latestAttendanceGrid").style.display = "grid";
+    const loader = document.getElementById("latestLoader");
+    const grid = document.getElementById("latestAttendanceGrid");
+    
+    if (loader) loader.style.display = "none";
+    if (grid) grid.style.display = "grid";
+
 
   }
 }
