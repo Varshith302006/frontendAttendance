@@ -1097,11 +1097,28 @@ body[data-theme="dark"] .table-wrapper th {
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
      <!-- <div class="stats-grid" id="periodStatsGrid" style="margin-top:40px;"></div>-->
-    <div style="text-align:center; margin-bottom:24px;">
-      <button id="openLatestBtn" class="btn">
-        📅 View Today’s Attendance
-      </button>
+    <div id="latestPopup" class="pdf-popup">
+      <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
+    
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3>📅 Today’s Attendance</h3>
+          <button id="closeLatestBtn" class="menu-btn">✖</button>
+        </div>
+    
+        <!-- Loader -->
+        <div id="latestLoader" class="loading-state">
+          <div class="loader"></div>
+          <p>Loading today’s attendance...</p>
+        </div>
+    
+        <!-- Data -->
+        <div class="stats-grid" id="latestAttendanceGrid" style="display:none;">
+          <!-- Period cards injected here -->
+        </div>
+    
+      </div>
     </div>
+
 
 
       <!-- Academic Attendance -->
@@ -1832,11 +1849,17 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
 }
 document.getElementById("openLatestBtn").addEventListener("click", () => {
   document.getElementById("latestPopup").style.display = "flex";
+
+  // Show loader, hide data
+  document.getElementById("latestLoader").style.display = "flex";
+  document.getElementById("latestAttendanceGrid").style.display = "none";
 });
+
 
 document.getElementById("closeLatestBtn").addEventListener("click", () => {
   document.getElementById("latestPopup").style.display = "none";
 });
+
 document.getElementById("latestPopup").addEventListener("click", (e) => {
   if (e.target.id === "latestPopup") {
     e.target.style.display = "none";
@@ -1929,6 +1952,10 @@ function renderLatestAttendance(rows) {
         </div>
       </div>
     `;
+    // Hide loader, show data
+    document.getElementById("latestLoader").style.display = "none";
+    document.getElementById("latestAttendanceGrid").style.display = "grid";
+
   }
 }
 
