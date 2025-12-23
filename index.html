@@ -1096,7 +1096,13 @@ body[data-theme="dark"] .table-wrapper th {
   <div class="dashboard-grid" id="dashboardCards">
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
-     <div class="stats-grid" id="periodStatsGrid" style="margin-top:40px;"></div>
+     <!-- <div class="stats-grid" id="periodStatsGrid" style="margin-top:40px;"></div>-->
+    <div style="text-align:center; margin-bottom:24px;">
+      <button id="openLatestBtn" class="btn">
+        📅 View Today’s Attendance
+      </button>
+    </div>
+
 
       <!-- Academic Attendance -->
     <div class="card" id="academicCard">
@@ -1168,6 +1174,20 @@ body[data-theme="dark"] .table-wrapper th {
   <div style="display:flex; justify-content:space-between; align-items:center;">
     <h3>Menu</h3>
     <button id="closeMenuBtn" class="menu-btn" style="font-size:20px; padding:4px 10px;">✖</button>
+  </div>
+  <div id="latestPopup" class="pdf-popup">
+    <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3>📅 Today’s Attendance</h3>
+        <button id="closeLatestBtn" class="menu-btn">✖</button>
+      </div>
+  
+      <div class="stats-grid" id="latestAttendanceGrid">
+        <!-- Period cards will be injected here -->
+      </div>
+  
+    </div>
   </div>
 
   <button id="openPdfCompressor" class="side-menu-btn">
@@ -1810,9 +1830,21 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
     </div>
   `;
 }
+document.getElementById("openLatestBtn").addEventListener("click", () => {
+  document.getElementById("latestPopup").style.display = "flex";
+});
+
+document.getElementById("closeLatestBtn").addEventListener("click", () => {
+  document.getElementById("latestPopup").style.display = "none";
+});
+document.getElementById("latestPopup").addEventListener("click", (e) => {
+  if (e.target.id === "latestPopup") {
+    e.target.style.display = "none";
+  }
+});
 
 function renderLatestAttendance(rows) {
-  const container = document.getElementById("periodStatsGrid");
+  const container = document.getElementById("latestAttendanceGrid");
   container.innerHTML = "";
 
   const periods = {
