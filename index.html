@@ -1589,9 +1589,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       
           if (latestData.success) {
             CACHED_LATEST_ATTENDANCE = latestData.latest;
-            renderLatestAttendance(latestData.latest);
-            LATEST_RENDERED = true;
           }
+
         } catch (err) {
           console.error("Latest attendance failed", err);
         }
@@ -1891,15 +1890,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const loader = document.getElementById("latestLoader");
     const grid = document.getElementById("latestAttendanceGrid");
 
-   if (CACHED_LATEST_ATTENDANCE) {
+    if (CACHED_LATEST_ATTENDANCE) {
       loader.style.display = "none";
       grid.style.display = "grid";
+
+      if (!LATEST_RENDERED) {
+        renderLatestAttendance(CACHED_LATEST_ATTENDANCE);
+        LATEST_RENDERED = true;
+      }
     } else {
       loader.style.display = "flex";
       grid.style.display = "none";
     }
   });
 });
+
 
 
 
