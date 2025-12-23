@@ -1019,9 +1019,9 @@ body[data-theme="dark"] .table-wrapper th {
 </style>
 </head>
 <body>
-<!-- <div style="position: fixed; bottom: 10px; right: 10px; z-index: 999; font-size: 12px; color: #999;">
+<div style="position: fixed; bottom: 10px; right: 10px; z-index: 999; font-size: 12px; color: #999;">
     UMA CREATIONS
-</div> -->
+</div>
 
 
 <header>
@@ -1178,7 +1178,7 @@ body[data-theme="dark"] .table-wrapper th {
     <h3>Menu</h3>
     <button id="closeMenuBtn" class="menu-btn" style="font-size:20px; padding:4px 10px;">✖</button>
   </div>
-   <!-- <div id="latestPopup" class="pdf-popup">
+   <div id="latestPopup" class="pdf-popup">
       <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
     
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -1198,7 +1198,7 @@ body[data-theme="dark"] .table-wrapper th {
         </div>
     
       </div>
-    </div> -->
+    </div>
 
   <button id="openPdfCompressor" class="side-menu-btn">
     📄 PDF Compressor
@@ -1224,27 +1224,6 @@ body[data-theme="dark"] .table-wrapper th {
     <button id="closePdfPopup" class="side-menu-btn" style="background: var(--danger-light); color: var(--danger);">Close</button>
   </div>
 </div>
- <div id="latestPopup" class="pdf-popup">
-      <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
-    
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h3>📅 Today’s Attendance</h3>
-          <button id="closeLatestBtn" class="menu-btn">✖</button>
-        </div>
-    
-        <!-- Loader -->
-        <div id="latestLoader" class="loading-state">
-          <div class="loader"></div>
-          <p>Loading today’s attendance...</p>
-        </div>
-    
-        <!-- Data -->
-        <div class="stats-grid" id="latestAttendanceGrid" style="display:none;">
-          <!-- Period cards injected here -->
-        </div>
-    
-      </div>
-    </div>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -1276,8 +1255,7 @@ const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
 const menuToggle = document.getElementById("menuToggle");
 const sideMenu = document.getElementById("sideMenu");
-let CACHED_LATEST_ATTENDANCE = null;
-
+let LATEST_ATTENDANCE_READY = false;
 
 menuToggle.addEventListener("click", () => {
   sideMenu.classList.toggle("open");
@@ -1380,7 +1358,13 @@ document.addEventListener("click", (e) => {
   }
 });
 
-  
+  window.addEventListener("DOMContentLoaded", () => {
+  resetLatestAttendancePopup();
+});
+window.addEventListener("beforeunload", () => {
+  sessionStorage.clear();
+});
+
 // Theme Management - Initialize on page load
 function initTheme() {
   const currentTheme = localStorage.getItem('theme') || 
@@ -1430,19 +1414,11 @@ function showDashboard(studentId) {
   }, 10);
   document.querySelector('header h2').textContent = `${studentId}'s Dashboard`;
   logoutBtn.style.display = 'block';
-   logoutBtn.onclick = () => {
-    CACHED_LATEST_ATTENDANCE = null;
-  
-    const grid = document.getElementById("latestAttendanceGrid");
-    const loader = document.getElementById("latestLoader");
-  
-    if (grid) grid.innerHTML = "";
-    if (loader) loader.style.display = "flex";
-  
-    sessionStorage.clear();
+  logoutBtn.onclick = () => {
+    resetLatestAttendancePopup();
+    sessionStorage.clear(); // optional, keep if you want full reset
     location.reload();
   };
-
 
 
   visitsBadge.style.display = 'flex';
@@ -1587,9 +1563,8 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
           const latestData = await latestRes.json();
       
           if (latestData.success) {
-            CACHED_LATEST_ATTENDANCE = latestData.latest;
+            renderLatestAttendance(latestData.latest);
           }
-
         } catch (err) {
           console.error("Latest attendance failed", err);
         }
@@ -1877,48 +1852,54 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
     </div>
   `;
 }
-document.addEventListener("DOMContentLoaded", () => {
-  const openBtn = document.getElementById("openLatestBtn");
+document.getElementById("openLatestBtn").addEventListener("click", () => {
   const popup = document.getElementById("latestPopup");
+  const loader = document.getElementById("latestLoader");
+  const grid = document.getElementById("latestAttendanceGrid");
 
-  if (!openBtn || !popup) return;
+  popup.style.display = "flex";
 
-  openBtn.addEventListener("click", () => {
-    popup.style.display = "flex";
-
-    const loader = document.getElementById("latestLoader");
-    const grid = document.getElementById("latestAttendanceGrid");
-
-    if (Array.isArray(CACHED_LATEST_ATTENDANCE)) {
-      renderLatestAttendance(CACHED_LATEST_ATTENDANCE);
-    } else {
-      loader.style.display = "flex";
-      grid.style.display = "none";
-    }
-  });
+  // ✅ If already loaded, just show data
+  if (LATEST_ATTENDANCE_READY) {
+    loader.style.display = "none";
+    grid.style.display = "grid";
+  }
+  // ⏳ First time only
+  else {
+    loader.style.display = "flex";
+    grid.style.display = "none";
+  }
 });
+function resetLatestAttendancePopup() {
+  // Reset JS flags
+  LATEST_ATTENDANCE_READY = false;
 
-
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const closeBtn = document.getElementById("closeLatestBtn");
+  // Reset DOM
+  const grid = document.getElementById("latestAttendanceGrid");
+  const loader = document.getElementById("latestLoader");
   const popup = document.getElementById("latestPopup");
 
-  if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-      popup.style.display = "none";
-    });
+  if (grid) {
+    grid.innerHTML = "";
+    grid.style.display = "none";
+  }
+
+  if (loader) {
+    loader.style.display = "flex";
   }
 
   if (popup) {
-    popup.addEventListener("click", (e) => {
-      if (e.target === popup) popup.style.display = "none";
-    });
+    popup.style.display = "none";
   }
-});
 
+  // Clear session cache (safe, you already use it)
+  sessionStorage.removeItem("latestAttendance");
+}
+
+
+document.getElementById("closeLatestBtn").addEventListener("click", () => {
+  document.getElementById("latestPopup").style.display = "none";
+});
 
 document.getElementById("latestPopup").addEventListener("click", (e) => {
   if (e.target.id === "latestPopup") {
@@ -1927,18 +1908,6 @@ document.getElementById("latestPopup").addEventListener("click", (e) => {
 });
 
 function renderLatestAttendance(rows) {
-  if (!Array.isArray(rows) || rows.length === 0) {
-  document.getElementById("latestAttendanceGrid").innerHTML = `
-    <div class="empty-state">
-      <div class="empty-state-icon">📭</div>
-      <p>No attendance updated for today</p>
-    </div>
-  `;
-  document.getElementById("latestLoader").style.display = "none";
-  document.getElementById("latestAttendanceGrid").style.display = "grid";
-  return;
-}
-
   const container = document.getElementById("latestAttendanceGrid");
   container.innerHTML = "";
 
@@ -2024,13 +1993,10 @@ function renderLatestAttendance(rows) {
         </div>
       </div>
     `;
-    const loader = document.getElementById("latestLoader");
-    const grid = document.getElementById("latestAttendanceGrid");
-    
-    if (loader) loader.style.display = "none";
-    if (grid) grid.style.display = "grid";
-
-
+    // Hide loader, show data
+    document.getElementById("latestLoader").style.display = "none";
+    document.getElementById("latestAttendanceGrid").style.display = "grid";
+    LATEST_ATTENDANCE_READY = true;
   }
 }
 
