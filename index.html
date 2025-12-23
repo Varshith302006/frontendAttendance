@@ -1097,27 +1097,13 @@ body[data-theme="dark"] .table-wrapper th {
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
      <!-- <div class="stats-grid" id="periodStatsGrid" style="margin-top:40px;"></div>-->
-    <div id="latestPopup" class="pdf-popup">
-      <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
-    
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h3>📅 Today’s Attendance</h3>
-          <button id="closeLatestBtn" class="menu-btn">✖</button>
-        </div>
-    
-        <!-- Loader -->
-        <div id="latestLoader" class="loading-state">
-          <div class="loader"></div>
-          <p>Loading today’s attendance...</p>
-        </div>
-    
-        <!-- Data -->
-        <div class="stats-grid" id="latestAttendanceGrid" style="display:none;">
-          <!-- Period cards injected here -->
-        </div>
-    
-      </div>
+    <div style="text-align:center; margin-bottom:24px;">
+      <button id="openLatestBtn" class="btn">
+        📅 View Today’s Attendance
+      </button>
     </div>
+
+   
 
 
 
@@ -1192,20 +1178,27 @@ body[data-theme="dark"] .table-wrapper th {
     <h3>Menu</h3>
     <button id="closeMenuBtn" class="menu-btn" style="font-size:20px; padding:4px 10px;">✖</button>
   </div>
-  <div id="latestPopup" class="pdf-popup">
-    <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
-      
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3>📅 Today’s Attendance</h3>
-        <button id="closeLatestBtn" class="menu-btn">✖</button>
+   <div id="latestPopup" class="pdf-popup">
+      <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
+    
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3>📅 Today’s Attendance</h3>
+          <button id="closeLatestBtn" class="menu-btn">✖</button>
+        </div>
+    
+        <!-- Loader -->
+        <div id="latestLoader" class="loading-state">
+          <div class="loader"></div>
+          <p>Loading today’s attendance...</p>
+        </div>
+    
+        <!-- Data -->
+        <div class="stats-grid" id="latestAttendanceGrid" style="display:none;">
+          <!-- Period cards injected here -->
+        </div>
+    
       </div>
-  
-      <div class="stats-grid" id="latestAttendanceGrid">
-        <!-- Period cards will be injected here -->
-      </div>
-  
     </div>
-  </div>
 
   <button id="openPdfCompressor" class="side-menu-btn">
     📄 PDF Compressor
