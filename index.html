@@ -1811,7 +1811,7 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
   `;
 }
 
-function renderLatestAttendance(rows) {
+function renderLatestAttendance(rows,pct) {
   const container = document.getElementById("periodStatsGrid");
   container.innerHTML = "";
 
@@ -1880,8 +1880,8 @@ function renderLatestAttendance(rows) {
       bg = "var(--danger-light)";
     }
 
-      // const statsGrid = document.getElementById("statsGrid");
-      container.innerHTML += `
+      const statsGrid = document.getElementById("statsGrid");
+      statsGrid.innerHTML += `
         <div class="stat-card">
             <div class="stat-card-header">
               <div>
