@@ -1005,6 +1005,7 @@ body[data-theme="dark"] .table-wrapper th {
   z-index: 99999;
 }
 
+
 .pdf-popup-inner {
   background: var(--bg-secondary);
   padding: 30px;
@@ -1013,8 +1014,21 @@ body[data-theme="dark"] .table-wrapper th {
   text-align:center;
   border:2px solid var(--border);
 }
-
-
+.pdf-popup {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  z-index: 999999;
+}
+/* @media (max-width: 768px) {
+  .pdf-popup-inner {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+  }
+} */
 
 </style>
 </head>
@@ -1027,14 +1041,14 @@ body[data-theme="dark"] .table-wrapper th {
 <header>
   <div class="header-container">
     <div class="header-title">
-      <div class="logo">📊</div>
+      <!-- <div class="logo">📊</div> -->
       <h2>My Attendance Dashboard</h2>
     </div>
     <div class="header-actions">
       <button id="themeToggle" title="Toggle dark mode" style="display: flex !important;">
         <span id="themeIcon">🌙</span>
       </button>
-      <div id="visitsBadge">
+      <div id="visitsBadge" style="display: none;">
         <span>👥</span>
         <span id="visitsCount">0</span>
       </div>
@@ -1102,6 +1116,7 @@ body[data-theme="dark"] .table-wrapper th {
         📅 View Today’s Attendance
       </button>
     </div>
+    
 
    
 
@@ -1401,10 +1416,10 @@ togglePassword.addEventListener('click', () => {
   eyeOpen.style.display = type === 'password' ? 'block' : 'none';
   eyeClosed.style.display = type === 'password' ? 'none' : 'block';
 });
-window.addEventListener('DOMContentLoaded', () => {
-  visitsBadge.style.display = 'flex'; 
-  updateTodayVisits();
-});
+//window.addEventListener('DOMContentLoaded', () => {
+  //visitsBadge.style.display = 'flex'; 
+  //updateTodayVisits();
+//});
 
 function showDashboard(studentId) {
   loginCard.style.display = 'none';
@@ -1421,11 +1436,17 @@ function showDashboard(studentId) {
   };
 
 
-  visitsBadge.style.display = 'flex';
+    if (studentId === "24951A05D") {
+        visitsBadge.style.display = 'flex';
+        updateTodayVisits();   // fetch only for you
+    } else {
+        visitsBadge.style.display = 'none';
+    }
   document.getElementById('todayClassesCard').style.display = 'block';
   resetBtn.style.display = 'block';
 }
 async function updateTodayVisits() {
+    if (!visitsBadge || visitsBadge.style.display === 'none') return;
   try {
     const res = await fetch('https://attendance-4rm8.onrender.com/today-logins');
     if (!res.ok) throw new Error('Failed to fetch today visits');
