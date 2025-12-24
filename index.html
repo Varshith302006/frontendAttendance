@@ -813,7 +813,7 @@ tr:hover {
 /* Empty State */
 .empty-state {
   text-align: center;
-  padding: 48px 24px;
+  padding: 25px 12px;
   color: var(--text-secondary);
 }
 
@@ -1022,13 +1022,13 @@ body[data-theme="dark"] .table-wrapper th {
   display: none;
   z-index: 999999;
 }
-/* @media (max-width: 768px) {
-  .pdf-popup-inner {
-    width: 100vw;
-    height: 100dvh;
-    border-radius: 0;
-  }
-} */
+#biometricPopup .card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
 
 </style>
 </head>
@@ -1116,11 +1116,11 @@ body[data-theme="dark"] .table-wrapper th {
         📅 View Today’s Attendance
       </button>
     </div>
-    
-
-   
-
-
+    <div style="text-align:center; margin-bottom:24px;">
+        <button id="openBiometricBtn" class="btn">
+            🔐 View Biometric Analysis
+        </button>
+    </div>
 
       <!-- Academic Attendance -->
     <div class="card" id="academicCard">
@@ -1139,7 +1139,7 @@ body[data-theme="dark"] .table-wrapper th {
     </div>
 
     <!-- Biometric Attendance -->
-    <div class="card" id="biometricCard" style="margin-top:40px;">
+    <!-- <div class="card" id="biometricCard" style="margin-top:40px; display: none;">
       <div class="card-header">
         <h3>
           <span>🔐</span>
@@ -1164,6 +1164,31 @@ body[data-theme="dark"] .table-wrapper th {
           <p id="attendanceMessage"></p>
         </div>
       </div>
+    </div> -->
+    <div id="biometricCard" style="display: none;">
+      <!-- <div class="card-header">
+        <h3>
+          <span>🔐</span>
+          Biometric Attendance
+        </h3>
+      </div> -->
+       <div class="btn-container" style="margin: 20px; margin-bottom: 0px;">
+            <button id="biometricAttendBtn" class="btn attend-btn">Attend</button>
+            <button id="biometricBunkBtn" class="btn bunk-btn">Bunk</button>
+            <button id="biometricResetIcon" title="Reset Biometric Simulation" class="reset-icon-btn">
+              ↻
+            </button>
+          </div>
+          
+          <p id="attendanceMessage"></p>
+      <!-- <div class="card-body"> -->
+        <div id="biometricTable" class="empty-state" >
+          <div class="empty-state-icon">👤</div>
+          <p>Loading....</p>
+        </div>
+        <div id="biometricSection" style="margin-top: 0px;">
+        </div>
+      <!-- </div> -->
     </div>
 </div>
  
@@ -1218,6 +1243,7 @@ body[data-theme="dark"] .table-wrapper th {
   <button id="openPdfCompressor" class="side-menu-btn">
     📄 PDF Compressor
   </button>
+  
 
 </div>
 <div id="pdfPopup" class="pdf-popup">
@@ -1237,6 +1263,27 @@ body[data-theme="dark"] .table-wrapper th {
     </div>
 
     <button id="closePdfPopup" class="side-menu-btn" style="background: var(--danger-light); color: var(--danger);">Close</button>
+  </div>
+</div>
+<div id="biometricPopup" class="pdf-popup">
+  <div class="pdf-popup-inner" style="width:90%; max-width:800px; max-height:90vh; overflow:auto;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3>🔐 Biometric Attendance</h3>
+      <button id="closeBiometricBtn" class="menu-btn">✖</button>
+    </div>
+
+    <!-- Loader (optional) -->
+    <div id="biometricLoader" class="loading-state" style="display:none;">
+      <div class="loader"></div>
+      <p>Loading biometric attendance...</p>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="biometricPopupContent">
+      <!-- biometricTable + buttons will be MOVED here -->
+    </div>
+
   </div>
 </div>
 
@@ -1271,6 +1318,24 @@ const themeIcon = document.getElementById('themeIcon');
 const menuToggle = document.getElementById("menuToggle");
 const sideMenu = document.getElementById("sideMenu");
 let LATEST_ATTENDANCE_READY = false;
+const biometricPopup = document.getElementById("biometricPopup");
+const openBiometricBtn = document.getElementById("openBiometricBtn");
+const closeBiometricBtn = document.getElementById("closeBiometricBtn");
+
+openBiometricBtn.addEventListener("click", () => {
+  const holder = document.getElementById("biometricCard");
+  const popupContent = document.getElementById("biometricPopupContent");
+
+  popupContent.innerHTML = "";
+  popupContent.appendChild(holder);
+
+  holder.style.display = "block";
+  biometricPopup.style.display = "flex";
+});
+
+closeBiometricBtn.addEventListener("click", () => {
+  biometricPopup.style.display = "none";
+});
 
 menuToggle.addEventListener("click", () => {
   sideMenu.classList.toggle("open");
@@ -1574,7 +1639,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       setTimeout(async () => {
         try {
           const latestRes = await fetch(
-            "https://attendance-4rm8.onrender.com/get-latest",
+            "https://attendance-4rm8.onrender.com/get-lates",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -1844,23 +1909,23 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
   document.getElementById('biometricTable').innerHTML = `
     <div style="display: grid; gap: 16px;">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
-        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+        <div style="background: var(--bg-primary); padding: 12px; border-radius: var(--radius); text-align: center;">
           <div style="font-size: 24px; font-weight: 700; color: ${pct >= 75 ? 'var(--success)' : 'var(--danger)'};">${pct.toFixed(2)}%</div>
           <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Attendance %</div>
         </div>
-        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+        <div style="background: var(--bg-primary); padding: 12px; border-radius: var(--radius); text-align: center;">
           <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">${totalDays}</div>
           <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Total Days</div>
         </div>
-        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+        <div style="background: var(--bg-primary); padding: 12px; border-radius: var(--radius); text-align: center;">
           <div style="font-size: 24px; font-weight: 700; color: var(--success);">${presentCount}</div>
           <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Present Days</div>
         </div>
-        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+        <div style="background: var(--bg-primary); padding: 12px; border-radius: var(--radius); text-align: center;">
           <div style="font-size: 24px; font-weight: 700; color: var(--primary);">${daysToAttend}</div>
           <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">To Reach 75%</div>
         </div>
-        <div style="background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center;">
+        <div style="background: var(--bg-primary); padding: 12px; border-radius: var(--radius); text-align: center;">
           <div style="font-size: 24px; font-weight: 700; color: var(--warning);">${leavesCanTake}</div>
           <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Can Bunk</div>
         </div>
