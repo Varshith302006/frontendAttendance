@@ -1121,6 +1121,12 @@ body[data-theme="dark"] .table-wrapper th {
             🔐 View Biometric Analysis
         </button>
     </div>
+    <div style="text-align:center; margin-bottom:24px;">
+      <button id="openRegisterBtn" class="btn">
+        🗂 View Attendance Register
+      </button>
+    </div>
+
 
       <!-- Academic Attendance -->
     <div class="card" id="academicCard">
@@ -1347,6 +1353,20 @@ document.getElementById("openPdfCompressor").onclick = () => {
 document.getElementById("closePdfPopup").onclick = () => {
   document.getElementById("pdfPopup").style.display = "none";
 };
+document.getElementById("openRegisterBtn").addEventListener("click", () => {
+
+  // Safety check
+  if (!sessionStorage.getItem("attendance_register")) {
+    alert("Attendance register not loaded yet. Please login again.");
+    return;
+  }
+
+  // Open register in same tab (recommended)
+  window.location.href = "register.html";
+
+  // OR open in new tab (optional)
+  // window.open("attendance-register.html", "_blank");
+});
 
 // Simple compression using PDF-lib
 document.getElementById("compressPdfBtn").onclick = async () => {
@@ -1441,9 +1461,9 @@ document.addEventListener("click", (e) => {
   window.addEventListener("DOMContentLoaded", () => {
   resetLatestAttendancePopup();
 });
-window.addEventListener("beforeunload", () => {
-  sessionStorage.clear();
-});
+// window.addEventListener("beforeunload", () => {
+//   sessionStorage.clear();
+// });
 
 // Theme Management - Initialize on page load
 function initTheme() {
