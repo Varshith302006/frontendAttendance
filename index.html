@@ -1635,6 +1635,11 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       showDashboard(username);
       renderAcademic(academicData, username);
       renderBiometric(biometricData);
+      // ✅ Fetch register ONCE per login (background)
+      fetchAttendanceRegisterOnce(username, password)
+        .then(() => console.log("Attendance register cached"))
+        .catch(err => console.warn("Register fetch failed", err));
+
       // Load latest attendance AFTER dashboard loads
       setTimeout(async () => {
         try {
@@ -1938,6 +1943,37 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
     </div>
   `;
 }
+  
+async function fetchAttendanceRegisterOnce(username, password) {
+  // Already fetched in this session
+  if (sessionStorage.getItem("attendance_register")) {
+    return JSON.parse(sessionStorage.getItem("attendance_register"));
+  }
+
+  const res = await fetch(
+    "https://attendance-4rm8.onrender.com/get-attendance-register",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    }
+  );
+
+  const data = await res.json();
+
+  if (!data.success) {
+    throw new Error("Failed to fetch attendance register");
+  }
+
+  // Cache for entire session
+  sessionStorage.setItem(
+    "attendance_register",
+    JSON.stringify(data.records)
+  );
+
+  return data.records;
+}
+
 document.getElementById("openLatestBtn").addEventListener("click", () => {
   const popup = document.getElementById("latestPopup");
   const loader = document.getElementById("latestLoader");
