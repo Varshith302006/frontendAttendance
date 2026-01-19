@@ -1114,22 +1114,23 @@ body[data-theme="dark"] .table-wrapper th {
     <!-- Stats Cards -->
     <div class="stats-grid" id="statsGrid"></div>
      <!-- <div class="stats-grid" id="periodStatsGrid" style="margin-top:40px;"></div>-->
-    <div style="text-align:center; margin-bottom:24px;">
-      <button id="openLatestBtn" class="btn">
-        📅 View Today’s Attendance
-      </button>
-    </div>
-    <div style="text-align:center; margin-bottom:24px;">
-        <button id="openBiometricBtn" class="btn">
-            🔐 View Biometric Analysis
-        </button>
-    </div>
-    <div style="text-align:center; margin-bottom:24px;">
-      <button id="openRegisterBtn" class="btn">
-        🗂 View Attendance Register
+    <div style="margin-bottom:24px;">
+      <button id="openRegisterBtn" class="btn" style="width:100%; display:block;">
+        Attendance Register
       </button>
     </div>
 
+    <div style="margin-bottom:24px;">
+      <button id="openLatestBtn" class="btn" style="width:100%; display:none;">
+        Today’s Attendance
+      </button>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <button id="openBiometricBtn" class="btn" style="width:100%; display:block;">
+        Biometric Analysis
+      </button>
+    </div>
 
       <!-- Academic Attendance -->
     <div class="card" id="academicCard">
