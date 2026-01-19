@@ -1056,7 +1056,7 @@ body[data-theme="dark"] .table-wrapper th {
         <span id="visitsCount">0</span>
       </div>
       <button id="logoutBtn">Logout</button>
-      <button id="menuToggle" class="menu-btn">☰</button>
+      <button id="menuToggle" class="menu-btn" style="display: none;">☰</button>
     </div>
   </div>
 </header>
@@ -1119,18 +1119,18 @@ body[data-theme="dark"] .table-wrapper th {
         Attendance Register
       </button>
     </div>
-
-    <div style="margin-bottom:24px;">
-      <button id="openLatestBtn" class="btn" style="width:100%; display:none;">
-        Today’s Attendance
-      </button>
-    </div>
-
     <div style="margin-bottom:24px;">
       <button id="openBiometricBtn" class="btn" style="width:100%; display:block;">
         Biometric Analysis
       </button>
     </div>
+    <div style="margin-bottom:24px;">
+      <button id="openLatestBtn" class="btn" style="width:100%; display:block;">
+        Today’s Attendance
+      </button>
+    </div>
+
+    
 
       <!-- Academic Attendance -->
     <div class="card" id="academicCard">
@@ -1357,6 +1357,7 @@ document.getElementById("openPdfCompressor").onclick = () => {
 document.getElementById("closePdfPopup").onclick = () => {
   document.getElementById("pdfPopup").style.display = "none";
 };
+
 document.getElementById("openRegisterBtn").addEventListener("click", () => {
 
   // Safety check
@@ -1471,8 +1472,8 @@ document.addEventListener("click", (e) => {
 
 // Theme Management - Initialize on page load
 function initTheme() {
-  const currentTheme = localStorage.getItem('theme') || 
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const savedTheme = localStorage.getItem('theme');
+  const currentTheme = savedTheme || 'dark';
 
   if (currentTheme === 'dark') {
     document.body.setAttribute('data-theme', 'dark');
