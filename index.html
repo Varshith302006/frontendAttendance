@@ -1361,10 +1361,10 @@ document.getElementById("closePdfPopup").onclick = () => {
 document.getElementById("openRegisterBtn").addEventListener("click", () => {
 
   // Safety check
-  if (!sessionStorage.getItem("attendance_register")) {
-    alert("Attendance register not loaded yet. Please login again.");
-    return;
-  }
+  // if (!sessionStorage.getItem("attendance_register")) {
+  //   // alert("Attendance register not loaded yet. Retry.");
+  //   return;
+  // }
 
   // Open register in same tab (recommended)
   window.location.href = "register.html";
