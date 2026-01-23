@@ -309,7 +309,7 @@ function buildRegister(records) {
   const subjects = [...new Set(records.map(r => r.subject))].sort();
 
   // ✅ UNIQUE DATES → ROWS
-  const dates = [...new Set(records.map(r => r.date))].sort();
+  const dates = [...new Set(records.map(r => r.date))].sort().reverse();
 
   /**
    * Matrix:
