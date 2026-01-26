@@ -281,6 +281,49 @@
 <body>
   <div class="container">
     <h2>Attendance Register</h2>
+    <button id="openTimetableBtn"
+      style="
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 9999;
+        padding: 10px 16px;
+        border-radius: 10px;
+        border: none;
+        background: #4f46e5;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      ">
+      📅 Timetable
+    </button>
+
+    <div id="timetablePopup"
+      style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.5);
+        z-index:10000;
+        align-items:center;
+        justify-content:center;
+      ">
+      <div style="
+        background:white;
+        width:90%;
+        max-width:1100px;
+        max-height:90vh;
+        overflow:auto;
+        padding:20px;
+        border-radius:16px;
+      ">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h3>📅 Weekly Timetable</h3>
+          <button onclick="closeTimetable()">✖</button>
+        </div>
+        <div id="timetableContent"></div>
+      </div>
+    </div>
 
     <div class="wrapper">
       <div class="scroll-container">
@@ -368,6 +411,54 @@ function buildRegister(records) {
   html += "</tbody>";
   table.innerHTML = html;
 }
+
+document.getElementById("openTimetableBtn").onclick = () => {
+  const popup = document.getElementById("timetablePopup");
+  const container = document.getElementById("timetableContent");
+
+  const timetable = JSON.parse(
+    sessionStorage.getItem("weekly_timetable") || "[]"
+  );
+
+  if (!timetable.length) {
+    container.innerHTML = "<p>No timetable available</p>";
+    popup.style.display = "flex";
+    return;
+  }
+
+  let html = `
+    <table border="1" width="100%" cellpadding="8">
+      <tr>
+        <th>Day</th>
+        <th>P1</th><th>P2</th><th>P3</th>
+        <th>P4</th><th>P5</th><th>P6</th>
+      </tr>
+  `;
+
+  timetable.forEach(r => {
+    if (
+      r.day.toLowerCase().includes("period") ||
+      r.day.toLowerCase().includes("lunch") ||
+      r.day.toLowerCase().includes("s.no")
+    ) return;
+
+    html += `<tr><td><b>${r.day}</b></td>`;
+    for (let i = 0; i < 6; i++) {
+      html += `<td>${r.periods[i] || "-"}</td>`;
+    }
+    html += "</tr>";
+  });
+
+  html += "</table>";
+  container.innerHTML = html;
+  popup.style.display = "flex";
+};
+
+function closeTimetable() {
+  document.getElementById("timetablePopup").style.display = "none";
+}
+
+
 </script>
 
 </body>
