@@ -1358,39 +1358,8 @@ document.getElementById("closePdfPopup").onclick = () => {
 
 document.getElementById("openRegisterBtn").addEventListener("click", async () => {
   if (!sessionStorage.getItem("attendance_register")) {
-    alert("Attendance register not loaded yet. Retry again.");
+    alert("Attendance register not loaded yet. Wait for a while.");
     return;
-  }
-
-  // ✅ Fetch timetable ONCE (only if not cached)
-  if (!sessionStorage.getItem("weekly_timetable")) {
-    try {
-      const res = await fetch(
-        "https://attendance-4rm8.onrender.com/get-timetable",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: document.getElementById("username").value,
-            password: document.getElementById("passwordField").value,
-            ay: "2025-26"
-          })
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.success) {
-        sessionStorage.setItem(
-          "weekly_timetable",
-          JSON.stringify(data.weeklyTimetable)
-        );
-        sessionStorage.setItem("timetable_section", data.section);
-        sessionStorage.setItem("timetable_ay", data.academicYear);
-      }
-    } catch (err) {
-      console.warn("Timetable fetch failed", err);
-    }
   }
 
   // ✅ Move to register page
@@ -1606,6 +1575,7 @@ function getCache(key) {
 
 document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
+    sessionStorage.clear();
   const formData = new FormData(e.target);
   const username = formData.get('username');
   const password = formData.get('password');
@@ -1693,6 +1663,10 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       fetchAttendanceRegisterOnce(username, password)
         .then(() => console.log("Attendance register cached"))
         .catch(err => console.warn("Register fetch failed", err));
+      // ✅ Fetch timetable immediately after login (background)
+      fetchTimetableOnce(username, password)
+        .then(() => console.log("Timetable cached"))
+        .catch(err => console.warn("Timetable fetch failed", err));
 
       // Load latest attendance AFTER dashboard loads
       setTimeout(async () => {
@@ -1726,7 +1700,12 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   }
 });
 
-async function fetchTimetable(username, password) {
+async function fetchTimetableOnce(username, password) {
+  // Already fetched in this session
+  if (sessionStorage.getItem("weekly_timetable")) {
+    return JSON.parse(sessionStorage.getItem("weekly_timetable"));
+  }
+
   const res = await fetch(
     "https://attendance-4rm8.onrender.com/get-timetable",
     {
@@ -1735,16 +1714,26 @@ async function fetchTimetable(username, password) {
       body: JSON.stringify({
         username,
         password,
-        ay: "2025-26",
+        ay: "2025-26"
       })
     }
   );
 
   const data = await res.json();
-  if (!data.success) throw new Error("Timetable fetch failed");
+  if (!data.success) {
+    throw new Error("Timetable fetch failed");
+  }
 
-  return data;
+  sessionStorage.setItem(
+    "weekly_timetable",
+    JSON.stringify(data.weeklyTimetable)
+  );
+  sessionStorage.setItem("timetable_section", data.section);
+  sessionStorage.setItem("timetable_ay", data.academicYear);
+
+  return data.weeklyTimetable;
 }
+
 
 
 function renderAcademic(data,username) {
@@ -2018,7 +2007,11 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
 }
   
 async function fetchAttendanceRegisterOnce(username, password) {
-  
+  // Already fetched in this session
+  if (sessionStorage.getItem("attendance_register")) {
+    return JSON.parse(sessionStorage.getItem("attendance_register"));
+  }
+
   const res = await fetch(
     "https://attendance-4rm8.onrender.com/get-attendance-register",
     {
