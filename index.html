@@ -1128,9 +1128,7 @@ body[data-theme="dark"] .table-wrapper th {
       <button id="openLatestBtn" class="btn" style="width:100%; display:block;">
         Today’s Attendance
       </button>
-    </div>
-
-    
+    </div> 
 
       <!-- Academic Attendance -->
     <div class="card" id="academicCard">
@@ -1358,20 +1356,51 @@ document.getElementById("closePdfPopup").onclick = () => {
   document.getElementById("pdfPopup").style.display = "none";
 };
 
-document.getElementById("openRegisterBtn").addEventListener("click", () => {
-
-  // Safety check
+document.getElementById("openRegisterBtn").addEventListener("click", async () => {
   if (!sessionStorage.getItem("attendance_register")) {
     alert("Attendance register not loaded yet. Retry again.");
     return;
   }
 
-  // Open register in same tab (recommended)
+  // ✅ Fetch timetable ONCE (only if not cached)
+  if (!sessionStorage.getItem("weekly_timetable")) {
+    try {
+      const res = await fetch(
+        "https://attendance-4rm8.onrender.com/get-timetable",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: document.getElementById("username").value,
+            password: document.getElementById("passwordField").value,
+            ay: "2025-26"
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        sessionStorage.setItem(
+          "weekly_timetable",
+          JSON.stringify(data.weeklyTimetable)
+        );
+        sessionStorage.setItem("timetable_section", data.section);
+        sessionStorage.setItem("timetable_ay", data.academicYear);
+      }
+    } catch (err) {
+      console.warn("Timetable fetch failed", err);
+    }
+  }
+
+  // ✅ Move to register page
   window.location.href = "register.html";
 
+  
   // OR open in new tab (optional)
   // window.open("attendance-register.html", "_blank");
 });
+
 
 // Simple compression using PDF-lib
 document.getElementById("compressPdfBtn").onclick = async () => {
@@ -1697,6 +1726,25 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
   }
 });
 
+async function fetchTimetable(username, password) {
+  const res = await fetch(
+    "https://attendance-4rm8.onrender.com/get-timetable",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username,
+        password,
+        ay: "2025-26",
+      })
+    }
+  );
+
+  const data = await res.json();
+  if (!data.success) throw new Error("Timetable fetch failed");
+
+  return data;
+}
 
 
 function renderAcademic(data,username) {
