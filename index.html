@@ -2018,11 +2018,7 @@ document.getElementById('biometricResetIcon').addEventListener('click', () => {
 }
   
 async function fetchAttendanceRegisterOnce(username, password) {
-  // Already fetched in this session
-  if (sessionStorage.getItem("attendance_register")) {
-    return JSON.parse(sessionStorage.getItem("attendance_register"));
-  }
-
+  
   const res = await fetch(
     "https://attendance-4rm8.onrender.com/get-attendance-register",
     {
