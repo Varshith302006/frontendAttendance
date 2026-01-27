@@ -1659,15 +1659,16 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       showDashboard(username);
       renderAcademic(academicData, username);
       renderBiometric(biometricData);
-      // ✅ Fetch register ONCE per login (background)
-      fetchAttendanceRegisterOnce(username, password)
-        .then(() => console.log("Attendance register cached"))
-        .catch(err => console.warn("Register fetch failed", err));
       // ✅ Fetch timetable immediately after login (background)
       fetchTimetableOnce(username, password)
         .then(() => console.log("Timetable cached"))
         .catch(err => console.warn("Timetable fetch failed", err));
 
+      // ✅ Fetch register ONCE per login (background)
+      fetchAttendanceRegisterOnce(username, password)
+        .then(() => console.log("Attendance register cached"))
+        .catch(err => console.warn("Register fetch failed", err));
+      
       // Load latest attendance AFTER dashboard loads
       setTimeout(async () => {
         try {
