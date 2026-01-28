@@ -1104,6 +1104,46 @@ body[data-theme="dark"] .table-wrapper th {
     </form>
     
   </div>
+  <!-- Public Content For AdSense (Below Login) -->
+<section id="publicContent" style="margin-top:110px;">
+  <div class="card">
+    <div class="card-body">
+
+      <h1>Student Attendance Dashboard</h1>
+
+      <p>
+        Student Attendance Dashboard is a free online tool that helps students track, analyze, and predict their academic and biometric attendance in an easy and visual way.
+      </p>
+
+      <h2>📊 What This Website Does</h2>
+      <ul>
+        <li>Shows your subject-wise attendance</li>
+        <li>Calculates overall attendance percentage</li>
+        <li>Shows how many classes you can bunk</li>
+        <li>Shows how many classes you must attend to reach 75%</li>
+        <li>Provides biometric attendance analysis</li>
+        <li>Shows Time Table and Attendance Register</li>
+        <li>Simulates future attendance</li>
+      </ul>
+
+      <h2>🎯 Why This Is Useful</h2>
+      <p>
+        This tool helps you plan your attendance smartly and stay above the required limit.
+      </p>
+
+      <h2>🔐 Your Data Is Safe</h2>
+      <p>
+        Your login data is used only to fetch attendance from the college server.
+      </p>
+
+      <p style="margin-top:20px; font-weight:600;">
+        👉 Scroll up and login to access your dashboard.
+      </p>
+
+    </div>
+  </div>
+</section>
+
   <div id="skeletonLoader" class="skeleton-container" style="display:none;">
     <div class="skeleton-card"></div>
     <div class="skeleton-card"></div>
@@ -1198,7 +1238,9 @@ body[data-theme="dark"] .table-wrapper th {
         <div id="biometricSection" style="margin-top: 0px;">
         </div>
       <!-- </div> -->
+       
     </div>
+    
 </div>
  
  <!-- <div class="stats-grid" id="periodStatsGrid" style="margin-top:40px;"></div> -->
@@ -1295,6 +1337,31 @@ body[data-theme="dark"] .table-wrapper th {
 
   </div>
 </div>
+<footer style="margin-top:60px; border-top:1px solid var(--border); background:var(--bg-secondary);">
+  <div style="max-width:1280px; margin:auto; padding:30px 20px; text-align:center;">
+
+    <h3>Student Attendance Dashboard</h3>
+    <p style="color:var(--text-secondary); max-width:700px; margin:10px auto;">
+      A free tool for students to analyze, track, and predict their academic and biometric attendance.
+    </p>
+
+    <div style="margin:20px 0; display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+      <a href="about.html">About</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms & Conditions</a>
+      <a href="contact.html">Contact</a>
+    </div>
+
+    <p style="font-size:13px; color:var(--text-muted);">
+      © 2026 Attendance Dashboard. All rights reserved.
+    </p>
+
+    <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">
+      This website is not affiliated with any university or institution.
+    </p>
+
+  </div>
+</footer>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -1584,6 +1651,7 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
 
   // HIDE LOGIN CARD IMMEDIATELY
   loginCard.style.display = "none";
+  document.getElementById('publicContent').style.display = "none";
   // SHOW ONLY DASHBOARD SKELETON
   document.getElementById('skeletonLoader').style.display = 'grid';
 
