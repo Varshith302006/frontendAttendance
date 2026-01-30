@@ -160,6 +160,24 @@
       transform: scale(1.05);
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
+    .PA {
+      color: #b45309; /* dark orange text */
+      font-weight: 700;
+      background: linear-gradient(
+        135deg,
+        rgba(251, 191, 36, 0.25),
+        rgba(245, 158, 11, 0.15)
+      );
+      border-radius: 8px;
+      padding: 6px 12px;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+      font-size: 15px;
+    }
+    
+    .PA:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+    }
 
     .NA {
       color: #64748b;
@@ -386,27 +404,41 @@ function buildRegister(records) {
   dates.forEach(date => {
     html += `<tr><td>${date}</td>`;
 
-    subjects.forEach(sub => {
-     const { present, absent } = map[date][sub];
-
+   subjects.forEach(sub => {
+      const { present, absent } = map[date][sub];
+    
       let parts = [];
       let cls = "NA";
-      
+    
+      const isMixed = present > 0 && absent > 0;
+    
+      // Present text
       if (present > 0) {
-        parts.push(present > 1 ? `P(${present})` : "P");
-        cls = "P";
+        parts.push(
+          isMixed || present > 1 ? `P(${present})` : "P"
+        );
       }
-      
+    
+      // Absent text (🔥 ALWAYS show count if mixed)
       if (absent > 0) {
-        parts.push(absent > 1 ? `A(${absent})` : "A");
-        cls = present > 0 ? "P" : "A"; // green if any present
+        parts.push(
+          isMixed ? `A(${absent})` : (absent > 1 ? `A(${absent})` : "A")
+        );
       }
-      
-      let text = parts.length ? parts.join(" ") : "-";
-
-
+    
+      // Cell color
+      if (isMixed) {
+        cls = "PA";   // 🟠 Orange
+      } else if (present > 0) {
+        cls = "P";    // 🟢 Green
+      } else if (absent > 0) {
+        cls = "A";    // 🔴 Red
+      }
+    
+      const text = parts.length ? parts.join(" ") : "-";
       html += `<td class="${cls}">${text}</td>`;
     });
+
 
     html += "</tr>";
   });
