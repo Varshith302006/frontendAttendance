@@ -485,12 +485,55 @@ document.getElementById("openTimetableBtn").onclick = () => {
   });
 
   html += "</table>";
+  html += renderSubjectsDetails();
   container.innerHTML = html;
   popup.style.display = "flex";
 };
 
 function closeTimetable() {
   document.getElementById("timetablePopup").style.display = "none";
+}
+function renderSubjectsDetails() {
+  const subjects = JSON.parse(
+    sessionStorage.getItem("timetable_subjects") || "[]"
+  );
+
+  if (!subjects.length) {
+    return "<p>No subject details available</p>";
+  }
+
+  let html = `
+    <h3 style="margin-top:24px;">📘 Subject Details</h3>
+    <table width="100%" cellpadding="8" cellspacing="0"
+      style="border-collapse:collapse; margin-top:12px;">
+      <thead>
+        <tr style="background:#f1f5f9;">
+          <th>S.No</th>
+          <th>Subject Code</th>
+          <th>Short Code</th>
+          <th>Subject Name</th>
+          <th>Faculty</th>
+          <th>Staff ID</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  subjects.forEach(s => {
+    html += `
+      <tr>
+        <td>${s.sno || "-"}</td>
+        <td><b>${s.subjectCode || "-"}</b></td>
+        <td>${s.shortCode || "-"}</td>
+        <td>${s.subjectName || "-"}</td>
+        <td>${s.staffName || "-"}</td>
+        <td>${s.staffId || "-"}</td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table>";
+  return html;
 }
 
 
