@@ -1041,7 +1041,60 @@ body[data-theme="dark"] .table-wrapper th {
   padding: 0;
 }
 
+/* Timetable popup table fix */
+.timetable-scroll {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 10px;
+  border-radius: 12px;
+}
 
+/* Stable table layout */
+.timetable-table {
+  width: 100%;
+  min-width: 900px; /* forces proper column spacing */
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Header cells */
+.timetable-table th {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  padding: 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* Body cells */
+.timetable-table td {
+  padding: 14px 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  border-bottom: 1px solid var(--border-light);
+  word-break: break-word;
+}
+
+/* Day column */
+.timetable-table th:first-child,
+.timetable-table td:first-child {
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--bg-secondary);
+}
+
+/* Mobile smooth scroll */
+.timetable-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.timetable-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+#timetablePopup {
+  overflow: hidden;
+}
 </style>
 </head>
 <body>
@@ -1113,7 +1166,7 @@ body[data-theme="dark"] .table-wrapper th {
     
   </div>
   <!-- Public Content For AdSense (Below Login) -->
-<section id="publicContent" style="margin-top:110px;">
+<section id="publicContent" style="margin-top:500px;">
   <div class="card">
     <div class="card-body">
 
@@ -1374,7 +1427,7 @@ body[data-theme="dark"] .table-wrapper th {
 
   </div>
 </div>
-<footer style="margin-top:60px; border-top:1px solid var(--border); background:var(--bg-secondary);">
+<footer style="margin-top:100px; border-top:1px solid var(--border); background:var(--bg-secondary);">
   <div style="max-width:1280px; margin:auto; padding:30px 20px; text-align:center;">
 
     <h3>Student Attendance Dashboard</h3>
@@ -1439,14 +1492,45 @@ const timetablePopup = document.getElementById("timetablePopup");
 const closeTimetableBtn = document.getElementById("closeTimetableBtn");
 const timetableContent = document.getElementById("timetableContent");
 
-openTimetableBtn.addEventListener("click", () => {
+openTimetableBtn.addEventListener("click", async () => {
+  resetTimetablePopupPosition();
   timetablePopup.style.display = "flex";
+
+  // 1️⃣ Show loading immediately
+  timetableContent.innerHTML = `
+    <div class="loading-state">
+      <div class="loader"></div>
+      <p>Loading timetable...</p>
+    </div>
+  `;
+
+  // 2️⃣ Ensure data is fetched
+  await ensureTimetableLoaded();
+
+  // 3️⃣ Render AFTER fetch
   renderTimetablePopup();
 });
+async function ensureTimetableLoaded() {
+  // Already cached → skip fetch
+  if (sessionStorage.getItem("weekly_timetable")) return;
+
+  const username = sessionStorage.getItem("logged_user");
+  const password = sessionStorage.getItem("logged_pass");
+
+  if (!username || !password) {
+    throw new Error("Credentials missing");
+  }
+
+  await fetchTimetableOnce(username, password);
+}
+
+
 
 closeTimetableBtn.addEventListener("click", () => {
   timetablePopup.style.display = "none";
+  resetTimetablePopupPosition(); // ✅ prevent stale position
 });
+
 
 // ✅ click outside closes popup
 timetablePopup.addEventListener("click", (e) => {
@@ -1494,6 +1578,14 @@ document.getElementById("openRegisterBtn").addEventListener("click", async () =>
   // OR open in new tab (optional)
   // window.open("attendance-register.html", "_blank");
 });
+function resetTimetablePopupPosition() {
+  const popupInner = document.querySelector("#timetablePopup .pdf-popup-inner");
+  if (!popupInner) return;
+
+  popupInner.style.left = "50%";
+  popupInner.style.top = "50%";
+  popupInner.style.transform = "translate(-50%, -50%)";
+}
 
 function renderTimetablePopup() {
   const timetable = JSON.parse(sessionStorage.getItem("weekly_timetable") || "[]");
@@ -1505,16 +1597,17 @@ function renderTimetablePopup() {
   }
 
   let html = `
-    <table width="100%" cellpadding="10" cellspacing="0"
-      style="border-collapse:collapse; text-align:center;">
-      <thead>
-        <tr style="background:var(--bg-primary);">
-          <th>Day</th>
-          <th>P1</th><th>P2</th><th>P3</th>
-          <th>P4</th><th>P5</th><th>P6</th>
-        </tr>
-      </thead>
-      <tbody>
+    <div class="timetable-scroll">
+      <table class="timetable-table">
+          <thead>
+          <tr style="background:var(--bg-primary);">
+            <th>Day</th>
+            <th>P1</th><th>P2</th><th>P3</th>
+            <th>P4</th><th>P5</th><th>P6</th>
+          </tr>
+        </thead>
+        <tbody>
+    </div>
   `;
 
   timetable.forEach(r => {
@@ -1523,7 +1616,7 @@ function renderTimetablePopup() {
       r.day.toLowerCase().includes("lunch")
     ) return;
 
-    html += `<tr><td><b>${r.day}</b></td>`;
+    html += `<tr><td>${formatDayDate(r.day)}</td>`;
     for (let i = 0; i < 6; i++) {
       html += `<td>${r.periods[i] || "-"}</td>`;
     }
@@ -1569,6 +1662,25 @@ function renderTimetablePopup() {
 
   timetableContent.innerHTML = html;
 }
+function formatDayDate(raw) {
+  if (!raw) return "-";
+
+  // Match: Monday26-Jan-2026
+  const match = raw.match(/^([A-Za-z]+)(\d{1,2}-[A-Za-z]{3}-\d{4})$/);
+
+  if (!match) return raw;
+
+  const day = match[1];
+  const date = match[2];
+
+  return `
+    <div class="day-cell">
+      <div class="day-name">${day}</div>
+      <div class="day-date">${date}</div>
+    </div>
+  `;
+}
+
 (function enableTimetableDrag() {
   const popup = document.querySelector("#timetablePopup .pdf-popup-inner");
   const header = document.getElementById("timetableHeader");
@@ -1577,6 +1689,8 @@ function renderTimetablePopup() {
 
   let isDragging = false;
   let startX, startY, startLeft, startTop;
+
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   const startDrag = (x, y) => {
     isDragging = true;
@@ -1593,8 +1707,19 @@ function renderTimetablePopup() {
   const moveDrag = (x, y) => {
     if (!isDragging) return;
 
-    popup.style.left = startLeft + (x - startX) + "px";
-    popup.style.top = startTop + (y - startY) + "px";
+    const dx = x - startX;
+    const dy = y - startY;
+
+    const popupRect = popup.getBoundingClientRect();
+
+    const maxLeft = window.innerWidth - popupRect.width;
+    const maxTop = window.innerHeight - popupRect.height;
+
+    const newLeft = clamp(startLeft + dx, 8, maxLeft - 8);
+    const newTop  = clamp(startTop + dy, 8, maxTop - 8);
+
+    popup.style.left = newLeft + "px";
+    popup.style.top  = newTop  + "px";
   };
 
   const stopDrag = () => {
@@ -1603,6 +1728,7 @@ function renderTimetablePopup() {
 
   /* Mouse */
   header.addEventListener("mousedown", e => {
+    e.preventDefault();
     startDrag(e.clientX, e.clientY);
   });
 
@@ -1913,16 +2039,19 @@ document.getElementById('loginForm').addEventListener('submit', async e => {
       // SUCCESS → SHOW DASHBOARD
       document.getElementById('skeletonLoader').style.display = 'none';
       showDashboard(username);
+      sessionStorage.setItem("logged_user", username);
+      sessionStorage.setItem("logged_pass", password);
+
       renderAcademic(academicData, username);
       renderBiometric(biometricData);
       // ✅ Fetch timetable immediately after login (background)
       fetchTimetableOnce(username, password)
-        .then(() => console.log("Timetable cached"))
+        .then(() => console.log(""))
         .catch(err => console.warn("Timetable fetch failed", err));
 
       // ✅ Fetch register ONCE per login (background)
       fetchAttendanceRegisterOnce(username, password)
-        .then(() => console.log("Attendance register cached"))
+        .then(() => console.log(""))
         .catch(err => console.warn("Register fetch failed", err));
       
       // Load latest attendance AFTER dashboard loads
