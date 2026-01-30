@@ -1798,6 +1798,7 @@ async function fetchTimetableOnce(username, password) {
     "weekly_timetable",
     JSON.stringify(data.weeklyTimetable)
   );
+  sessionStorage.setItem("timetable_subjects", JSON.stringify(data.subjects));
   sessionStorage.setItem("timetable_section", data.section);
   sessionStorage.setItem("timetable_ay", data.academicYear);
 
