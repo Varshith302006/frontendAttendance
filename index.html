@@ -1160,6 +1160,12 @@ body[data-theme="dark"] .table-wrapper th {
         Attendance Register
       </button>
     </div>
+     <div style="margin-bottom:24px;">
+       <button id="openTimetableBtn" class="btn" style="width:100%; display:block;">
+         Timetable
+       </button>
+     </div>
+
     <div style="margin-bottom:24px;">
       <button id="openBiometricBtn" class="btn" style="width:100%; display:block;">
         Biometric Analysis
@@ -1294,7 +1300,22 @@ body[data-theme="dark"] .table-wrapper th {
   <button id="openPdfCompressor" class="side-menu-btn">
     📄 PDF Compressor
   </button>
-  
+  <div id="timetablePopup" class="pdf-popup">
+       <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
+     
+         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+           <h3>📅 Weekly Timetable</h3>
+           <button id="closeTimetableBtn" class="menu-btn">✖</button>
+         </div>
+     
+         <div id="timetableContent" class="loading-state">
+           <div class="loader"></div>
+           <p>Loading timetable...</p>
+         </div>
+     
+       </div>
+     </div>
+
 
 </div>
 <div id="pdfPopup" class="pdf-popup">
@@ -1397,6 +1418,26 @@ let LATEST_ATTENDANCE_READY = false;
 const biometricPopup = document.getElementById("biometricPopup");
 const openBiometricBtn = document.getElementById("openBiometricBtn");
 const closeBiometricBtn = document.getElementById("closeBiometricBtn");
+const openTimetableBtn = document.getElementById("openTimetableBtn");
+const timetablePopup = document.getElementById("timetablePopup");
+const closeTimetableBtn = document.getElementById("closeTimetableBtn");
+const timetableContent = document.getElementById("timetableContent");
+
+openTimetableBtn.addEventListener("click", () => {
+  timetablePopup.style.display = "flex";
+  renderTimetablePopup();
+});
+
+closeTimetableBtn.addEventListener("click", () => {
+  timetablePopup.style.display = "none";
+});
+
+// ✅ click outside closes popup
+timetablePopup.addEventListener("click", (e) => {
+  if (e.target === timetablePopup) {
+    timetablePopup.style.display = "none";
+  }
+});
 
 openBiometricBtn.addEventListener("click", () => {
   const holder = document.getElementById("biometricCard");
@@ -1438,6 +1479,80 @@ document.getElementById("openRegisterBtn").addEventListener("click", async () =>
   // window.open("attendance-register.html", "_blank");
 });
 
+function renderTimetablePopup() {
+  const timetable = JSON.parse(sessionStorage.getItem("weekly_timetable") || "[]");
+  const subjects = JSON.parse(sessionStorage.getItem("timetable_subjects") || "[]");
+
+  if (!timetable.length) {
+    timetableContent.innerHTML = "<p>No timetable available</p>";
+    return;
+  }
+
+  let html = `
+    <table width="100%" cellpadding="10" cellspacing="0"
+      style="border-collapse:collapse; text-align:center;">
+      <thead>
+        <tr style="background:var(--bg-primary);">
+          <th>Day</th>
+          <th>P1</th><th>P2</th><th>P3</th>
+          <th>P4</th><th>P5</th><th>P6</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  timetable.forEach(r => {
+    if (
+      r.day.toLowerCase().includes("period") ||
+      r.day.toLowerCase().includes("lunch")
+    ) return;
+
+    html += `<tr><td><b>${r.day}</b></td>`;
+    for (let i = 0; i < 6; i++) {
+      html += `<td>${r.periods[i] || "-"}</td>`;
+    }
+    html += "</tr>";
+  });
+
+  html += "</tbody></table>";
+
+  // 📘 Subject details
+  if (subjects.length) {
+    html += `
+      <h3 style="margin-top:24px;">📘 Subject Details</h3>
+      <table width="100%" cellpadding="8" cellspacing="0"
+        style="border-collapse:collapse; margin-top:12px;">
+        <thead>
+          <tr style="background:var(--bg-primary);">
+            <th>S.No</th>
+            <th>Code</th>
+            <th>Short</th>
+            <th>Subject</th>
+            <th>Faculty</th>
+            <th>Staff ID</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    subjects.forEach(s => {
+      html += `
+        <tr>
+          <td>${s.sno || "-"}</td>
+          <td><b>${s.subjectCode || "-"}</b></td>
+          <td>${s.shortCode || "-"}</td>
+          <td>${s.subjectName || "-"}</td>
+          <td>${s.staffName || "-"}</td>
+          <td>${s.staffId || "-"}</td>
+        </tr>
+      `;
+    });
+
+    html += "</tbody></table>";
+  }
+
+  timetableContent.innerHTML = html;
+}
 
 // Simple compression using PDF-lib
 document.getElementById("compressPdfBtn").onclick = async () => {
