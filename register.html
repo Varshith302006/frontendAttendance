@@ -387,8 +387,6 @@ function buildRegister(records) {
     html += `<tr><td>${date}</td>`;
 
     subjects.forEach(sub => {
-      const { total, present } = map[date][sub];
-
      const { present, absent } = map[date][sub];
 
       let parts = [];
