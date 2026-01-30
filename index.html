@@ -2403,15 +2403,6 @@ function calculateNewOverall() {
   // UI OUTPUT → SHOW BOTH BARS
   // ----------------------------------------
   newOverallEl.innerHTML = `
-    <div style="margin-bottom:12px;">
-      <b>Subject-wise Average:</b> ${subjectAvg}%<br>
-      <div class="progress" style="margin-top:6px;">
-        <div class="progress-bar" style="width:${subjectAvg}%; background:${subBg}; color:white;">
-          ${subjectAvg}%
-        </div>
-      </div>
-    </div>
-
     <div>
       <b>Total Present / Total Classes:</b> ${overallAvg}%<br>
       <div class="progress" style="margin-top:6px;">
