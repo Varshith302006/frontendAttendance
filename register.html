@@ -489,12 +489,11 @@ document.getElementById("openTimetableBtn").onclick = () => {
   container.innerHTML = html;
   popup.style.display = "flex";
 };
-// Close timetable when clicking outside popup box
-document.getElementById("timetablePopup").addEventListener("click", (e) => {
-  const box = document.getElementById("timetableBox");
+const popup = document.getElementById("timetablePopup");
 
-  // If click is NOT inside popup box → close
-  if (!box.contains(e.target)) {
+popup.addEventListener("click", (e) => {
+  // Close ONLY if user clicks on the dark overlay
+  if (e.target === popup) {
     closeTimetable();
   }
 });
