@@ -489,6 +489,15 @@ document.getElementById("openTimetableBtn").onclick = () => {
   container.innerHTML = html;
   popup.style.display = "flex";
 };
+// Close timetable when clicking outside popup box
+document.getElementById("timetablePopup").addEventListener("click", (e) => {
+  const box = document.getElementById("timetableBox");
+
+  // If click is NOT inside popup box → close
+  if (!box.contains(e.target)) {
+    closeTimetable();
+  }
+});
 
 function closeTimetable() {
   document.getElementById("timetablePopup").style.display = "none";
