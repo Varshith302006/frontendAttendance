@@ -770,6 +770,14 @@ tr:hover {
     display: block;
   }
 }
+/* Make popup movable */
+#timetablePopup .pdf-popup-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  touch-action: none;
+}
 
 @media (max-width: 480px) {
   .login-card {
@@ -1303,7 +1311,15 @@ body[data-theme="dark"] .table-wrapper th {
   <div id="timetablePopup" class="pdf-popup">
        <div class="pdf-popup-inner" style="width:90%; max-width:1100px; max-height:90vh; overflow:auto;">
      
-         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+         <div id="timetableHeader"
+               style="
+                 display:flex;
+                 justify-content:space-between;
+                 align-items:center;
+                 margin-bottom:16px;
+                 cursor: grab;
+               ">
+
            <h3>📅 Weekly Timetable</h3>
            <button id="closeTimetableBtn" class="menu-btn">✖</button>
          </div>
@@ -1553,6 +1569,62 @@ function renderTimetablePopup() {
 
   timetableContent.innerHTML = html;
 }
+(function enableTimetableDrag() {
+  const popup = document.querySelector("#timetablePopup .pdf-popup-inner");
+  const header = document.getElementById("timetableHeader");
+
+  if (!popup || !header) return;
+
+  let isDragging = false;
+  let startX, startY, startLeft, startTop;
+
+  const startDrag = (x, y) => {
+    isDragging = true;
+    startX = x;
+    startY = y;
+
+    const rect = popup.getBoundingClientRect();
+    startLeft = rect.left;
+    startTop = rect.top;
+
+    popup.style.transform = "none"; // remove centering
+  };
+
+  const moveDrag = (x, y) => {
+    if (!isDragging) return;
+
+    popup.style.left = startLeft + (x - startX) + "px";
+    popup.style.top = startTop + (y - startY) + "px";
+  };
+
+  const stopDrag = () => {
+    isDragging = false;
+  };
+
+  /* Mouse */
+  header.addEventListener("mousedown", e => {
+    startDrag(e.clientX, e.clientY);
+  });
+
+  document.addEventListener("mousemove", e => {
+    moveDrag(e.clientX, e.clientY);
+  });
+
+  document.addEventListener("mouseup", stopDrag);
+
+  /* Touch */
+  header.addEventListener("touchstart", e => {
+    const t = e.touches[0];
+    startDrag(t.clientX, t.clientY);
+  });
+
+  document.addEventListener("touchmove", e => {
+    const t = e.touches[0];
+    moveDrag(t.clientX, t.clientY);
+  }, { passive: false });
+
+  document.addEventListener("touchend", stopDrag);
+})();
 
 // Simple compression using PDF-lib
 document.getElementById("compressPdfBtn").onclick = async () => {
