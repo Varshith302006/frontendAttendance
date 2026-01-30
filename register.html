@@ -362,15 +362,15 @@ function buildRegister(records) {
   dates.forEach(d => {
     map[d] = {};
     subjects.forEach(s => {
-      map[d][s] = { total: 0, present: 0 };
+      map[d][s] = { present: 0, absent: 0 };
     });
   });
 
   // Accumulate attendance
   records.forEach(r => {
     const cell = map[r.date][r.subject];
-    cell.total += 1;
     if (r.status === "P") cell.present += 1;
+    if (r.status === "A") cell.absent += 1;
   });
 
   // =========================
@@ -389,18 +389,23 @@ function buildRegister(records) {
     subjects.forEach(sub => {
       const { total, present } = map[date][sub];
 
-      let text = "-";
-      let cls = "NA";
+     const { present, absent } = map[date][sub];
 
-      if (total > 0) {
-        if (present > 0) {
-          text = total > 1 ? `P(${total})` : "P";
-          cls = "P";
-        } else {
-          text = total > 1 ? `A(${total})` : "A";
-          cls = "A";
-        }
+      let parts = [];
+      let cls = "NA";
+      
+      if (present > 0) {
+        parts.push(present > 1 ? `P(${present})` : "P");
+        cls = "P";
       }
+      
+      if (absent > 0) {
+        parts.push(absent > 1 ? `A(${absent})` : "A");
+        cls = present > 0 ? "P" : "A"; // green if any present
+      }
+      
+      let text = parts.length ? parts.join(" ") : "-";
+
 
       html += `<td class="${cls}">${text}</td>`;
     });
