@@ -370,7 +370,8 @@ function buildRegister(records) {
   const subjects = [...new Set(records.map(r => r.subject))].sort();
 
   // ✅ UNIQUE DATES → ROWS
-  const dates = [...new Set(records.map(r => r.date))].sort().reverse();
+  const dates = [...new Set(records.map(r => r.date))]
+    .sort((a, b) => parseDate(b) - parseDate(a)); // newest first
 
   /**
    * Matrix:
@@ -542,6 +543,10 @@ function renderSubjectsDetails() {
 
   html += "</tbody></table>";
   return html;
+}
+function parseDate(d) {
+  // Converts "10 Jan 2026" → Date object
+  return new Date(d.replace(/(\d{2}) (\w{3}) (\d{4})/, "$2 $1, $3"));
 }
 
 
