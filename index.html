@@ -1190,7 +1190,7 @@ a {
       </button>
     </div>
      <div style="margin-bottom:24px;">
-       <button id="openTimetableBtn" class="btn" style="width:100%; display:block;">
+       <button id="openTimetableBtn" class="btn" style="width:100%; display:none;">
          Timetable
        </button>
      </div>
@@ -1514,7 +1514,7 @@ document.getElementById("openRegisterBtn").addEventListener("click", async () =>
   }
 
   // ✅ Move to register page
-  window.location.href = "register.html";
+  window.open("register.html", "_blank");
 
   
   // OR open in new tab (optional)
@@ -2235,14 +2235,13 @@ function renderBiometric(data) {
 
 document.getElementById('biometricAttendBtn').addEventListener('click', () => {
   attendCount++;
-  bunkCount = 0;
 
-  let newTotal = totalDays + attendCount;
+  let newTotal = totalDays + attendCount+bunkCount;
   let newPresent = presentCount + attendCount;
 
   let newAttendance = ((newPresent / newTotal) * 100).toFixed(2);
 
-  let message = `If you attend ${attendCount} day(s), your attendance will be ${newAttendance}%. `;
+  let message = `After attending ${attendCount} day(s) and bunking ${bunkCount} day(s), your attendance will be ${newAttendance}%.`;
 
   // Additional logic
   if (newAttendance < 75) {
@@ -2260,14 +2259,13 @@ document.getElementById('biometricAttendBtn').addEventListener('click', () => {
 
 document.getElementById('biometricBunkBtn').addEventListener('click', () => {
   bunkCount++;
-  attendCount = 0;
 
-  let newTotal = totalDays + bunkCount;
-  let newPresent = presentCount;
+  let newTotal = totalDays+attendCount + bunkCount;
+  let newPresent = presentCount+attendCount;
 
   let newAttendance = ((newPresent / newTotal) * 100).toFixed(2);
 
-  let message = `If you bunk ${bunkCount} day(s), your attendance will be ${newAttendance}%. `;
+  let message = `After attending ${attendCount} days and bunking ${bunkCount} days, your attendance will be ${newAttendance}%.`;
 
   // Additional logic
   if (newAttendance < 75) {
