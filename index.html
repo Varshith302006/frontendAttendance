@@ -1133,10 +1133,14 @@ a {
     </div>
     <div style="text-align:center; margin-bottom:20px;">
       <a href="/AttendanceApp-arm64-v8a.apk" download
-        onclick="alert('If error downloading, use this link:\nhttps://drive.google.com/uc?export=download&id=1-ccTFoIdhFI41gsmSp3wvkc-D9tJqHva');">
+         onclick="setTimeout(() => {
+           document.getElementById('apkFallbackPopup').style.display='flex';
+         }, 500);">
+         
         <button class="btn" style="width:100%;">
           Download Attendance App (APK) Version 1.0.3
         </button>
+        
       </a>
     </div>
 
@@ -1355,6 +1359,31 @@ a {
      </div>
 
 
+</div>
+<div id="apkFallbackPopup" class="pdf-popup">
+  <div class="pdf-popup-inner" style="max-width:400px; text-align:center;">
+
+    <h3>Download Started</h3>
+
+    <p style="margin-top:10px; font-size:14px; color:var(--text-secondary);">
+      If the download does not start or fails,
+      you can use this link below.
+    </p>
+
+    <a href="https://drive.google.com/uc?export=download&id=1-ccTFoIdhFI41gsmSp3wvkc-D9tJqHva"
+       target="_blank"
+       style="display:inline-block; margin-top:12px; color:var(--primary); font-weight:600;">
+       Open Google Drive Download
+    </a>
+
+    <br><br>
+
+    <button onclick="document.getElementById('apkFallbackPopup').style.display='none'"
+            class="menu-btn">
+      Close
+    </button>
+
+  </div>
 </div>
 <div id="pdfPopup" class="pdf-popup">
   <div class="pdf-popup-inner">
