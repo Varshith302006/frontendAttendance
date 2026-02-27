@@ -1094,7 +1094,34 @@ a {
   text-decoration: none;
   color: inherit;
 }
+/* Button Loading State */
+/* Bulletproof Centered Loader */
+.btn.is-loading {
+  position: relative !important;
+  color: transparent !important; /* Hides the text */
+  pointer-events: none;
+}
 
+/* Hides any inside elements like icons temporarily */
+.btn.is-loading * {
+  visibility: hidden; 
+}
+
+/* Draws the spinner exactly in the center */
+.btn.is-loading::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  visibility: visible;
+}
 </style>
 </head>
 <body>
@@ -1537,18 +1564,35 @@ document.getElementById("closePdfPopup").onclick = () => {
   document.getElementById("pdfPopup").style.display = "none";
 };
 
-document.getElementById("openRegisterBtn").addEventListener("click", async () => {
-  if (!sessionStorage.getItem("attendance_register")) {
-    alert("Attendance register not loaded yet. Wait for a while.");
+document.getElementById("openRegisterBtn").addEventListener("click", function() {
+  const btn = this;
+
+  // If data is already loaded, open immediately in the same tab
+  if (sessionStorage.getItem("attendance_register")) {
+    window.open("register.html","_blank");
     return;
   }
 
-  // ✅ Move to register page
-  window.open("register.html", "_blank");
+  // Activate loading state (CSS handles the centering automatically)
+  btn.classList.add("is-loading");
 
-  
-  // OR open in new tab (optional)
-  // window.open("attendance-register.html", "_blank");
+  // Check for the data every 500ms
+  const checkInterval = setInterval(() => {
+    if (sessionStorage.getItem("attendance_register")) {
+      clearInterval(checkInterval);
+      btn.classList.remove("is-loading"); // Remove spinner
+      window.open("register.html","_blank"); 
+    }
+  }, 50);
+
+  // Failsafe: Stop loading after 15 seconds if it fails
+  setTimeout(() => {
+    if (btn.classList.contains("is-loading")) {
+      clearInterval(checkInterval);
+      btn.classList.remove("is-loading");
+      alert("Loading is taking longer than expected. Please check your connection.");
+    }
+  }, 150000); 
 });
 function resetTimetablePopupPosition() {
   const popupInner = document.querySelector("#timetablePopup .pdf-popup-inner");
