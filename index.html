@@ -2153,6 +2153,22 @@ function renderAcademic(data,username) {
   data.forEach(sub => T +=Number(sub.attended)||0 );
   data.forEach(sub => tot += Number(sub.total)|| 0 );
   const TT = (T*100/tot).toFixed(2);
+  const target = 0.75;
+
+    let extraMessage = "";
+    let required = 0;
+
+    if (TT < 75) {
+    required = Math.ceil(((target * tot) - T) / (1 - target));
+    required = Math.max(required, 0);
+
+    extraMessage = `Attend ${required} more classes`;
+    } else {
+    required = Math.floor((T - (target * tot)) / target);
+    required = Math.max(required, 0);
+
+    extraMessage = `Can bunk ${required} classes`;
+    }
   // Update stats cards
   const statsGrid = document.getElementById('statsGrid');
     // let statsHtml = `
@@ -2170,16 +2186,32 @@ function renderAcademic(data,username) {
 
     let statsHtml = `
         <div class="stat-card">
-        <div class="stat-card-header">
-            <div>
-            <div class="stat-card-title">Attendance</div>
-            <div class="stat-card-value">${TT}%</div>
-            <div class="stat-card-label">Performance</div>
+            <div class="stat-card-header">
+                <div>
+                    <div class="stat-card-title">Attendance</div>
+                    <div class="stat-card-value">${TT}%</div>
+                    <div class="stat-card-label">Performance</div>
+                </div>
+                <div class="stat-card-icon" 
+                    style="background: ${TT >= 75 ? 'var(--success-light)' : 'var(--danger-light)'}; 
+                            color: ${TT >= 75 ? 'var(--success)' : 'var(--danger)'};">
+                    📚
+                </div>
             </div>
-            <div class="stat-card-icon" style="background: var(--success-light); color: var(--success);">📚</div>
+
+            <!-- 👇 NEW SECTION INSIDE CARD -->
+            <div style="
+                margin-top:14px;
+                padding:10px 12px;
+                border-radius:8px;
+                font-size:13px;
+                font-weight:600;
+                color:${TT >= 75 ? 'var(--success)' : 'var(--danger)'};
+            ">
+                ${extraMessage}
+            </div>
         </div>
-        </div>
-    `;
+        `;
 
     // Continue appending the other cards
     // statsHtml += `
